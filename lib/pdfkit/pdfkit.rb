@@ -15,6 +15,7 @@ class PDFKit
     
     default_options = {
       :disable_smart_shrinking => true,
+      :page_size => 'Letter',
       :margin_top => '0.75in',
       :margin_right => '0.75in',
       :margin_bottom => '0.75in',
