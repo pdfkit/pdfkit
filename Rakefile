@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "PDFKit"
+    gem.name = "pdfkit"
     gem.summary = %Q{HTML+CSS -> PDF}
     gem.description = %Q{Uses wkhtmltopdf to create PDFs using HTML}
     gem.email = "jared@codewordstudios.com"
