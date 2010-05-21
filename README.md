@@ -5,10 +5,11 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 ## Installation
 
 1. Install wkhtmltopdf
-   # Download the latest binary from http://code.google.com/p/wkhtmltopdf/downloads/list
-   # Place the binary somewhere on your path (e.g /usr/local/bin)
+## Download the latest binary from http://code.google.com/p/wkhtmltopdf/downloads/list
+## Place the binary somewhere on your path (e.g /usr/local/bin)
 2. Install PDFKit
-   # $ gem install pdfkit
+
+    $ gem install pdfkit
    
 ## Usage
     
