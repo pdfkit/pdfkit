@@ -14,7 +14,17 @@ class PDFKit
       if !request.params['pdf'].blank?
         if headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
           body = response.body
-        
+          
+          # Make absolute urls
+          uri = env['REQUEST_URI'].split('?').first
+          uri += '/' unless uri.match(/\/$/)
+          root = env['rack.url_scheme'] + "://" + env['HTTP_HOST']
+          # translate relative urls
+          body.gsub!(/(href|src)=['"]([^\/][^\"']*)['"]/,'\1="'+root+'/\2"')
+          
+          # translate absolute urls
+          body.gsub!(/(href|src)=['"]\/([^\"]*|[^']*)['"]/,'\1="'+uri+'\2"')
+          
           pdf = PDFKit.new(body)
           body = pdf.to_pdf
           
