@@ -1,6 +1,6 @@
 = PDFKit
 
-Description goes here.
+Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the backend which renders HTML using Webkit.
 
 == Note on Patches/Pull Requests
  
@@ -14,4 +14,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 jdpace. See LICENSE for details.
+Copyright (c) 2010 Jared Pace. See LICENSE for details.
