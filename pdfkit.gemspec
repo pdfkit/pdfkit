@@ -23,12 +23,12 @@ Gem::Specification.new do |s|
      "README.md",
      "Rakefile",
      "VERSION",
-     "lib/PDFKit.rb",
+     "lib/pdfkit.rb",
      "lib/pdfkit/middleware.rb",
      "lib/pdfkit/pdfkit.rb",
      "pdfkit.gemspec",
-     "spec/PDFKit_spec.rb",
      "spec/fixtures/example.css",
+     "spec/pdfkit_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb"
   ]

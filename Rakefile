@@ -12,6 +12,22 @@ begin
     gem.authors = ["jdpace"]
     gem.add_dependency "activesupport"
     gem.add_development_dependency "rspec", "~> 2.0.0.beta.8"
+    gem.files = [
+      ".document",
+       ".gitignore",
+       "LICENSE",
+       "README.md",
+       "Rakefile",
+       "VERSION",
+       "lib/pdfkit.rb",
+       "lib/pdfkit/middleware.rb",
+       "lib/pdfkit/pdfkit.rb",
+       "pdfkit.gemspec",
+       "spec/pdfkit_spec.rb",
+       "spec/fixtures/example.css",
+       "spec/spec.opts",
+       "spec/spec_helper.rb"
+    ]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
