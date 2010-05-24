@@ -5,8 +5,8 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 ## Installation
 
 1. Install wkhtmltopdf
-## Download the latest binary from http://code.google.com/p/wkhtmltopdf/downloads/list
-## Place the binary somewhere on your path (e.g /usr/local/bin)
+** Download the latest binary from http://code.google.com/p/wkhtmltopdf/downloads/list
+** Place the binary somewhere on your path (e.g /usr/local/bin)
 2. Install PDFKit
 
     $ gem install pdfkit
@@ -26,7 +26,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
    
 ## Middleware
 
-PDFKit comes with a middleware that allows users to visit any to get a PDF view of any page on your site by appending ?pdf=true to the URL.
+PDFKit comes with a middleware that allows users to visit any to get a PDF view of any page on your site by appending .pdf to the URL.
 
 ### Middleware Setup
 
@@ -41,6 +41,12 @@ PDFKit comes with a middleware that allows users to visit any to get a PDF view 
     # in application.rb(Rails3) or environment.rb(Rails2)
     require 'pdfkit'
     config.middleware.use PDFKit::Middleware
+    
+**With PDFKit options**
+
+    # options will be passed to PDFKit.new
+    config.middleware.use PDFKit::Middleware, :print_media_type => true
+
 
 ## Note on Patches/Pull Requests
  
