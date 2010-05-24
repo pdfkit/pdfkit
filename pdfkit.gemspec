@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{pdfkit}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "lib/PDFKit.rb",
      "lib/pdfkit/middleware.rb",
      "lib/pdfkit/pdfkit.rb",
+     "pdfkit.gemspec",
      "spec/PDFKit_spec.rb",
      "spec/fixtures/example.css",
      "spec/spec.opts",
