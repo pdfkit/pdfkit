@@ -3,11 +3,14 @@ class PDFKit
   # A rack middleware for validating HTML via w3c validator
   class Middleware
     
-    def initialize( app )
+    def initialize(app, options = {})
       @app = app
+      @options = options
     end
         
-    def call( env )
+    def call(env)
+      puts env.inspect
+      
       status, headers, response = @app.call( env )
       
       request = Rack::Request.new( env )
@@ -25,7 +28,7 @@ class PDFKit
           # translate absolute urls
           body.gsub!(/(href|src)=['"]\/([^\"]*|[^']*)['"]/,'\1="'+uri+'\2"')
           
-          pdf = PDFKit.new(body)
+          pdf = PDFKit.new(body, @options)
           body = pdf.to_pdf
           
           headers["Content-Length"] = body.length.to_s
