@@ -56,7 +56,7 @@ class PDFKit
     def append_stylesheets
       stylesheets.each do |stylesheet|
         if @html.match(/<\/head>/)
-          @html.gsub!(/(<\/head>)/, "#{style_tag_for(stylesheet)}$1")
+          @html.gsub!(/(<\/head>)/, style_tag_for(stylesheet)+'\1')
         else
           @html.insert(0, style_tag_for(stylesheet))
         end
