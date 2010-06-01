@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{pdfkit}
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
-  s.date = %q{2010-05-31}
+  s.date = %q{2010-06-01}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
   s.email = %q{jared@codewordstudios.com}
   s.executables = ["pdfkit.rb", "wkhtmltopdf-linux-i386-0-9-9", "wkhtmltopdf-osx-i386-0-9-9", "wkhtmltopdf-proxy"]
