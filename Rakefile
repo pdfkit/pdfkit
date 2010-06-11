@@ -12,6 +12,7 @@ begin
     gem.authors = ["jdpace"]
     gem.add_dependency "activesupport"
     gem.add_development_dependency "rspec", "~> 2.0.0.beta.8"
+    gem.add_development_dependency 'mocha'
     gem.files = [
       ".document",
        ".gitignore",
@@ -19,12 +20,19 @@ begin
        "README.md",
        "Rakefile",
        "VERSION",
+       "bin/pdfkit.rb",
+       "bin/wkhtmltopdf-linux-i386-0-9-9",
+       "bin/wkhtmltopdf-osx-i386-0-9-9",
+       "bin/wkhtmltopdf-proxy",
        "lib/pdfkit.rb",
        "lib/pdfkit/middleware.rb",
        "lib/pdfkit/pdfkit.rb",
+       "lib/pdfkit/source.rb",
        "pdfkit.gemspec",
        "spec/pdfkit_spec.rb",
+       "spec/source_spec.rb",
        "spec/fixtures/example.css",
+       "spec/fixtures/example.html",
        "spec/spec.opts",
        "spec/spec_helper.rb"
     ]

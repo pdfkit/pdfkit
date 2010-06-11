@@ -25,7 +25,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     pdf = kit.to_pdf
     
     # Save the PDF to a file
-    File.open('/path/to/save/pdf','w') {|file| file << pdf}
+    file = kit.to_file('/path/to/save/pdf')
     
     # PDFKit.new can optionally accept a URL or a File.
     # Stylesheets can not be added when source is provided as a URL of File.

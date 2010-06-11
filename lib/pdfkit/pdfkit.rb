@@ -60,6 +60,10 @@ class PDFKit
     return result
   end
   
+  def to_file(path)
+    File.open(path,'w') {|file| file << self.to_pdf}
+  end
+  
   protected
   
     def style_tag_for(stylesheet)

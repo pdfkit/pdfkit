@@ -4,6 +4,7 @@ $LOAD_PATH.unshift(File.join(SPEC_ROOT, '..', 'lib'))
 require 'pdfkit'
 require 'spec'
 require 'spec/autorun'
+require 'mocha'
 
 Spec::Runner.configure do |config|
   

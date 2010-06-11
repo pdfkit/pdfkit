@@ -64,7 +64,7 @@ describe PDFKit do
     end
   end
   
-  context "to_pdf" do
+  context "#to_pdf" do
     it "should generate a PDF of the HTML" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
       pdf = pdfkit.to_pdf
@@ -92,6 +92,25 @@ describe PDFKit do
       css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
       lambda { pdfkit.to_pdf }.should raise_error(PDFKit::ImproperSourceError)
+    end
+  end
+  
+  context "#to_file" do
+    before do
+      @file_path = File.join(SPEC_ROOT,'fixtures','test.pdf')
+      File.delete(@file_path) if File.exist?(@file_path)
+    end
+    
+    after do
+      File.delete(@file_path)
+    end
+    
+    it "should create a file with the PDF as content" do
+      pdfkit = PDFKit.new('html', :page_size => 'Letter')
+      pdfkit.expects(:to_pdf).returns('PDF')
+      file = pdfkit.to_file(@file_path)
+      file.should be_instance_of(File)
+      File.read(file.path).should == 'PDF'
     end
   end
   
