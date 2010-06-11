@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{pdfkit}
-  s.version = "0.2.3"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
-  s.date = %q{2010-06-01}
+  s.date = %q{2010-06-11}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
   s.email = %q{jared@codewordstudios.com}
   s.executables = ["pdfkit.rb", "wkhtmltopdf-linux-i386-0-9-9", "wkhtmltopdf-osx-i386-0-9-9", "wkhtmltopdf-proxy"]
@@ -24,12 +24,19 @@ Gem::Specification.new do |s|
      "README.md",
      "Rakefile",
      "VERSION",
+     "bin/pdfkit.rb",
+     "bin/wkhtmltopdf-linux-i386-0-9-9",
+     "bin/wkhtmltopdf-osx-i386-0-9-9",
+     "bin/wkhtmltopdf-proxy",
      "lib/pdfkit.rb",
      "lib/pdfkit/middleware.rb",
      "lib/pdfkit/pdfkit.rb",
+     "lib/pdfkit/source.rb",
      "pdfkit.gemspec",
      "spec/fixtures/example.css",
+     "spec/fixtures/example.html",
      "spec/pdfkit_spec.rb",
+     "spec/source_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb"
   ]
@@ -40,6 +47,7 @@ Gem::Specification.new do |s|
   s.summary = %q{HTML+CSS -> PDF}
   s.test_files = [
     "spec/pdfkit_spec.rb",
+     "spec/source_spec.rb",
      "spec/spec_helper.rb"
   ]
 
@@ -50,13 +58,16 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
+      s.add_development_dependency(%q<mocha>, [">= 0"])
     else
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
+      s.add_dependency(%q<mocha>, [">= 0"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
+    s.add_dependency(%q<mocha>, [">= 0"])
   end
 end
 
