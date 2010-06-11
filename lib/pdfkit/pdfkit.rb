@@ -6,11 +6,18 @@ class PDFKit
     end
   end
   
-  attr_accessor :html, :stylesheets
+  class ImproperSourceError < StandardError
+    def initialize(msg)
+      super("Improper Source: #{msg}")
+    end
+  end
+  
+  attr_accessor :source, :stylesheets
   attr_reader :options
   
-  def initialize(html, options = {})
-    @html = html
+  def initialize(url_file_or_html, options = {})
+    @source = Source.new(url_file_or_html)
+    
     @stylesheets = []
     
     default_options = {
@@ -31,7 +38,13 @@ class PDFKit
     args = [@cmd]
     args += @options.to_a.flatten.compact
     args << '--quiet'
-    args << '-' # Get HTML from stdin
+    
+    if @source.html?
+      args << '-' # Get HTML from stdin
+    else
+      args << @source.to_s
+    end
+    
     args << '-' # Read PDF from stdout
     args.join(' ')
   end
@@ -40,7 +53,7 @@ class PDFKit
     append_stylesheets
     
     pdf = IO.popen(command, "w+")
-    pdf.puts(@html)
+    pdf.puts(@source.to_s) if @source.html?
     pdf.close_write
     result = pdf.gets(nil)
     pdf.close_read
@@ -54,11 +67,13 @@ class PDFKit
     end
     
     def append_stylesheets
+      raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@source.html?
+      
       stylesheets.each do |stylesheet|
-        if @html.match(/<\/head>/)
-          @html.gsub!(/(<\/head>)/, style_tag_for(stylesheet)+'\1')
+        if @source.to_s.match(/<\/head>/)
+          @source.to_s.gsub!(/(<\/head>)/, style_tag_for(stylesheet)+'\1')
         else
-          @html.insert(0, style_tag_for(stylesheet))
+          @source.to_s.insert(0, style_tag_for(stylesheet))
         end
       end
     end
@@ -66,6 +81,7 @@ class PDFKit
     def normalize_options(options)
       normalized_options = {}
       options.each do |key, value|
+        next if !value
         normalized_key = "--#{key.to_s.downcase.dasherize}"
         normalized_value = value.is_a?(TrueClass) ? nil : value
         normalized_options[normalized_key] = normalized_value

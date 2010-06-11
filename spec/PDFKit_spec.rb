@@ -3,9 +3,23 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe PDFKit do
   
   context "initialization" do
-    it "should take HTML for the renderer" do
+    it "should accept HTML as the source" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
-      pdfkit.html.should == '<h1>Oh Hai</h1>'
+      pdfkit.source.should be_html
+      pdfkit.source.to_s.should == '<h1>Oh Hai</h1>'
+    end
+    
+    it "should accept a URL as the source" do
+      pdfkit = PDFKit.new('http://google.com')
+      pdfkit.source.should be_url
+      pdfkit.source.to_s.should == 'http://google.com'
+    end
+    
+    it "should accept a File as the source" do
+      file_path = File.join(SPEC_ROOT,'fixtures','example.html')
+      pdfkit = PDFKit.new(File.new(file_path))
+      pdfkit.source.should be_file
+      pdfkit.source.to_s.should == file_path
     end
     
     it "should parse the options into a cmd line friedly format" do
@@ -32,6 +46,22 @@ describe PDFKit do
       pdfkit.command.should include('wkhtmltopdf')
       pdfkit.command.should include('--page-size Letter')
     end
+    
+    it "read the source from stdin if it is html" do
+      pdfkit = PDFKit.new('html')
+      pdfkit.command.should match(/ - -$/)
+    end
+    
+    it "specify the URL to the source if it is a url" do
+      pdfkit = PDFKit.new('http://google.com')
+      pdfkit.command.should match(/ http:\/\/google\.com -$/)
+    end
+    
+    it "should specify the path to the source if it is a file" do
+      file_path = File.join(SPEC_ROOT,'fixtures','example.html')
+      pdfkit = PDFKit.new(File.new(file_path))
+      pdfkit.command.should match(/ #{file_path} -$/)
+    end
   end
   
   context "to_pdf" do
@@ -43,18 +73,25 @@ describe PDFKit do
     
     it "should have the stylesheet added to the head if it has one" do
       pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
-      css = File.expand_path(File.dirname(__FILE__) + '/fixtures/example.css')
+      css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
       pdfkit.to_pdf
-      pdfkit.html.should include("<style>#{File.read(css)}</style>")
+      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style>")
     end
     
     it "should prepend style tags if the HTML doesn't have a head tag" do
       pdfkit = PDFKit.new("<html><body>Hai!</body></html>")
-      css = File.expand_path(File.dirname(__FILE__) + '/fixtures/example.css')
+      css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
       pdfkit.to_pdf
-      pdfkit.html.should include("<style>#{File.read(css)}</style><html>")
+      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style><html>")
+    end
+    
+    it "should throw an error if the source is not html and stylesheets have been added" do
+      pdfkit = PDFKit.new('http://google.com')
+      css = File.join(SPEC_ROOT,'fixtures','example.css')
+      pdfkit.stylesheets << css
+      lambda { pdfkit.to_pdf }.should raise_error(PDFKit::ImproperSourceError)
     end
   end
   

@@ -1,5 +1,6 @@
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+SPEC_ROOT = File.dirname(__FILE__)
+$LOAD_PATH.unshift(SPEC_ROOT)
+$LOAD_PATH.unshift(File.join(SPEC_ROOT, '..', 'lib'))
 require 'pdfkit'
 require 'spec'
 require 'spec/autorun'
