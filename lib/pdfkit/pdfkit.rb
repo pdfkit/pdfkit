@@ -30,12 +30,11 @@ class PDFKit
     }
     @options = normalize_options(options.reverse_merge(default_options))
     
-    @cmd  = `which wkhtmltopdf-proxy`.chomp
-    raise NoExecutableError.new if @cmd.blank?
+    raise NoExecutableError.new if wkhtmltopdf.blank?
   end
   
   def command
-    args = [@cmd]
+    args = [wkhtmltopdf]
     args += @options.to_a.flatten.compact
     args << '--quiet'
     
@@ -65,6 +64,10 @@ class PDFKit
   end
   
   protected
+  
+    def wkhtmltopdf
+      @wkhtmltopdf ||= `which wkhtmltopdf-proxy`.chomp
+    end
   
     def style_tag_for(stylesheet)
       "<style>#{File.read(stylesheet)}</style>"
