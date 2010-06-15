@@ -20,7 +20,6 @@ begin
        "README.md",
        "Rakefile",
        "VERSION",
-       "bin/pdfkit.rb",
        "bin/wkhtmltopdf-linux-i386-0-9-9",
        "bin/wkhtmltopdf-osx-i386-0-9-9",
        "bin/wkhtmltopdf-proxy",
