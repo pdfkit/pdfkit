@@ -38,17 +38,12 @@ class PDFKit
     
     private
     
+      # Change relative paths to absolute
       def translate_paths(body, env)
-        # Make absolute urls
-        uri = env['REQUEST_URI'].split('?').first
-        uri += '/' unless uri.match(/\/$/)
-        root = env['rack.url_scheme'] + "://" + env['HTTP_HOST']
+        # Host with protocol
+        root = env['rack.url_scheme'] + "://" + env['HTTP_HOST'] + "/"
         
-        # translate absolute urls
-        body.gsub!(/(href|src)=['"]([^\/][^\"']*)['"]/,'\1="'+root+'/\2"')
-        
-        # translate relative urls
-        body.gsub!(/(href|src)=['"]\/([^\"']*|[^"']*)['"]/,'\1="'+uri+'\2"')
+        body.gsub!(/(href|src)=['"]\/([^\"']*|[^"']*)['"]/,'\1="'+root+'\2"')
       end
     
       def set_request_to_render_as_pdf(env)
