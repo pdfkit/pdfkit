@@ -44,11 +44,11 @@ class PDFKit
         uri += '/' unless uri.match(/\/$/)
         root = env['rack.url_scheme'] + "://" + env['HTTP_HOST']
         
-        # translate relative urls
+        # translate absolute urls
         body.gsub!(/(href|src)=['"]([^\/][^\"']*)['"]/,'\1="'+root+'/\2"')
         
-        # translate absolute urls
-        body.gsub!(/(href|src)=['"]\/([^\"]*|[^']*)['"]/,'\1="'+uri+'\2"')
+        # translate relative urls
+        body.gsub!(/(href|src)=['"]\/([^\"']*|[^"']*)['"]/,'\1="'+uri+'\2"')
       end
     
       def set_request_to_render_as_pdf(env)
