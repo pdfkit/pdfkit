@@ -1,6 +1,5 @@
 class PDFKit
   
-  # A rack middleware for validating HTML via w3c validator
   class Middleware
     
     def initialize(app, options = {})
@@ -12,9 +11,9 @@ class PDFKit
       @render_pdf = false
       set_request_to_render_as_pdf(env) if env['PATH_INFO'].match(/\.pdf$/)
       
-      status, headers, response = @app.call( env )
+      status, headers, response = @app.call(env)
       
-      request = Rack::Request.new( env )
+      request = Rack::Request.new(env)
       if @render_pdf && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.body
         
