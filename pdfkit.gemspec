@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
-  s.date = %q{2010-06-15}
+  s.date = %q{2010-06-16}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
   s.email = %q{jared@codewordstudios.com}
   s.executables = ["wkhtmltopdf-linux-i386-0-9-9", "wkhtmltopdf-osx-i386-0-9-9", "wkhtmltopdf-proxy"]
@@ -57,15 +57,18 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
+      s.add_development_dependency(%q<rspec-core>, ["~> 2.0.0.beta.8"])
       s.add_development_dependency(%q<mocha>, [">= 0"])
     else
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
+      s.add_dependency(%q<rspec-core>, ["~> 2.0.0.beta.8"])
       s.add_dependency(%q<mocha>, [">= 0"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
+    s.add_dependency(%q<rspec-core>, ["~> 2.0.0.beta.8"])
     s.add_dependency(%q<mocha>, [">= 0"])
   end
 end
