@@ -57,7 +57,7 @@ class PDFKit
         
         path = Pathname(env['PATH_INFO'])
         env['PATH_INFO'] = path.to_s.sub(/#{path.extname}$/,'') if path.extname == '.pdf'
-        env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('html'))
+        env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
       end
       
       def concat(accepts, type)
