@@ -27,7 +27,7 @@ class PDFKit
         headers.delete('ETag')
         headers.delete('Cache-Control')
         
-        headers["Content-Length"] = body.length.to_s
+        headers["Content-Length"] = body.bytes.to_a.size.to_s
         headers["Content-Type"] = "application/pdf"
         
         response = [body]
