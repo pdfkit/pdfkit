@@ -1,6 +1,5 @@
 class PDFKit
   
-  # A rack middleware for validating HTML via w3c validator
   class Middleware
     
     def initialize(app, options = {})
@@ -12,9 +11,9 @@ class PDFKit
       @render_pdf = false
       set_request_to_render_as_pdf(env) if env['PATH_INFO'].match(/\.pdf$/)
       
-      status, headers, response = @app.call( env )
+      status, headers, response = @app.call(env)
       
-      request = Rack::Request.new( env )
+      request = Rack::Request.new(env)
       if @render_pdf && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.body
         
@@ -39,17 +38,12 @@ class PDFKit
     
     private
     
+      # Change relative paths to absolute
       def translate_paths(body, env)
-        # Make absolute urls
-        uri = env['REQUEST_URI'].split('?').first
-        uri += '/' unless uri.match(/\/$/)
-        root = env['rack.url_scheme'] + "://" + env['HTTP_HOST']
+        # Host with protocol
+        root = env['rack.url_scheme'] + "://" + env['HTTP_HOST'] + "/"
         
-        # translate relative urls
-        body.gsub!(/(href|src)=['"]([^\/][^\"']*)['"]/,'\1="'+root+'/\2"')
-        
-        # translate absolute urls
-        body.gsub!(/(href|src)=['"]\/([^\"]*|[^']*)['"]/,'\1="'+uri+'\2"')
+        body.gsub!(/(href|src)=['"]\/([^\"']*|[^"']*)['"]/,'\1="'+root+'\2"')
       end
     
       def set_request_to_render_as_pdf(env)
@@ -58,7 +52,7 @@ class PDFKit
         
         path = Pathname(env['PATH_INFO'])
         env['PATH_INFO'] = path.to_s.sub(/#{path.extname}$/,'') if path.extname == '.pdf'
-        env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('html'))
+        env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
       end
       
       def concat(accepts, type)
