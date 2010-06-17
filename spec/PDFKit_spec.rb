@@ -68,7 +68,7 @@ describe PDFKit do
     it "should generate a PDF of the HTML" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
       pdf = pdfkit.to_pdf
-      pdf.should match(/^%PDF/) # PDF Signature at beginning of file
+      pdf[0...4].should == "%PDF" # PDF Signature at beginning of file
     end
     
     it "should have the stylesheet added to the head if it has one" do
