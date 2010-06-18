@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{pdfkit}
-  s.version = "0.3.1"
+  s.version = "0.3.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
-  s.date = %q{2010-06-16}
+  s.date = %q{2010-06-18}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
   s.email = %q{jared@codewordstudios.com}
   s.executables = ["wkhtmltopdf-linux-i386-0-9-9", "wkhtmltopdf-osx-i386-0-9-9", "wkhtmltopdf-proxy"]
@@ -27,16 +27,15 @@ Gem::Specification.new do |s|
      "bin/wkhtmltopdf-linux-i386-0-9-9",
      "bin/wkhtmltopdf-osx-i386-0-9-9",
      "bin/wkhtmltopdf-proxy",
-     "lib/PDFKit.rb",
+     "lib/pdfkit.rb",
      "lib/pdfkit/middleware.rb",
      "lib/pdfkit/pdfkit.rb",
      "lib/pdfkit/source.rb",
      "pdfkit.gemspec",
      "spec/fixtures/example.css",
      "spec/fixtures/example.html",
-     "spec/PDFKit_spec.rb",
+     "spec/pdfkit_spec.rb",
      "spec/source_spec.rb",
-     "spec/spec.opts",
      "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/jdpace/PDFKit}
