@@ -48,6 +48,13 @@ describe PDFKit do
       pdfkit.command.should include('--toc-l1-font-size 12')
     end
     
+    it "will not include default options it is told to omit" do
+      pdfkit = PDFKit.new('html')
+      pdfkit.command.should include('--disable-smart-shrinking')
+      pdfkit = PDFKit.new('html', :disable_smart_shrinking => false)
+      pdfkit.command.should_not include('--disable-smart-shrinking')
+    end
+    
     it "read the source from stdin if it is html" do
       pdfkit = PDFKit.new('html')
       pdfkit.command.should match(/ - -$/)
