@@ -10,7 +10,6 @@ begin
     gem.email = "jared@codewordstudios.com"
     gem.homepage = "http://github.com/jdpace/PDFKit"
     gem.authors = ["jdpace"]
-    gem.add_dependency "activesupport"
     gem.add_development_dependency "rspec", "~> 2.0.0.beta.8"
     gem.add_development_dependency "rspec-core", "~> 2.0.0.beta.8"
     gem.add_development_dependency 'mocha'

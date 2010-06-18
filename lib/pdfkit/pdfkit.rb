@@ -28,9 +28,9 @@ class PDFKit
       :margin_bottom => '0.75in',
       :margin_left => '0.75in'
     }
-    @options = normalize_options(options.reverse_merge(default_options))
+    @options = normalize_options(default_options.merge(options))
     
-    raise NoExecutableError.new if wkhtmltopdf.blank?
+    raise NoExecutableError.new if wkhtmltopdf.nil? || wkhtmltopdf == ''
   end
   
   def command
@@ -89,11 +89,15 @@ class PDFKit
       normalized_options = {}
       options.each do |key, value|
         next if !value
-        normalized_key = "--#{key.to_s.downcase.dasherize}"
+        normalized_key = "--#{normalize_arg key}"
         normalized_value = value.is_a?(TrueClass) ? nil : value
         normalized_options[normalized_key] = normalized_value
       end
       normalized_options
+    end
+    
+    def normalize_arg(arg)
+      arg.to_s.downcase.gsub(/[^a-z0-9]/,'-')
     end
   
 end

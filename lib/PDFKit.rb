@@ -1,6 +1,4 @@
 require 'rubygems'
-require 'active_support/core_ext'
-require 'active_support/inflector'
 require 'pdfkit/source'
 require 'pdfkit/pdfkit'
 require 'pdfkit/middleware'
