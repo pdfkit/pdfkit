@@ -55,6 +55,11 @@ describe PDFKit do
       pdfkit.command.should_not include('--disable-smart-shrinking')
     end
     
+    it "should encapsulate string arguments in quotes" do
+      pdfkit = PDFKit.new('html', :header_center => "foo [page]")
+      pdfkit.command.should include('--header-center "foo [page]"')
+    end
+    
     it "read the source from stdin if it is html" do
       pdfkit = PDFKit.new('html')
       pdfkit.command.should match(/ - -$/)

@@ -90,14 +90,24 @@ class PDFKit
       options.each do |key, value|
         next if !value
         normalized_key = "--#{normalize_arg key}"
-        normalized_value = value.is_a?(TrueClass) ? nil : value
-        normalized_options[normalized_key] = normalized_value
+        normalized_options[normalized_key] = normalize_value(value)
       end
       normalized_options
     end
     
     def normalize_arg(arg)
       arg.to_s.downcase.gsub(/[^a-z0-9]/,'-')
+    end
+    
+    def normalize_value(value)
+      case value
+      when TrueClass
+        nil
+      when String
+        value.match(/\s/) ? "\"#{value}\"" : value
+      else
+        value
+      end
     end
   
 end
