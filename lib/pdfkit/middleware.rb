@@ -43,8 +43,7 @@ class PDFKit
       #find pdf_header and pdf_footer
       def find_options_in_meta(body)
         xml_body = REXML::Document.new(body)
-        xml_body.elements.each("html/head/meta[@name='pdkfit' @data-option-name='header']").each 
-        {|e| @options.merge!(e.attributes("data-option-name").to_sym => e.attributes("content") )  }
+        xml_body.elements.each("html/head/meta[@name='pdkfit' @data-option-name='header']").each  {|e| @options.merge!(e.attributes("data-option-name").to_sym => e.attributes("content") )  }
       end
     
       
