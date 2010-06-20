@@ -19,7 +19,7 @@ class PDFKit
         
         body = translate_paths(body, env)
         
-        find_options_in_meta(body)
+        @options.merge! find_options_in_meta(body)
 
         pdf = PDFKit.new(body, @options)
         body = pdf.to_pdf
@@ -42,13 +42,13 @@ class PDFKit
     
       #find pdf_header and pdf_footer
       def find_options_in_meta(body)
+        found_options={}
         require 'rexml/document'
         xml_body = REXML::Document.new(body)
        
-        xml_body.elements.each("html/head/meta[@name='pdfkit' @data-option-name='header']")  {|e|
-          @options.merge!(e.attributes["data-option-name"].to_sym => e.attributes["content"] )  }
-        #required for the rspec....
-        @options
+        xml_body.elements.each("html/head/meta[@name='pdfkit' @data-option-name='header']")  {
+          |e| found_options.merge!(e.attributes["data-option-name"].to_sym => e.attributes["content"] )  }
+        found_options
       end
     
       
