@@ -19,6 +19,8 @@ class PDFKit
         
         body = translate_paths(body, env)
         
+        find_options_in_meta(body)
+
         pdf = PDFKit.new(body, @options)
         body = pdf.to_pdf
         
@@ -37,6 +39,15 @@ class PDFKit
     end
     
     private
+    
+      #find pdf_header and pdf_footer
+      def find_options_in_meta(body)
+        xml_body = REXML::Document.new(body)
+        xml_body.elements.each("html/head/meta[@name='pdkfit' @data-option-name='header']").each 
+        {|e| @options.merge!(e.attributes("data-option-name").to_sym => e.attributes("content") )  }
+      end
+    
+      
     
       # Change relative paths to absolute
       def translate_paths(body, env)
