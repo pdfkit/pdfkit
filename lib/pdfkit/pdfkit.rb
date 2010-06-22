@@ -1,6 +1,7 @@
 class PDFKit
 
   EXECUTABLE = 'wkhtmltopdf'
+  META_TAG_PREFIX = 'pdfkit-'
 
   class NoExecutableError < StandardError
     def initialize
@@ -75,13 +76,22 @@ class PDFKit
   protected
 
     def find_options_in_meta(body)
-      found_options={}
+      pdfkit_meta_tags(body).inject({}) do |found, tag|
+        name = tag.attributes["name"].sub(/^#{META_TAG_PREFIX}/, '').to_sym
+        found.merge(name => tag.attributes["content"])
+      end
+    end
+
+    def pdfkit_meta_tags(body)
       require 'rexml/document'
       xml_body = REXML::Document.new(body)
-
-      xml_body.elements.each("html/head/meta[@name='pdfkit' @data-option-name='header']")  {
-        |e| found_options.merge!(e.attributes["data-option-name"].to_sym => e.attributes["content"] )  }
-      found_options
+      found = []
+      xml_body.elements.each("html/head/meta") do |tag|
+        found << tag if tag.attributes['name'].to_s =~ /^#{META_TAG_PREFIX}/
+      end
+      found
+    rescue # rexml random crash on invalid xml
+      []
     end
   
     def style_tag_for(stylesheet)
