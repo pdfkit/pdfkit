@@ -75,6 +75,12 @@ describe PDFKit do
       pdfkit = PDFKit.new(File.new(file_path))
       pdfkit.command.should match(/ #{file_path} -$/)
     end
+
+    it "should detect special pdfkit meta tags" do
+      body = %{<html><head><meta name="pdfkit" content="http://www.example.com/header.html" data-option-name="header" /></head></html>}
+      pdfkit = PDFKit.new(body)
+      pdfkit.command.should include(" --header-html http://www.example.com/header.html")
+    end
   end
   
   context "#to_pdf" do

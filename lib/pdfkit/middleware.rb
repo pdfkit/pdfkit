@@ -19,8 +19,6 @@ class PDFKit
         
         body = translate_paths(body, env)
         
-        @options.merge! find_options_in_meta(body)
-
         pdf = PDFKit.new(body, @options)
         body = pdf.to_pdf
         
@@ -39,19 +37,6 @@ class PDFKit
     end
     
     private
-    
-      #find pdf_header and pdf_footer
-      def find_options_in_meta(body)
-        found_options={}
-        require 'rexml/document'
-        xml_body = REXML::Document.new(body)
-       
-        xml_body.elements.each("html/head/meta[@name='pdfkit' @data-option-name='header']")  {
-          |e| found_options.merge!(e.attributes["data-option-name"].to_sym => e.attributes["content"] )  }
-        found_options
-      end
-    
-      
     
       # Change relative paths to absolute
       def translate_paths(body, env)

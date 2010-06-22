@@ -30,7 +30,12 @@ class PDFKit
       :margin_bottom => '0.75in',
       :margin_left => '0.75in'
     }
-    @options = normalize_options(default_options.merge(options))
+
+    @options = options.dup
+    unless source.url?
+      @options.merge! find_options_in_meta(url_file_or_html)
+    end
+    @options = normalize_options(default_options.merge(@options))
     
     raise NoExecutableError.new if `which #{EXECUTABLE}`.strip.empty?
   end
@@ -68,6 +73,16 @@ class PDFKit
   end
   
   protected
+
+    def find_options_in_meta(body)
+      found_options={}
+      require 'rexml/document'
+      xml_body = REXML::Document.new(body)
+
+      xml_body.elements.each("html/head/meta[@name='pdfkit' @data-option-name='header']")  {
+        |e| found_options.merge!(e.attributes["data-option-name"].to_sym => e.attributes["content"] )  }
+      found_options
+    end
   
     def style_tag_for(stylesheet)
       "<style>#{File.read(stylesheet)}</style>"
@@ -87,6 +102,7 @@ class PDFKit
   
     def normalize_options(options)
       normalized_options = {}
+
       options.each do |key, value|
         next if !value
         normalized_key = "--#{normalize_arg key}"
