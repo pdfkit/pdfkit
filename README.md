@@ -32,7 +32,10 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     # Stylesheets can not be added when source is provided as a URL of File.
     kit = PDFKit.new('http://google.com')
     kit = PDFKit.new(File.new('/path/to/html'))
-   
+
+    # Add any kind of option through meta tags
+    PDFKit.new('<html><head><meta name="pdfkit-header" content="file:///tmp/foo/bar /></head></html>")
+
 ## Middleware
 
 PDFKit comes with a middleware that allows users to get a PDF view of any page on your site by appending .pdf to the URL.
