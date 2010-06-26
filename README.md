@@ -2,18 +2,19 @@
 
 Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the backend which renders HTML using Webkit.
 
-## Installation
+## Install
 
-1. Install wkhtmltopdf (optional)
-** PDFKit comes bundled with wkhtmltopdf binaries for Linux i386 and OS X i386
-** PDFKit defaults to user installed versions of wkhtmltopdf if found
-** Installing wkhtmltopdf binary
-*** Download the latest binary from http://code.google.com/p/wkhtmltopdf/downloads/list
-*** Place the binary somewhere on your path (e.g /usr/local/bin)
-2. Install PDFKit
+### PDFKit
 
-    $ gem install pdfkit
-   
+    gem install pdfkit
+
+### wkhtmltopdf
+ * **Automatic**: `sudo pdfkit --install-wkhtml2pdf`  
+ install latest version into /usr/local/bin  
+ (overwrite defaults with e.g. ARCHITECTURE=amd64 TO=/home/foo/bin)
+ * By hand: http://code.google.com/p/wkhtmltopdf/downloads/list
+
+
 ## Usage
     
     # PDFKit.new takes the HTML and any options for wkhtmltopdf
@@ -55,6 +56,8 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
     # options will be passed to PDFKit.new
     config.middleware.use PDFKit::Middleware, :print_media_type => true
 
+## TODO
+ - add amd64 support in --install-wkhtmltopdf
 
 ## Note on Patches/Pull Requests
  
