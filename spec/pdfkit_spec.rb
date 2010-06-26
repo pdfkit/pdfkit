@@ -43,7 +43,7 @@ describe PDFKit do
   context "command" do
     it "should contstruct the correct command" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12)
-      pdfkit.command.should include('wkhtmltopdf')
+      pdfkit.command.should include('wkhtml2pdf')
       pdfkit.command.should include('--page-size Letter')
       pdfkit.command.should include('--toc-l1-font-size 12')
     end

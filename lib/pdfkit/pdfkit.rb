@@ -2,7 +2,7 @@ class PDFKit
   
   class NoExecutableError < StandardError
     def initialize
-      super('Could not locate wkhtmltopdf-proxy executable')
+      super('Could not locate wkhtml2pdf executable')
     end
   end
   
@@ -30,11 +30,11 @@ class PDFKit
     }
     @options = normalize_options(default_options.merge(options))
     
-    raise NoExecutableError.new if wkhtmltopdf.nil? || wkhtmltopdf == ''
+    raise NoExecutableError.new if `which wkhtml2pdf`.strip.empty?
   end
   
   def command
-    args = [wkhtmltopdf]
+    args = ['wkhtml2pdf']
     args += @options.to_a.flatten.compact
     args << '--quiet'
     
@@ -64,10 +64,6 @@ class PDFKit
   end
   
   protected
-  
-    def wkhtmltopdf
-      @wkhtmltopdf ||= `which wkhtmltopdf-proxy`.chomp
-    end
   
     def style_tag_for(stylesheet)
       "<style>#{File.read(stylesheet)}</style>"
