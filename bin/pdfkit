@@ -10,10 +10,11 @@ Options are:
 BANNER
   parser.on("--install-wkhtml2pdf", "Install wkhtml2pdf binaries (TO=/usr/local/bin ARCHITECTURE=i386)") do
     #TODO amd64 ?
-    architecture = ENV['ARCHITECTURE'] || case RUBY_PLATFORM
-    when /linux/
+    require 'rbconfig'
+    architecture = ENV['ARCHITECTURE'] || case Config::CONFIG['host_os']
+    when /linux/i
       'i386'
-    when /darwin/
+    when /darwin/i
       'OS-X.i368'
     else
       raise "No binaries found for your system. Please install wkhtmltopdf by hand."
