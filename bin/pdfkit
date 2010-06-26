@@ -8,7 +8,7 @@ PDFKit
 
 Options are:
 BANNER
-  parser.on("--install-wkhtml2pdf", "Install wkhtml2pdf binaries (TO=/usr/local/bin ARCHITECTURE=i386)") do
+  parser.on("--install-wkhtmltopdf", "Install wkhtmltopdf binaries (TO=/usr/local/bin ARCHITECTURE=i386)") do
     #TODO amd64 ?
     require 'rbconfig'
     architecture = ENV['ARCHITECTURE'] || case Config::CONFIG['host_os']
@@ -20,7 +20,7 @@ BANNER
       raise "No binaries found for your system. Please install wkhtmltopdf by hand."
     end
 
-    install_to = ENV['TO'] || '/usr/local/bin/wkhtml2pdf'
+    install_to = ENV['TO'] || '/usr/local/bin/wkhtmltopdf'
 
     # find
     require 'open-uri'

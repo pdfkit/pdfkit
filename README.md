@@ -9,7 +9,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     gem install pdfkit
 
 ### wkhtmltopdf
- * **Automatic**: `sudo pdfkit --install-wkhtml2pdf`  
+ * **Automatic**: `sudo pdfkit --install-wkhtmltopdf`  
  install latest version into /usr/local/bin  
  (overwrite defaults with e.g. ARCHITECTURE=amd64 TO=/home/foo/bin)
  * By hand: http://code.google.com/p/wkhtmltopdf/downloads/list

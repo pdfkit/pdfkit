@@ -1,8 +1,10 @@
 class PDFKit
-  
+
+  EXECUTABLE = 'wkhtmltopdf'
+
   class NoExecutableError < StandardError
     def initialize
-      super('Could not locate wkhtml2pdf executable')
+      super('Could not locate wkhtmltopdf executable')
     end
   end
   
@@ -30,11 +32,11 @@ class PDFKit
     }
     @options = normalize_options(default_options.merge(options))
     
-    raise NoExecutableError.new if `which wkhtml2pdf`.strip.empty?
+    raise NoExecutableError.new if `which #{EXECUTABLE}`.strip.empty?
   end
   
   def command
-    args = ['wkhtml2pdf']
+    args = [EXECUTABLE]
     args += @options.to_a.flatten.compact
     args << '--quiet'
     
