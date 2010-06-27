@@ -58,6 +58,8 @@ class PDFKit
     pdf.close_write
     result = pdf.gets(nil)
     pdf.close_read
+
+    raise "command failed: #{command}" if result.to_s.strip.empty?
     return result
   end
   
