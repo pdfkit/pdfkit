@@ -13,29 +13,14 @@ begin
     gem.add_development_dependency "rspec", "~> 2.0.0.beta.8"
     gem.add_development_dependency "rspec-core", "~> 2.0.0.beta.8"
     gem.add_development_dependency 'mocha'
-    gem.files = [
-      ".document",
-       ".gitignore",
-       "LICENSE",
-       "README.md",
-       "Rakefile",
-       "VERSION",
-       "bin/wkhtmltopdf-linux-i386-0-9-9",
-       "bin/wkhtmltopdf-osx-i386-0-9-9",
-       "bin/wkhtmltopdf-proxy",
-       "lib/pdfkit.rb",
-       "lib/pdfkit/middleware.rb",
-       "lib/pdfkit/pdfkit.rb",
-       "lib/pdfkit/source.rb",
-       "pdfkit.gemspec",
-       "spec/pdfkit_spec.rb",
-       "spec/source_spec.rb",
-       "spec/fixtures/example.css",
-       "spec/fixtures/example.html",
-       "spec/spec.opts",
-       "spec/spec_helper.rb"
-    ]
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.post_install_message = <<-POST_INSTALL_MESSAGE
+#{'*'*50}
+
+Run sudo pdfkit --install-wkhtmltopdf to install wkhtmltopdf binaries.
+(run pdfkit --help to see more options)
+
+#{'*'*50}
+POST_INSTALL_MESSAGE
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
