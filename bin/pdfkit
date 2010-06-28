@@ -34,15 +34,15 @@ BANNER
     # cleanup old
     Dir.chdir '/tmp'
     `rm -rf wkhtmltopdf*`
-    `sudo rm #{install_to}`
+    `rm #{install_to}`
 
     # install new
     `curl #{url} > #{download}`
     if download =~ /.tar.bz2$/
       `tar xjvf #{download}`
-      `sudo mv wkhtmltopdf-#{architecture} #{install_to}`
+      `mv wkhtmltopdf-#{architecture} #{install_to}`
     else
-      `sudo mv #{download} #{install_to}`
+      `mv #{download} #{install_to}`
     end
     `sudo chmod +x #{install_to}`
   end
