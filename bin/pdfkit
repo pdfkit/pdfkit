@@ -37,7 +37,7 @@ BANNER
     `sudo rm #{install_to}`
 
     # install new
-    `wget #{url}`
+    `curl #{url} > #{download}`
     if download =~ /.tar.bz2$/
       `tar xjvf #{download}`
       `sudo mv wkhtmltopdf-#{architecture} #{install_to}`
