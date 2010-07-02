@@ -34,7 +34,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
    
 ## Middleware
 
-PDFKit comes with a middleware that allows users to visit any to get a PDF view of any page on your site by appending .pdf to the URL.
+PDFKit comes with a middleware that allows users to get a PDF view of any page on your site by appending .pdf to the URL.
 
 ### Middleware Setup
 
