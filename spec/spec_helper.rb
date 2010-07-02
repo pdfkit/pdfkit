@@ -5,6 +5,7 @@ require 'pdfkit'
 require 'rspec'
 require 'rspec/autorun'
 require 'mocha'
+require 'rack'
 
 RSpec.configure do |config|
   
