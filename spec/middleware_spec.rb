@@ -18,5 +18,12 @@ describe PDFKit::Middleware do
       body = @pdf.send :translate_paths, @body, @env
       body.should == "<link href=\"http://example.com/stylesheets/application.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" />"
     end
+    
+    it "should return the body even if there are no valid substitutions found" do
+      @body = "NO MATCH"
+      body = @pdf.send :translate_paths, @body, @env
+      body.should == "NO MATCH"
+    end
+    
   end
 end
