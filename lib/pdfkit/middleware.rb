@@ -51,9 +51,9 @@ class PDFKit
       def set_request_to_render_as_pdf(env)
         @render_pdf = true
         puts "Setting PDF mode"
-        
+
         path = Pathname(env['PATH_INFO'])
-        env['PATH_INFO'] = path.to_s.sub(/#{path.extname}$/,'') if path.extname == '.pdf'
+        ['PATH_INFO','REQUEST_URI'].each { |e| env[e] = path.to_s.sub(/#{path.extname}$/,'')  } if path.extname == '.pdf'
         env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
       end
       
