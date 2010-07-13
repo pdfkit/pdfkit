@@ -16,6 +16,4 @@ if executable.empty?
   
 end
 
-arguments = $*.map { |arg| arg.include?(' ') ? %Q("#{arg}") : arg }
-
-system(executable + " " + arguments.join(" "))
+system(executable, *($*))
