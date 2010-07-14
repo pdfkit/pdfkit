@@ -45,7 +45,7 @@ Gem::Specification.new do |s|
   s.summary = %q{HTML+CSS -> PDF}
   s.test_files = [
     "spec/middleware_spec.rb",
-     "spec/PDFKit_spec.rb",
+     "spec/pdfkit_spec.rb",
      "spec/source_spec.rb",
      "spec/spec_helper.rb"
   ]
