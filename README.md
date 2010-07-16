@@ -34,7 +34,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     kit = PDFKit.new(File.new('/path/to/html'))
 
     # Add any kind of option through meta tags
-    PDFKit.new('<html><head><meta name="pdfkit-header" content="file:///tmp/foo/bar /></head></html>")
+    PDFKit.new('<html><head><meta name="pdfkit-page-size" content="Letter")
 
 ## Middleware
 

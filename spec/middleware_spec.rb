@@ -25,12 +25,6 @@ describe PDFKit::Middleware do
       body = @pdf.send :translate_paths, @body, @env
       body.should == "NO MATCH"
     end
-    
-    it "should detect special pdfkit meta tags" do
-      @body = %{<html><head><meta name="pdfkit" content="http://www.example.com/header.html" data-option-name="header" /></head></html>}
-      body = @pdf.send :find_options_in_meta, @body
-      body.should have_key(:header)
-    end
   end
   
   describe "#set_request_to_render_as_pdf" do

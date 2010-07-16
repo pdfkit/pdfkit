@@ -77,9 +77,9 @@ describe PDFKit do
     end
 
     it "should detect special pdfkit meta tags" do
-      body = %{<html><head><meta name="pdfkit-header" content="http://www.example.com/header.html"/></head></html>}
+      body = %{<html><head><meta name="pdfkit-page-size" content="Letter"/></head></html>}
       pdfkit = PDFKit.new(body)
-      pdfkit.command.should include(" --header-html http://www.example.com/header.html")
+      pdfkit.command.should include(" --page-size Letter")
     end
   end
   
