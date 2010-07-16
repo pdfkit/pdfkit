@@ -53,13 +53,14 @@ class PDFKit
     end
     
     args << '-' # Read PDF from stdout
-    args.join(' ')
+    args
   end
   
   def to_pdf
     append_stylesheets
     
-    pdf = IO.popen(command, "w+")
+    pdf = Kernel.open('|-', "w+")
+    exec(*command) if pdf.nil?
     pdf.puts(@source.to_s) if @source.html?
     pdf.close_write
     result = pdf.gets(nil)
@@ -129,8 +130,6 @@ class PDFKit
       case value
       when TrueClass
         nil
-      when String
-        value.match(/\s/) ? "\"#{value}\"" : value
       else
         value
       end
