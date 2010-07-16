@@ -23,7 +23,6 @@ class PDFKit
         body = pdf.to_pdf
         
         # Do not cache PDFs
-        puts "DELETING CACHING"
         headers.delete('ETag')
         headers.delete('Cache-Control')
         
