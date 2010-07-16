@@ -50,7 +50,6 @@ class PDFKit
     
       def set_request_to_render_as_pdf(env)
         @render_pdf = true
-        puts "Setting PDF mode"
 
         path = Pathname(env['PATH_INFO'])
         ['PATH_INFO','REQUEST_URI'].each { |e| env[e] = path.to_s.sub(/#{path.extname}$/,'')  } if path.extname == '.pdf'
