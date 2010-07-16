@@ -14,7 +14,6 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
  (overwrite defaults with e.g. ARCHITECTURE=amd64 TO=/home/foo/bin)
  * By hand: http://code.google.com/p/wkhtmltopdf/downloads/list
 
-
 ## Usage
     
     # PDFKit.new takes the HTML and any options for wkhtmltopdf
@@ -35,6 +34,15 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
     # Add any kind of option through meta tags
     PDFKit.new('<html><head><meta name="pdfkit-page-size" content="Letter")
+    
+## Configuration
+
+If you're on Windows or you installed wkhtmltopdf by hand to a location other than /usr/local/bin you will need to tell PDFKit where the binary is. You can configure PDFKit like so:
+
+    # config/initializers/pdfkit.rb
+    PDFKit.configure do |config|
+      config.wkhtmltopdf = '/path/to/wkhtmltopdf'
+    end
 
 ## Middleware
 

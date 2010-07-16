@@ -1,11 +1,10 @@
 class PDFKit
 
-  EXECUTABLE = 'wkhtmltopdf'
-  META_TAG_PREFIX = 'pdfkit-'
-
   class NoExecutableError < StandardError
     def initialize
-      super('Could not locate wkhtmltopdf executable')
+      msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
+      msg << ">> Install wkhtmltopdf by hand or try running `pdfkit --install-wkhtmltopdf`"
+      super(msg)
     end
   end
   
@@ -38,11 +37,11 @@ class PDFKit
     end
     @options = normalize_options(default_options.merge(@options))
     
-    raise NoExecutableError.new if `which #{EXECUTABLE}`.strip.empty?
+    raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
   
   def command
-    args = [EXECUTABLE]
+    args = [PDFKit.configuration.wkhtmltopdf]
     args += @options.to_a.flatten.compact
     args << '--quiet'
     
@@ -78,7 +77,7 @@ class PDFKit
 
     def find_options_in_meta(body)
       pdfkit_meta_tags(body).inject({}) do |found, tag|
-        name = tag.attributes["name"].sub(/^#{META_TAG_PREFIX}/, '').to_sym
+        name = tag.attributes["name"].sub(/^#{PDFKit.configuration.meta_tag_prefix}/, '').to_sym
         found.merge(name => tag.attributes["content"])
       end
     end
@@ -88,7 +87,7 @@ class PDFKit
       xml_body = REXML::Document.new(body)
       found = []
       xml_body.elements.each("html/head/meta") do |tag|
-        found << tag if tag.attributes['name'].to_s =~ /^#{META_TAG_PREFIX}/
+        found << tag if tag.attributes['name'].to_s =~ /^#{PDFKit.configuration.meta_tag_prefix}/
       end
       found
     rescue # rexml random crash on invalid xml

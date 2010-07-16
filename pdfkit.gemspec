@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
      "VERSION",
      "bin/pdfkit",
      "lib/pdfkit.rb",
+     "lib/pdfkit/configuration.rb",
      "lib/pdfkit/middleware.rb",
      "lib/pdfkit/pdfkit.rb",
      "lib/pdfkit/source.rb",
