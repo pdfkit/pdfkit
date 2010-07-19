@@ -130,7 +130,7 @@ class PDFKit
       when TrueClass
         nil
       else
-        value
+        value.to_s
       end
     end
   
