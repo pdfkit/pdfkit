@@ -42,6 +42,10 @@ If you're on Windows or you installed wkhtmltopdf by hand to a location other th
     # config/initializers/pdfkit.rb
     PDFKit.configure do |config|
       config.wkhtmltopdf = '/path/to/wkhtmltopdf'
+      config.default_options = {
+        :page_size => 'Legal',
+        :print_media_type => true
+      }
     end
 
 ## Middleware

@@ -21,21 +21,9 @@ class PDFKit
     @source = Source.new(url_file_or_html)
     
     @stylesheets = []
-    
-    default_options = {
-      :disable_smart_shrinking => true,
-      :page_size => 'Letter',
-      :margin_top => '0.75in',
-      :margin_right => '0.75in',
-      :margin_bottom => '0.75in',
-      :margin_left => '0.75in'
-    }
 
-    @options = options.dup
-    unless source.url?
-      @options.merge! find_options_in_meta(url_file_or_html)
-    end
-    @options = normalize_options(default_options.merge(@options))
+    @options = normalize_options(PDFKit.configuration.default_options.merge(options))
+    @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
     
     raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
