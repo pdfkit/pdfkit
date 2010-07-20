@@ -29,7 +29,7 @@ class PDFKit
   end
   
   def command
-    args = [PDFKit.configuration.wkhtmltopdf]
+    args = [executable]
     args += @options.to_a.flatten.compact
     args << '--quiet'
     
@@ -41,6 +41,16 @@ class PDFKit
     
     args << '-' # Read PDF from stdout
     args
+  end
+
+  def executable
+    default = PDFKit.configuration.wkhtmltopdf
+    return default if default !~ /^\// # its not a path, so nothing we can do
+    if File.exist?(default)
+      default
+    else
+      default.split('/').last
+    end
   end
   
   def to_pdf
