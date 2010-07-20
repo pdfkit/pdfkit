@@ -16,7 +16,9 @@ begin
     gem.post_install_message = <<-POST_INSTALL_MESSAGE
 #{'*'*50}
 
-Run sudo pdfkit --install-wkhtmltopdf to install wkhtmltopdf binaries.
+Now install wkhtmltopdf binaries:
+Global: sudo `which pdfkit` --install-wkhtmltopdf
+or inside RVM folder: export TO=`which pdfkit | sed 's:/pdfkit:/wkhtmltopdf:'` && pdfkit --install-wkhtmltopdf
 (run pdfkit --help to see more options)
 
 #{'*'*50}
