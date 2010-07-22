@@ -22,8 +22,9 @@ class PDFKit
     
     @stylesheets = []
 
-    @options = normalize_options(PDFKit.configuration.default_options.merge(options))
+    @options = PDFKit.configuration.default_options.merge(options)
     @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    @options = normalize_options(@options)
     
     raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end

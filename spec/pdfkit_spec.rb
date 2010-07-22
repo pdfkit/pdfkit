@@ -77,9 +77,17 @@ describe PDFKit do
     end
 
     it "should detect special pdfkit meta tags" do
-      body = %{<html><head><meta name="pdfkit-page-size" content="Letter"/></head></html>}
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-page_size" content="Legal"/>
+            <meta name="pdfkit-orientation" content="Landscape"/>
+          </head>
+        </html>
+      }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('--page-size') + 1].should == 'Letter'
+      pdfkit.command[pdfkit.command.index('--page-size') + 1].should == 'Legal'
+      pdfkit.command[pdfkit.command.index('--orientation') + 1].should == 'Landscape'
     end
   end
   
