@@ -13,16 +13,7 @@ begin
     gem.add_development_dependency "rspec", "~> 2.0.0.beta.8"
     gem.add_development_dependency "rspec-core", "~> 2.0.0.beta.8"
     gem.add_development_dependency 'mocha'
-    gem.post_install_message = <<-POST_INSTALL_MESSAGE
-#{'*'*50}
-
-Now install wkhtmltopdf binaries:
-Global: sudo `which pdfkit` --install-wkhtmltopdf
-or inside RVM folder: export TO=`which pdfkit | sed 's:/pdfkit:/wkhtmltopdf:'` && pdfkit --install-wkhtmltopdf
-(run pdfkit --help to see more options)
-
-#{'*'*50}
-POST_INSTALL_MESSAGE
+    gem.post_install_message = File.read('POST_INSTALL')
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

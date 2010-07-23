@@ -1,0 +1,8 @@
+******************************************************************
+
+Now install wkhtmltopdf binaries:
+Global: sudo `which pdfkit` --install-wkhtmltopdf
+or inside RVM folder: export TO=`which pdfkit | sed 's:/pdfkit:/wkhtmltopdf:'` && pdfkit --install-wkhtmltopdf
+(run pdfkit --help to see more options)
+
+******************************************************************
