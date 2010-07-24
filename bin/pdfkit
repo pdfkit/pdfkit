@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'optparse'
+require 'rbconfig'
+require 'open-uri'
+require 'pdfkit/configuration'
+
+def detect_architecture
+  case Config::CONFIG['host_os']
+  when /x86_64-linux/i
+    'amd64'
+  when /linux/i
+    'i386'
+  when /darwin/i
+    'OS-X.i368'
+  else
+    raise "No binaries found for your system. Please install wkhtmltopdf by hand."
+  end
+end
+
+def cleanup(install_to)
+  `rm -rf wkhtmltopdf*`
+  `rm #{install_to}`
+end
+
+def download_wkhtmltopdf(arch)
+  page = open("http://code.google.com/p/wkhtmltopdf/downloads/list").read
+  download = page.match(/href=".*name=(.*wkhtmltopdf-.*#{arch}.*?)&/) || raise("File not found..")
+  download = download[1]
+  url = "http://wkhtmltopdf.googlecode.com/files/#{download}"
+  puts "Downloading #{download} from #{url}"
+  
+  `curl #{url} > #{download}`
+  download
+end
+
+def install(download, arch, install_to)
+  puts "Installing #{download} to #{install_to}"
+  if download =~ /.tar.bz2$/
+    `tar xjvf #{download}`
+    `mv wkhtmltopdf-#{arch} #{install_to}`
+  else
+    `mv #{download} #{install_to}`
+  end
+  `sudo chmod +x #{install_to}`
+end
+
+OptionParser.new do |parser|
+  parser.banner = "PDFKit\n\nOptions are:"
+
+  parser.on("--install-wkhtmltopdf", "Install wkhtmltopdf binaries (TO=/usr/local/bin ARCHITECTURE=i386)") do
+    architecture = ENV['ARCHITECTURE'] || detect_architecture
+    install_to = ENV['TO'] || PDFKit.configuration.wkhtmltopdf
+    
+    Dir.chdir '/tmp'
+    
+    cleanup(install_to)
+    download = download_wkhtmltopdf(architecture)
+    install(download, architecture, install_to)
+  end
+
+  parser.on("--version", "Show Version.") do
+    root = File.dirname(File.dirname(__FILE__))
+    puts File.read(File.join(root, 'VERSION'))
+  end
+
+  parser.on("-h", "--help", "Show this.") { puts parser; exit }
+end.parse!

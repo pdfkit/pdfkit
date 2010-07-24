@@ -43,9 +43,9 @@ describe PDFKit do
   context "command" do
     it "should contstruct the correct command" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12)
-      pdfkit.command.should include('wkhtmltopdf')
-      pdfkit.command.should include('--page-size Letter')
-      pdfkit.command.should include('--toc-l1-font-size 12')
+      pdfkit.command[0].should include('wkhtmltopdf')
+      pdfkit.command[pdfkit.command.index('--page-size') + 1].should == 'Letter'
+      pdfkit.command[pdfkit.command.index('--toc-l1-font-size') + 1].should == '12'
     end
     
     it "will not include default options it is told to omit" do
@@ -57,29 +57,55 @@ describe PDFKit do
     
     it "should encapsulate string arguments in quotes" do
       pdfkit = PDFKit.new('html', :header_center => "foo [page]")
-      pdfkit.command.should include('--header-center "foo [page]"')
+      pdfkit.command[pdfkit.command.index('--header-center') + 1].should == 'foo [page]'
     end
     
     it "read the source from stdin if it is html" do
       pdfkit = PDFKit.new('html')
-      pdfkit.command.should match(/ - -$/)
+      pdfkit.command[-2..-1].should == ['-', '-']
     end
     
     it "specify the URL to the source if it is a url" do
       pdfkit = PDFKit.new('http://google.com')
-      pdfkit.command.should match(/ http:\/\/google\.com -$/)
+      pdfkit.command[-2..-1].should == ['http://google.com', '-']
     end
     
     it "should specify the path to the source if it is a file" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
-      pdfkit.command.should match(/ #{file_path} -$/)
+      pdfkit.command[-2..-1].should == [file_path, '-']
+    end
+
+    it "should detect special pdfkit meta tags" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-page_size" content="Legal"/>
+            <meta name="pdfkit-orientation" content="Landscape"/>
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('--page-size') + 1].should == 'Legal'
+      pdfkit.command[pdfkit.command.index('--orientation') + 1].should == 'Landscape'
     end
   end
   
   context "#to_pdf" do
     it "should generate a PDF of the HTML" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
+      pdf = pdfkit.to_pdf
+      pdf[0...4].should == "%PDF" # PDF Signature at beginning of file
+    end
+    
+    it "should generate a PDF with a numerical parameter" do
+      pdfkit = PDFKit.new('html', :header_spacing => 1)
+      pdf = pdfkit.to_pdf
+      pdf[0...4].should == "%PDF" # PDF Signature at beginning of file
+    end
+    
+    it "should generate a PDF with a symbol parameter" do
+      pdfkit = PDFKit.new('html', :page_size => :Letter)
       pdf = pdfkit.to_pdf
       pdf[0...4].should == "%PDF" # PDF Signature at beginning of file
     end
@@ -124,6 +150,23 @@ describe PDFKit do
       file = pdfkit.to_file(@file_path)
       file.should be_instance_of(File)
       File.read(file.path).should == 'PDF'
+    end
+  end
+  
+  context "security" do
+    before do
+      @test_path = File.join(SPEC_ROOT,'fixtures','security-oops')
+      File.delete(@test_path) if File.exist?(@test_path)
+    end
+    
+    after do
+      File.delete(@test_path) if File.exist?(@test_path)
+    end
+    
+    it "should not allow shell injection in options" do
+      pdfkit = PDFKit.new('html', :header_center => "a title\"; touch #{@test_path} #")
+      pdfkit.to_pdf
+      File.exist?(@test_path).should be_false
     end
   end
   

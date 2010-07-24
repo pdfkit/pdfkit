@@ -19,13 +19,12 @@ describe PDFKit::Middleware do
       body = @pdf.send :translate_paths, @body, @env
       body.should == "<link href=\"http://example.com/stylesheets/application.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" />"
     end
-    
+
     it "should return the body even if there are no valid substitutions found" do
       @body = "NO MATCH"
       body = @pdf.send :translate_paths, @body, @env
       body.should == "NO MATCH"
     end
-    
   end
   
   describe "#set_request_to_render_as_pdf" do
@@ -45,7 +44,6 @@ describe PDFKit::Middleware do
     it "should replace .pdf in REQUEST_URI when the extname is .pdf" do
       @pdf.send :set_request_to_render_as_pdf, @pdf_env
       @pdf_env['REQUEST_URI'].should == "file"
-    end
-    
+    end    
   end
 end

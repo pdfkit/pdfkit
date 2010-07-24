@@ -23,11 +23,10 @@ class PDFKit
         body = pdf.to_pdf
         
         # Do not cache PDFs
-        puts "DELETING CACHING"
         headers.delete('ETag')
         headers.delete('Cache-Control')
         
-        headers["Content-Length"] = body.bytes.to_a.size.to_s
+        headers["Content-Length"] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
         headers["Content-Type"] = "application/pdf"
         
         response = [body]
@@ -50,7 +49,6 @@ class PDFKit
     
       def set_request_to_render_as_pdf(env)
         @render_pdf = true
-        puts "Setting PDF mode"
 
         path = Pathname(env['PATH_INFO'])
         ['PATH_INFO','REQUEST_URI'].each { |e| env[e] = path.to_s.sub(/#{path.extname}$/,'')  } if path.extname == '.pdf'

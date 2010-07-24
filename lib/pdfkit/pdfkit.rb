@@ -1,8 +1,10 @@
 class PDFKit
-  
+
   class NoExecutableError < StandardError
     def initialize
-      super('Could not locate wkhtmltopdf-proxy executable')
+      msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
+      msg << ">> Install wkhtmltopdf by hand or try running `pdfkit --install-wkhtmltopdf`"
+      super(msg)
     end
   end
   
@@ -19,22 +21,16 @@ class PDFKit
     @source = Source.new(url_file_or_html)
     
     @stylesheets = []
+
+    @options = PDFKit.configuration.default_options.merge(options)
+    @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    @options = normalize_options(@options)
     
-    default_options = {
-      :disable_smart_shrinking => true,
-      :page_size => 'Letter',
-      :margin_top => '0.75in',
-      :margin_right => '0.75in',
-      :margin_bottom => '0.75in',
-      :margin_left => '0.75in'
-    }
-    @options = normalize_options(default_options.merge(options))
-    
-    raise NoExecutableError.new if wkhtmltopdf.nil? || wkhtmltopdf == ''
+    raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
   
   def command
-    args = [wkhtmltopdf]
+    args = [executable]
     args += @options.to_a.flatten.compact
     args << '--quiet'
     
@@ -45,17 +41,30 @@ class PDFKit
     end
     
     args << '-' # Read PDF from stdout
-    args.join(' ')
+    args
+  end
+
+  def executable
+    default = PDFKit.configuration.wkhtmltopdf
+    return default if default !~ /^\// # its not a path, so nothing we can do
+    if File.exist?(default)
+      default
+    else
+      default.split('/').last
+    end
   end
   
   def to_pdf
     append_stylesheets
     
-    pdf = IO.popen(command, "w+")
+    pdf = Kernel.open('|-', "w+")
+    exec(*command) if pdf.nil?
     pdf.puts(@source.to_s) if @source.html?
     pdf.close_write
     result = pdf.gets(nil)
     pdf.close_read
+
+    raise "command failed: #{command}" if result.to_s.strip.empty?
     return result
   end
   
@@ -64,9 +73,24 @@ class PDFKit
   end
   
   protected
-  
-    def wkhtmltopdf
-      @wkhtmltopdf ||= `which wkhtmltopdf-proxy`.chomp
+
+    def find_options_in_meta(body)
+      pdfkit_meta_tags(body).inject({}) do |found, tag|
+        name = tag.attributes["name"].sub(/^#{PDFKit.configuration.meta_tag_prefix}/, '').to_sym
+        found.merge(name => tag.attributes["content"])
+      end
+    end
+
+    def pdfkit_meta_tags(body)
+      require 'rexml/document'
+      xml_body = REXML::Document.new(body)
+      found = []
+      xml_body.elements.each("html/head/meta") do |tag|
+        found << tag if tag.attributes['name'].to_s =~ /^#{PDFKit.configuration.meta_tag_prefix}/
+      end
+      found
+    rescue # rexml random crash on invalid xml
+      []
     end
   
     def style_tag_for(stylesheet)
@@ -87,6 +111,7 @@ class PDFKit
   
     def normalize_options(options)
       normalized_options = {}
+
       options.each do |key, value|
         next if !value
         normalized_key = "--#{normalize_arg key}"
@@ -103,10 +128,8 @@ class PDFKit
       case value
       when TrueClass
         nil
-      when String
-        value.match(/\s/) ? "\"#{value}\"" : value
       else
-        value
+        value.to_s
       end
     end
   

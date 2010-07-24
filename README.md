@@ -2,18 +2,18 @@
 
 Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the backend which renders HTML using Webkit.
 
-## Installation
+## Install
 
-1. Install wkhtmltopdf (optional)
-** PDFKit comes bundled with wkhtmltopdf binaries for Linux i386 and OS X i386
-** PDFKit defaults to user installed versions of wkhtmltopdf if found
-** Installing wkhtmltopdf binary
-*** Download the latest binary from http://code.google.com/p/wkhtmltopdf/downloads/list
-*** Place the binary somewhere on your path (e.g /usr/local/bin)
-2. Install PDFKit
+### PDFKit
 
-    $ gem install pdfkit
-   
+    gem install pdfkit
+
+### wkhtmltopdf
+ * **Automatic**: `sudo pdfkit --install-wkhtmltopdf`  
+ install latest version into /usr/local/bin  
+ (overwrite defaults with e.g. ARCHITECTURE=amd64 TO=/home/foo/bin)
+ * By hand: http://code.google.com/p/wkhtmltopdf/downloads/list
+
 ## Usage
     
     # PDFKit.new takes the HTML and any options for wkhtmltopdf
@@ -31,7 +31,23 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     # Stylesheets can not be added when source is provided as a URL of File.
     kit = PDFKit.new('http://google.com')
     kit = PDFKit.new(File.new('/path/to/html'))
-   
+
+    # Add any kind of option through meta tags
+    PDFKit.new('<html><head><meta name="pdfkit-page_size" content="Letter")
+    
+## Configuration
+
+If you're on Windows or you installed wkhtmltopdf by hand to a location other than /usr/local/bin you will need to tell PDFKit where the binary is. You can configure PDFKit like so:
+
+    # config/initializers/pdfkit.rb
+    PDFKit.configure do |config|
+      config.wkhtmltopdf = '/path/to/wkhtmltopdf'
+      config.default_options = {
+        :page_size => 'Legal',
+        :print_media_type => true
+      }
+    end
+
 ## Middleware
 
 PDFKit comes with a middleware that allows users to get a PDF view of any page on your site by appending .pdf to the URL.
@@ -55,6 +71,8 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
     # options will be passed to PDFKit.new
     config.middleware.use PDFKit::Middleware, :print_media_type => true
 
+## TODO
+ - add amd64 support in --install-wkhtmltopdf
 
 ## Note on Patches/Pull Requests
  
