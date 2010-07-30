@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
     ".document",
      ".gitignore",
      ".rspec",
+     "Gemfile",
+     "Gemfile.lock",
      "LICENSE",
      "POST_INSTALL",
      "README.md",
