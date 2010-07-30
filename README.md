@@ -77,6 +77,7 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
 ## Note on Patches/Pull Requests
  
 * Fork the project.
+* Setup your development environment with: gem install bundler; bundle install
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
