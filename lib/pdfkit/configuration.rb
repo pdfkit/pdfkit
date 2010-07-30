@@ -11,7 +11,8 @@ class PDFKit
         :margin_top => '0.75in',
         :margin_right => '0.75in',
         :margin_bottom => '0.75in',
-        :margin_left => '0.75in'
+        :margin_left => '0.75in',
+        :encoding => "UTF-8"
       }
     end
   end

@@ -34,6 +34,11 @@ describe PDFKit do
       end
     end
     
+    it "should default to 'UTF-8' encoding" do
+      pdfkit = PDFKit.new('Captación')
+      pdfkit.options['--encoding'].should == 'UTF-8'
+    end
+    
     it "should not have any stylesheedt by default" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
       pdfkit.stylesheets.should be_empty
