@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'rake'
+require 'bundler'
+Bundler.require(:development)
 
 begin
   require 'jeweler'
