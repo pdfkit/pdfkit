@@ -42,7 +42,7 @@ class PDFKit
         # Host with protocol
         root = env['rack.url_scheme'] + "://" + env['HTTP_HOST'] + "/"
         
-        body.gsub!(/(href|src)=['"]\/([^\"']*|[^"']*)['"]/,'\1="'+root+'\2"')
+        body.gsub!(/(href|src)=(['"])\/([^\"']*|[^"']*)['"]/,'\1=\2'+root+'\3\2')
         
         return body
       end

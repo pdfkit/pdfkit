@@ -9,9 +9,9 @@ describe PDFKit::Middleware do
     end
 
     it "should correctly parse relative url with single quotes" do
-      @body = %{<html><head><link href='/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src='/test.png' /></body></html>}
+      @body = %{<html><head><link href='/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src="/test.png" /></body></html>}
       body = @pdf.send :translate_paths, @body, @env
-      body.should == "<html><head><link href=\"http://example.com/stylesheets/application.css\" media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.com/test.png\" /></body></html>"
+      body.should == "<html><head><link href='http://example.com/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.com/test.png\" /></body></html>"
     end
 
     it "should correctly parse relative url with double quotes" do
