@@ -64,7 +64,7 @@ class PDFKit
     result = pdf.gets(nil)
     pdf.close_read
 
-    raise "command failed: #{command}" if result.to_s.strip.empty?
+    raise "command failed: #{command.join(' ')}" if result.to_s.strip.empty?
     return result
   end
   
