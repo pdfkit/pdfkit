@@ -53,11 +53,14 @@ def install_binary(binary)
   architecture = ENV['ARCHITECTURE'] || detect_architecture
   install_to = ENV['TO'] || PDFKit.configuration.method(binary).call
 
-  Dir.chdir '/tmp'
+  tmpdir = "/tmp/pdfkit.#{$$}"
+  Dir.mkdir tmpdir
+  Dir.chdir tmpdir
     
   cleanup(binary,install_to)
   download = download(binary,architecture)
   install(binary,download, architecture, install_to)
+  `rm -rf #{tmpdir}`
 end
 
 OptionParser.new do |parser|
