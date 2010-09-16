@@ -1,11 +1,11 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :wkhtmltopdf, :default_options
+    attr_accessor :meta_tag_prefix, :wkhtmltopdf, :default_options_wkhtmltopdf, :wkhtmltoimage, :default_options_wkhtmltoimage
 
     def initialize
       @meta_tag_prefix = 'pdfkit-'
-      @wkhtmltopdf = '/usr/local/bin/wkhtmltopdf'
-      @default_options = {
+      @wkhtmltopdf   = '/usr/local/bin/wkhtmltopdf'
+      @default_options_wkhtmltopdf = {
         :disable_smart_shrinking => true,
         :page_size => 'Letter',
         :margin_top => '0.75in',
@@ -13,6 +13,9 @@ class PDFKit
         :margin_bottom => '0.75in',
         :margin_left => '0.75in',
         :encoding => "UTF-8"
+      }
+      @wkhtmltoimage = '/usr/local/bin/wkhtmltoimage'
+      @default_options_wkhtmltoimage = {
       }
     end
   end

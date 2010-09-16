@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
-  s.date = %q{2010-09-03}
+  s.date = %q{2010-09-09}
   s.default_executable = %q{pdfkit}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
   s.email = %q{jared@codewordstudios.com}
@@ -46,21 +46,31 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/jdpace/PDFKit}
   s.post_install_message = %q{******************************************************************
 
-Now install wkhtmltopdf binaries:
+Now install wkhtmltopdf and/or wkhtmltoimage binaries:
+
+For wkhtmltopdf:
+================
 Global: sudo `which pdfkit` --install-wkhtmltopdf
 or inside RVM folder: export TO=`which pdfkit | sed 's:/pdfkit:/wkhtmltopdf:'` && pdfkit --install-wkhtmltopdf
+
+For wkhtmltoimage:
+==================
+Global: sudo `which pdfkit` --install-wkhtmltoimage
+or inside RVM folder: export TO=`which pdfkit | sed 's:/pdfkit:/wkhtmltoimage:'` && pdfkit --install-wkhtmltoimage
+
 (run pdfkit --help to see more options)
 
-******************************************************************}
+******************************************************************
+}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{HTML+CSS -> PDF}
   s.test_files = [
-    "spec/middleware_spec.rb",
-     "spec/pdfkit_spec.rb",
+    "spec/spec_helper.rb",
      "spec/source_spec.rb",
-     "spec/spec_helper.rb"
+     "spec/pdfkit_spec.rb",
+     "spec/middleware_spec.rb"
   ]
 
   if s.respond_to? :specification_version then

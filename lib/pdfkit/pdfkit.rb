@@ -1,11 +1,8 @@
 class PDFKit
 
   class NoExecutableError < StandardError
-    def initialize
-      msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
-      msg << ">> Install wkhtmltopdf by hand or try running `pdfkit --install-wkhtmltopdf`"
-      super(msg)
-    end
+  end
+  class UnknownFormatError < StandardError
   end
   
   class ImproperSourceError < StandardError
@@ -15,25 +12,45 @@ class PDFKit
   end
   
   attr_accessor :source, :stylesheets
-  attr_reader :options
+  attr_reader :options_wkhtmltopdf, :options_wkhtmltoimage
   
   def initialize(url_file_or_html, options = {})
     @source = Source.new(url_file_or_html)
     
     @stylesheets = []
 
-    @options = PDFKit.configuration.default_options.merge(options)
-    @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
-    @options = normalize_options(@options)
+    # wkhtmltopdf options
+    @options_wkhtmltopdf   = PDFKit.configuration.default_options_wkhtmltopdf.merge(options)
+    @options_wkhtmltopdf.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    @options_wkhtmltopdf = normalize_options(@options_wkhtmltopdf)
     
-    raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
+    # wkhtmltoimage options
+    @options_wkhtmltoimage   = PDFKit.configuration.default_options_wkhtmltoimage.merge(options)
+    @options_wkhtmltoimage.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    @options_wkhtmltoimage = normalize_options(@options_wkhtmltoimage)
+    
+    # Check for executables
+    ['wkhtmltopdf','wkhtmltoimage'].each do |binary|
+      unless File.exists?(PDFKit.configuration.method(binary).call) then
+        msg  = "No #{binary} executable found at #{PDFKit.configuration.method(binary).call}\n"
+        msg << ">> Install #{binary} by hand or try running `pdfkit --install-#{binary}`"
+        raise NoExecutableError.new(msg)
+      end
+    end
+
   end
   
-  def command
-    args = [executable]
-    args += @options.to_a.flatten.compact
-    args << '--quiet'
+  def command(format)
+    args = [executable(format)]
+    case binary_name(format)
+      when 'wkhtmltopdf' then
+        args += @options_wkhtmltopdf.to_a.flatten.compact
+        args << '--quiet'
+      when 'wkhtmltoimage' then
+        args += @options_wkhtmltoimage.to_a.flatten.compact
+    end
     
+
     if @source.html?
       args << '-' # Get HTML from stdin
     else
@@ -41,11 +58,12 @@ class PDFKit
     end
     
     args << '-' # Read PDF from stdout
+#puts args.join(" ")
     args
   end
 
-  def executable
-    default = PDFKit.configuration.wkhtmltopdf
+  def executable(format)
+    default = PDFKit.configuration.method( binary_name(format) ).call
     return default if default !~ /^\// # its not a path, so nothing we can do
     if File.exist?(default)
       default
@@ -54,22 +72,56 @@ class PDFKit
     end
   end
   
+  def binary_name(format)
+    case format
+      when 'pdf' then
+        return 'wkhtmltopdf'
+      when /jpg|png|gif/ then
+        return 'wkhtmltoimage'
+      else
+        raise UnknownFormatError.new("Unknown format: #{format}\nValid formats are: pdf, jpg, png, gif")
+    end
+  end
+
   def to_pdf
     append_stylesheets
     
     pdf = Kernel.open('|-', "w+")
-    exec(*command) if pdf.nil?
+    exec(*command('pdf')) if pdf.nil?
     pdf.puts(@source.to_s) if @source.html?
     pdf.close_write
     result = pdf.gets(nil)
     pdf.close_read
 
-    raise "command failed: #{command.join(' ')}" if result.to_s.strip.empty?
+    raise "command failed: #{command('pdf').join(' ')}" if result.to_s.strip.empty?
     return result
   end
   
-  def to_file(path)
-    File.open(path,'w') {|file| file << self.to_pdf}
+  def to_image(format='png')
+    options_wkhtmltoimage['--format'] = format
+    append_stylesheets
+
+    img = Kernel.open('|-', "w+")
+    exec(*command(format)) if img.nil?
+    img.puts(@source.to_s) if @source.html?
+    img.close_write
+    result = img.gets(nil)
+    img.close_read
+
+    raise "command failed: #{command(format).join(' ')}" if result.to_s.strip.empty?
+    return result
+  end
+
+  ['jpg','png','gif'].each do |type|
+    define_method("to_#{type}".to_sym) do |*params|
+      to_image(type)
+    end
+  end
+
+
+  def to_file(path, format='pdf')
+    conversion_method = self.method( "to_#{format}" )
+    File.open(path,'w') {|file| file << conversion_method.call}
   end
   
   protected
