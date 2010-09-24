@@ -7,7 +7,7 @@ class PDFKit
     end
     
     def url?
-      @source.is_a?(String) && @source.match(/^http/)
+      @source.is_a?(String) && @source.match(/\Ahttp/)
     end
     
     def file?
