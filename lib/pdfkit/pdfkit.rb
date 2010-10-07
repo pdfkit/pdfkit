@@ -54,24 +54,26 @@ class PDFKit
     end
   end
   
-  def to_pdf
+  def to_pdf(path=nil)
     append_stylesheets
-    
-    pdf = Kernel.open('|-', "w+")
-    exec(*command) if pdf.nil?
-    pdf.puts(@source.to_s) if @source.html?
-    pdf.close_write
-    result = pdf.gets(nil)
-    pdf.close_read
 
-    raise "command failed: #{command.join(' ')}" if result.to_s.strip.empty?
+    args = command
+    args[-1] = path if path && args[-1] == "-"
+    invoke = args.map {|arg| %{"#{arg.gsub('"','\\"')}"}} * " "
+
+    result = IO.popen(invoke, "w+") do |pdf|
+      pdf.puts(@source.to_s) if @source.html?
+      pdf.close_write
+      pdf.gets(nil)
+    end
+    result = File.open(path, "rb") {|file| file.read} if path
+
+    raise "command failed: #{invoke}" if result.to_s.strip.empty?
     return result
   end
   
-  def to_file(path)
-    File.open(path,'w') {|file| file << self.to_pdf}
-  end
-  
+  alias to_file to_pdf
+
   protected
 
     def find_options_in_meta(body)
