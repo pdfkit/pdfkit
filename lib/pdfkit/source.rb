@@ -1,7 +1,5 @@
 class PDFKit
-  
   class Source
-        
     def initialize(url_file_or_html)
       @source = url_file_or_html
     end
@@ -21,7 +19,5 @@ class PDFKit
     def to_s
       file? ? @source.path : @source
     end
-    
   end
-  
 end
