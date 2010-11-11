@@ -41,7 +41,7 @@ def install(download, arch, install_to)
     `mv wkhtmltopdf-#{arch} #{install_to}`
   elsif download =~ /.tar.lzma$/
     raise "couldn't extract archive: lzcat not found" unless system("which lzcat > /dev/null 2>/dev/null")
-    `tar xv #{download}`
+    `tar -xvf #{download}`
     `mv wkhtmltopdf-#{arch} #{install_to}`
   else
     `mv #{download} #{install_to}`
