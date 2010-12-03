@@ -28,6 +28,7 @@ class PDFKit
         
         headers["Content-Length"] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
         headers["Content-Type"] = "application/pdf"
+        headers.store("Middleware", "PDFKit")
         
         response = [body]
       end
@@ -51,6 +52,7 @@ class PDFKit
         path = Pathname(env['PATH_INFO'])
         ['PATH_INFO','REQUEST_URI'].each { |e| env[e] = path.to_s.sub(/#{path.extname}$/,'')  } if path.extname == '.pdf'
         env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
+        env['MIDDLEWARE'] = "PDFKit"
       end
       
       def concat(accepts, type)

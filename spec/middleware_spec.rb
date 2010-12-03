@@ -44,6 +44,11 @@ describe PDFKit::Middleware do
     it "should replace .pdf in REQUEST_URI when the extname is .pdf" do
       @pdf.send :set_request_to_render_as_pdf, @pdf_env
       @pdf_env['REQUEST_URI'].should == "file"
-    end    
+    end  
+    
+    it "should inform RAILS of itself by setting a request header" do
+      @pdf.send :set_request_to_render_as_pdf, @pdf_env
+      @pdf_env['MIDDLEWARE'].should == "PDFKit"
+    end
   end
 end
