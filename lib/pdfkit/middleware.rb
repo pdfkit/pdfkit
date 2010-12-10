@@ -3,18 +3,18 @@ class PDFKit
   class Middleware
     
     def initialize(app, options = {}, conditions = {})
-      @app = app
-      @options = options
+      @app        = app
+      @options    = options
       @conditions = conditions
     end
     
     def call(env)
-      @request = Rack::Request.new(env)
-      set_request_to_render_as_pdf(env) if request_path_is_pdf?
-      
+      @request    = Rack::Request.new(env)
+      @render_pdf = false
       status, headers, response = @app.call(env)
+      set_request_to_render_as_pdf(env) if render_as_pdf?
       
-      if render_as_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
+      if @render_pdf && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.respond_to?(:body) ? response.body : response.join
         body = PDFKit.new(translate_paths(body, env), @options).to_pdf
         
@@ -39,12 +39,10 @@ class PDFKit
       body.gsub(/(href|src)=(['"])\/([^\"']*|[^"']*)['"]/, '\1=\2' + root + '\3\2')
     end
     
-    def request_path_is_pdf?
-      @request_path_is_pdf ||= @request.path =~ /\.pdf$/
-    end
-    
     def render_as_pdf?
-      if request_path_is_pdf? && @conditions[:only]
+      request_path_is_pdf = @request.path.match(/\.pdf$/)
+      
+      if request_path_is_pdf && @conditions[:only]
         rules = [@conditions[:only]].flatten
         rules.any? do |pattern|
           if pattern.is_a?(Regexp)
@@ -54,11 +52,13 @@ class PDFKit
           end
         end
       else
-        request_path_is_pdf?
+        request_path_is_pdf
       end
     end
     
     def set_request_to_render_as_pdf(env)
+      @render_pdf = true
+      
       path = Pathname(env['PATH_INFO'])
       %w[PATH_INFO REQUEST_URI].each { |e| env[e] = path.to_s.sub(/#{path.extname}$/,'') }
       env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
