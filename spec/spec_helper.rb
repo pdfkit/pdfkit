@@ -6,6 +6,7 @@ require 'rspec'
 require 'rspec/autorun'
 require 'mocha'
 require 'rack'
+require 'custom_wkhtmltopdf_path' if File.exists?(File.join(SPEC_ROOT, 'custom_wkhtmltopdf_path.rb'))
 
 RSpec.configure do |config|
   
