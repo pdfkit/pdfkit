@@ -24,7 +24,7 @@ describe PDFKit::Middleware do
         
         describe "regex" do
           describe "one" do
-            before { mock_app({}, :only => /^\/public/) }
+            before { mock_app({}, :only => %r[^/public]) }
             
             context "matching" do
               specify do
@@ -44,7 +44,7 @@ describe PDFKit::Middleware do
           end # one regex
           
           describe "multiple" do
-            before { mock_app({}, :only => [/^\/foo/, /^\/public/]) }
+            before { mock_app({}, :only => [%r[^/invoice], %r[^/public]]) }
             
             context "matching" do
               specify do
@@ -86,7 +86,7 @@ describe PDFKit::Middleware do
           end # one string
           
           describe "multiple" do
-            before { mock_app({}, :only => ['/foo', '/public']) }
+            before { mock_app({}, :only => ['/invoice', '/public']) }
             
             context "matching" do
               specify do
