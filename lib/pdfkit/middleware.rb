@@ -40,7 +40,7 @@ class PDFKit
     end
     
     def request_path_is_pdf?
-      @request.path =~ /\.pdf$/
+      @request_path_is_pdf ||= @request.path =~ /\.pdf$/
     end
     
     def render_as_pdf?
