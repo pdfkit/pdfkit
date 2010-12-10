@@ -1,6 +1,115 @@
 require 'spec_helper'
 
+def app; Rack::Lint.new(@app); end
+
+def mock_app(options = {}, conditions = {})
+  main_app = lambda { |env|
+    request = Rack::Request.new(env)
+    headers = {'Content-Type' => "text/html"}
+    headers['Set-Cookie'] = "id=1; path=/\ntoken=abc; path=/; secure; HttpOnly"
+    [200, headers, ['Hello world!']]
+  }
+  
+  builder = Rack::Builder.new
+  builder.use PDFKit::Middleware, options, conditions
+  builder.run main_app
+  @app = builder.to_app
+end
+
 describe PDFKit::Middleware do
+  
+  describe "#call" do
+    describe "conditions" do
+      describe ":only" do
+        
+        describe "regex" do
+          describe "one" do
+            before { mock_app({}, :only => /^\/public/) }
+            
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+            
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # one regex
+          
+          describe "multiple" do
+            before { mock_app({}, :only => [/^\/foo/, /^\/public/]) }
+            
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+            
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # multiple regex
+        end # regex
+        
+        describe "string" do
+          describe "one" do
+            before { mock_app({}, :only => '/public') }
+            
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+            
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # one string
+          
+          describe "multiple" do
+            before { mock_app({}, :only => ['/foo', '/public']) }
+            
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+            
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # multiple string
+        end # string
+        
+      end
+    end
+  end
+  
   describe "#translate_paths" do
     
     before do
