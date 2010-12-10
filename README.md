@@ -71,6 +71,16 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
     # options will be passed to PDFKit.new
     config.middleware.use PDFKit::Middleware, :print_media_type => true
 
+**With conditions to limit routes that can be generated in pdf**
+
+    # conditions can be regexes (either one or an array)
+    config.middleware.use PDFKit::Middleware, {}, :only => %r[^/public]
+    config.middleware.use PDFKit::Middleware, {}, :only => [%r[^/invoice], %r[^/public]]
+
+    # conditions can be strings (either one or an array)
+    config.middleware.use PDFKit::Middleware, {}, :only => '/public'
+    config.middleware.use PDFKit::Middleware, {}, :only => ['/invoice', '/public']
+
 ## TODO
  - add amd64 support in --install-wkhtmltopdf
 
