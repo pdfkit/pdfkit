@@ -15,6 +15,7 @@ begin
     gem.add_development_dependency "rspec", "~> 2.0.0.beta.8"
     gem.add_development_dependency "rspec-core", "~> 2.0.0.beta.8"
     gem.add_development_dependency 'mocha'
+    gem.add_development_dependency 'rack-test'
     gem.post_install_message = File.read('POST_INSTALL')
   end
   Jeweler::GemcutterTasks.new
