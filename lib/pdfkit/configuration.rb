@@ -33,9 +33,8 @@ class PDFKit
     @configuration ||= Configuration.new
   end
   
-  
   def self.configure
-    self.configuration 
     yield(configuration)
   end
+  
 end
