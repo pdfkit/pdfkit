@@ -1,35 +1,32 @@
 PATH
   remote: .
   specs:
-    pdfkit (0.4.6)
+    pdfkit (0.5.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
     diff-lcs (1.1.2)
-    mocha (0.9.9)
+    mocha (0.9.10)
       rake
     rack (1.2.1)
     rack-test (0.5.6)
       rack (>= 1.0)
     rake (0.8.7)
-    rspec (2.0.1)
-      rspec-core (~> 2.0.1)
-      rspec-expectations (~> 2.0.1)
-      rspec-mocks (~> 2.0.1)
-    rspec-core (2.0.1)
-    rspec-expectations (2.0.1)
-      diff-lcs (>= 1.1.2)
-    rspec-mocks (2.0.1)
-      rspec-core (~> 2.0.1)
-      rspec-expectations (~> 2.0.1)
+    rspec (2.2.0)
+      rspec-core (~> 2.2)
+      rspec-expectations (~> 2.2)
+      rspec-mocks (~> 2.2)
+    rspec-core (2.2.1)
+    rspec-expectations (2.2.0)
+      diff-lcs (~> 1.1.2)
+    rspec-mocks (2.2.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  mocha
+  mocha (>= 0.9.10)
   pdfkit!
-  rack-test
-  rspec (~> 2.0.0.beta.8)
-  rspec-core (~> 2.0.0.beta.8)
+  rack-test (>= 0.5.6)
+  rspec (~> 2.2.0)
