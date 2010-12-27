@@ -1,14 +1,12 @@
+PATH
+  remote: .
+  specs:
+    pdfkit (0.4.6)
+
 GEM
   remote: http://rubygems.org/
   specs:
     diff-lcs (1.1.2)
-    gemcutter (0.6.1)
-    git (1.2.5)
-    jeweler (1.4.0)
-      gemcutter (>= 0.1.0)
-      git (>= 1.2.5)
-      rubyforge (>= 2.0.0)
-    json_pure (1.4.6)
     mocha (0.9.9)
       rake
     rack (1.2.1)
@@ -25,16 +23,13 @@ GEM
     rspec-mocks (2.0.1)
       rspec-core (~> 2.0.1)
       rspec-expectations (~> 2.0.1)
-    rubyforge (2.0.4)
-      json_pure (>= 1.1.7)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  jeweler
   mocha
-  rack
+  pdfkit!
   rack-test
   rspec (~> 2.0.0.beta.8)
   rspec-core (~> 2.0.0.beta.8)
