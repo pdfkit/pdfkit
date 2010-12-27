@@ -17,6 +17,11 @@ describe PDFKit::Source do
       source = PDFKit::Source.new('<blink>Oh Hai!</blink>')
       source.should_not be_url
     end
+
+    it "should return false if passed HTML with embedded urls at the beginning of a line" do
+      source = PDFKit::Source.new("<blink>Oh Hai!</blink>\nhttp://www.google.com")
+      source.should_not be_url
+    end
   end
   
   describe "#file?" do

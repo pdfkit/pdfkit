@@ -46,10 +46,17 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/jdpace/PDFKit}
   s.post_install_message = %q{******************************************************************
 
-Now install wkhtmltopdf binaries:
-Global: sudo `which pdfkit` --install-wkhtmltopdf
-or inside RVM folder: export TO=`which pdfkit | sed 's:/pdfkit:/wkhtmltopdf:'` && pdfkit --install-wkhtmltopdf
-(run pdfkit --help to see more options)
+Now install the wkhtmltopdf binary
+==================================
+
+1. Install by hand (recomended):
+
+  https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF
+
+2. Try using the wkhtmltopdf-binary gem (mac + linux i386)
+
+  gem install wkhtmltopdf-binary
+
 
 ******************************************************************}
   s.rdoc_options = ["--charset=UTF-8"]

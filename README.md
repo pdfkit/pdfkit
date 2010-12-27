@@ -9,24 +9,30 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     gem install pdfkit
 
 ### wkhtmltopdf
- * **Automatic**: `sudo pdfkit --install-wkhtmltopdf`  
- install latest version into /usr/local/bin  
- (overwrite defaults with e.g. ARCHITECTURE=amd64 TO=/home/foo/bin)
- * By hand: http://code.google.com/p/wkhtmltopdf/downloads/list
+
+1. Install by hand (recomended):
+
+        https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF
+
+2. Try using the wkhtmltopdf-binary gem (mac + linux i386)
+
+        gem install wkhtmltopdf-binary
+
+*Note:* The automated installer has been removed.
 
 ## Usage
-    
+
     # PDFKit.new takes the HTML and any options for wkhtmltopdf
     # run `wkhtmltopdf --extended-help` for a full list of options
     kit = PDFKit.new(html, :page_size => 'Letter')
     kit.stylesheets << '/path/to/css/file'
-    
+
     # Git an inline PDF
     pdf = kit.to_pdf
-    
+
     # Save the PDF to a file
     file = kit.to_file('/path/to/save/pdf')
-    
+
     # PDFKit.new can optionally accept a URL or a File.
     # Stylesheets can not be added when source is provided as a URL of File.
     kit = PDFKit.new('http://google.com')
@@ -34,7 +40,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
     # Add any kind of option through meta tags
     PDFKit.new('<html><head><meta name="pdfkit-page_size" content="Letter")
-    
+
 ## Configuration
 
 If you're on Windows or you installed wkhtmltopdf by hand to a location other than /usr/local/bin you will need to tell PDFKit where the binary is. You can configure PDFKit like so:
@@ -55,17 +61,17 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
 ### Middleware Setup
 
 **Non-Rails Rack apps**
-   
+
     # in config.ru
     require 'pdfkit'
     use PDFKit::Middleware
-    
+
 **Rails apps**
 
     # in application.rb(Rails3) or environment.rb(Rails2)
     require 'pdfkit'
     config.middleware.use PDFKit::Middleware
-    
+
 **With PDFKit options**
 
     # options will be passed to PDFKit.new
@@ -75,7 +81,7 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
  - add amd64 support in --install-wkhtmltopdf
 
 ## Note on Patches/Pull Requests
- 
+
 * Fork the project.
 * Setup your development environment with: gem install bundler; bundle install
 * Make your feature addition or bug fix.
