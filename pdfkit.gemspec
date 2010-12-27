@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.name = %q{pdfkit}
   s.version = "0.4.6"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = ">= 1.3.6"
   s.authors = ["jdpace"]
   s.date = %q{2010-12-27}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
@@ -16,31 +16,10 @@ Gem::Specification.new do |s|
     "LICENSE",
      "README.md"
   ]
-  s.files = [
-    ".document",
-     ".gitignore",
-     ".rspec",
-     "Gemfile",
-     "Gemfile.lock",
-     "History.md",
-     "LICENSE",
-     "POST_INSTALL",
-     "README.md",
-     "Rakefile",
-     "VERSION",
-     "lib/pdfkit.rb",
-     "lib/pdfkit/configuration.rb",
-     "lib/pdfkit/middleware.rb",
-     "lib/pdfkit/pdfkit.rb",
-     "lib/pdfkit/source.rb",
-     "pdfkit.gemspec",
-     "spec/fixtures/example.css",
-     "spec/fixtures/example.html",
-     "spec/middleware_spec.rb",
-     "spec/pdfkit_spec.rb",
-     "spec/source_spec.rb",
-     "spec/spec_helper.rb"
-  ]
+  s.platform = Gem::Platform::RUBY
+  s.files = `git ls-files`.split("\n")
+  s.executables = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
+  s.require_path = 'lib'
   s.homepage = %q{http://github.com/jdpace/PDFKit}
   s.post_install_message = %q{******************************************************************
 
