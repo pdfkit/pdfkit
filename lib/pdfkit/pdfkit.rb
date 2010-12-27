@@ -29,7 +29,7 @@ class PDFKit
     raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
 
-  def command
+  def command(path = nil)
     args = [executable]
     args += @options.to_a.flatten.compact
     args << '--quiet'
@@ -40,8 +40,9 @@ class PDFKit
       args << @source.to_s
     end
 
-    args << '-' # Read PDF from stdout
-    args
+    args << (path || '-') # Write to file or stdout
+
+    args.map {|arg| %Q{"#{arg.gsub('"', '\"')}"}}
   end
 
   def executable
@@ -54,22 +55,26 @@ class PDFKit
     end
   end
 
-  def to_pdf
+  def to_pdf(path=nil)
     append_stylesheets
 
-    pdf = Kernel.open('|-', "w+")
-    exec(*command) if pdf.nil?
-    pdf.puts(@source.to_s) if @source.html?
-    pdf.close_write
-    result = pdf.gets(nil)
-    pdf.close_read
+    args = command(path)
+    invoke = args.join(' ')
 
-    raise "command failed: #{command.join(' ')}" if result.to_s.strip.empty?
+    result = IO.popen(invoke, "w+") do |pdf|
+      pdf.puts(@source.to_s) if @source.html?
+      pdf.close_write
+      pdf.gets(nil)
+    end
+    result = File.read(path) if path
+
+    raise "command failed: #{invoke}" if result.to_s.strip.empty?
     return result
   end
 
   def to_file(path)
-    File.open(path,'w') {|file| file << self.to_pdf}
+    self.to_pdf(path)
+    File.new(path)
   end
 
   protected
