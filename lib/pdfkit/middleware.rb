@@ -25,7 +25,6 @@ class PDFKit
 
         headers["Content-Length"]         = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
         headers["Content-Type"]           = "application/pdf"
-        headers["Rack-Middleware-PDFKit"] = "true"
       end
 
       [status, headers, response]
@@ -67,6 +66,7 @@ class PDFKit
       path = @request.path.sub(%r{\.pdf$}, '')
       %w[PATH_INFO REQUEST_URI].each { |e| env[e] = path }
       env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
+      env["Rack-Middleware-PDFKit"] = "true"
     end
 
     def concat(accepts, type)
