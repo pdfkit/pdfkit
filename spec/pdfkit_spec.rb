@@ -86,6 +86,12 @@ describe PDFKit do
       pdfkit.command[-2..-1].should == [%Q{"#{file_path}"}, '"-"']
     end
 
+    it "should specify the path for the ouput if a apth is given" do
+      file_path = "/path/to/output.pdf"
+      pdfkit = PDFKit.new("html")
+      pdfkit.command(file_path).last.should == %Q{"#{file_path}"}
+    end
+
     it "should detect special pdfkit meta tags" do
       body = %{
         <html>
