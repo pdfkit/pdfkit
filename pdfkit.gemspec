@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
-  s.date = %q{2010-09-03}
+  s.date = %q{2010-11-11}
   s.default_executable = %q{pdfkit}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
   s.email = %q{jared@codewordstudios.com}
@@ -58,9 +58,9 @@ or inside RVM folder: export TO=`which pdfkit | sed 's:/pdfkit:/wkhtmltopdf:'` &
   s.summary = %q{HTML+CSS -> PDF}
   s.test_files = [
     "spec/middleware_spec.rb",
-     "spec/pdfkit_spec.rb",
      "spec/source_spec.rb",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "spec/pdfkit_spec.rb"
   ]
 
   if s.respond_to? :specification_version then

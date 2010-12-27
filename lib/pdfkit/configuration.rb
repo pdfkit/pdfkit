@@ -1,10 +1,10 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :wkhtmltopdf, :default_options
+    attr_accessor :meta_tag_prefix, :default_options
+    attr_writer :wkhtmltopdf
 
     def initialize
       @meta_tag_prefix = 'pdfkit-'
-      @wkhtmltopdf = '/usr/local/bin/wkhtmltopdf'
       @default_options = {
         :disable_smart_shrinking => true,
         :page_size => 'Letter',
@@ -14,6 +14,10 @@ class PDFKit
         :margin_left => '0.75in',
         :encoding => "UTF-8"
       }
+    end
+
+    def wkhtmltopdf
+      @wkhtmltopdf ||= `which wkhtmltopdf`.chomp
     end
   end
 
