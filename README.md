@@ -87,6 +87,28 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
     config.middleware.use PDFKit::Middleware, {}, :only => '/public'
     config.middleware.use PDFKit::Middleware, {}, :only => ['/invoice', '/public']
 
+## Troubleshooting
+
+*  **Single thread issue:** In development environments it is common to run a 
+   single server process. This can cause issues when rendering your pdf 
+   requires wkhtmltopdf to hit your server again (for images, js, css).
+   This is because the resource requests will get blocked by the initial
+   request and the initial request will be waiting on the resource
+   requests causing a deadlock.
+
+   This is usually not an issue in a production environment. To get
+   around this issue you may want to run a server with multiple workers
+   like Passenger or try to embed your resources within your HTML to
+   avoid extra HTTP requests.
+
+*  **Resources aren't included in the PDF:** Images, CSS, or Javascript
+   does not seem to be downloading correctly in the PDF. This is due
+   to the fact that wkhtmltopdf does not know where to find those files.
+   Make sure you are using absolute paths (start with forward slash) to
+   your resources. If you are using PDFKit to generate pdfs from a raw
+   HTML source make sure you use complete paths (either file paths or 
+   urls including the domain).
+
 ## TODO
  - add amd64 support in --install-wkhtmltopdf
 
