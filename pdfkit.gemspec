@@ -9,11 +9,9 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jdpace"]
-  s.date = %q{2010-11-11}
-  s.default_executable = %q{pdfkit}
+  s.date = %q{2010-12-27}
   s.description = %q{Uses wkhtmltopdf to create PDFs using HTML}
   s.email = %q{jared@codewordstudios.com}
-  s.executables = ["pdfkit"]
   s.extra_rdoc_files = [
     "LICENSE",
      "README.md"
@@ -24,12 +22,12 @@ Gem::Specification.new do |s|
      ".rspec",
      "Gemfile",
      "Gemfile.lock",
+     "History.md",
      "LICENSE",
      "POST_INSTALL",
      "README.md",
      "Rakefile",
      "VERSION",
-     "bin/pdfkit",
      "lib/pdfkit.rb",
      "lib/pdfkit/configuration.rb",
      "lib/pdfkit/middleware.rb",
@@ -46,28 +44,28 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/jdpace/PDFKit}
   s.post_install_message = %q{******************************************************************
 
-Now install the wkhtmltopdf binary
-==================================
+Install wkhtmltopdf:
 
 1. Install by hand (recomended):
 
-  https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF
+        https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF
 
 2. Try using the wkhtmltopdf-binary gem (mac + linux i386)
 
-  gem install wkhtmltopdf-binary
+        gem install wkhtmltopdf-binary
 
 
-******************************************************************}
+******************************************************************
+}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{HTML+CSS -> PDF}
   s.test_files = [
     "spec/middleware_spec.rb",
+     "spec/pdfkit_spec.rb",
      "spec/source_spec.rb",
-     "spec/spec_helper.rb",
-     "spec/pdfkit_spec.rb"
+     "spec/spec_helper.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -78,15 +76,18 @@ Now install the wkhtmltopdf binary
       s.add_development_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
       s.add_development_dependency(%q<rspec-core>, ["~> 2.0.0.beta.8"])
       s.add_development_dependency(%q<mocha>, [">= 0"])
+      s.add_development_dependency(%q<rack-test>, [">= 0"])
     else
       s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
       s.add_dependency(%q<rspec-core>, ["~> 2.0.0.beta.8"])
       s.add_dependency(%q<mocha>, [">= 0"])
+      s.add_dependency(%q<rack-test>, [">= 0"])
     end
   else
     s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.8"])
     s.add_dependency(%q<rspec-core>, ["~> 2.0.0.beta.8"])
     s.add_dependency(%q<mocha>, [">= 0"])
+    s.add_dependency(%q<rack-test>, [">= 0"])
   end
 end
 
