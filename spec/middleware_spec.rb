@@ -1,11 +1,136 @@
 require 'spec_helper'
 
+def app; Rack::Lint.new(@app); end
+
+def mock_app(options = {}, conditions = {})
+  main_app = lambda { |env|
+    @env = env
+    headers = {'Content-Type' => "text/html"}
+    [200, headers, @body || ['Hello world!']]
+  }
+
+  builder = Rack::Builder.new
+  builder.use PDFKit::Middleware, options, conditions
+  builder.run main_app
+  @app = builder.to_app
+end
+
 describe PDFKit::Middleware do
+
+  describe "#call" do
+    describe "conditions" do
+      describe ":only" do
+
+        describe "regex" do
+          describe "one" do
+            before { mock_app({}, :only => %r[^/public]) }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # one regex
+
+          describe "multiple" do
+            before { mock_app({}, :only => [%r[^/invoice], %r[^/public]]) }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # multiple regex
+        end # regex
+
+        describe "string" do
+          describe "one" do
+            before { mock_app({}, :only => '/public') }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # one string
+
+          describe "multiple" do
+            before { mock_app({}, :only => ['/invoice', '/public']) }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # multiple string
+        end # string
+
+      end
+    end
+
+    describe "remove .pdf from PATH_INFO and REQUEST_URI" do
+      before { mock_app }
+
+      context "matching" do
+        specify do
+          get 'http://www.example.org/public/file.pdf'
+          @env["PATH_INFO"].should == "/public/file"
+          @env["REQUEST_URI"].should == "/public/file"
+        end
+        specify do
+          get 'http://www.example.org/public/file.txt'
+          @env["PATH_INFO"].should == "/public/file.txt"
+          @env["REQUEST_URI"].should be_nil
+        end
+      end
+
+    end
+  end
+
   describe "#translate_paths" do
-    
     before do
       @pdf = PDFKit::Middleware.new({})
-      @env = {'REQUEST_URI' => 'http://example.com/document.pdf', 'rack.url_scheme' => 'http', 'HTTP_HOST' => 'example.com'}
+      @env = { 'REQUEST_URI' => 'http://example.com/document.pdf', 'rack.url_scheme' => 'http', 'HTTP_HOST' => 'example.com' }
     end
 
     it "should correctly parse relative url with single quotes" do
@@ -26,29 +151,5 @@ describe PDFKit::Middleware do
       body.should == "NO MATCH"
     end
   end
-  
-  describe "#set_request_to_render_as_pdf" do
-    
-    before do      
-      @pdf = PDFKit::Middleware.new({})
 
-      @pdf_env = {'PATH_INFO' => Pathname.new("file.pdf"), 'REQUEST_URI' => Pathname.new("file.pdf")}
-      @non_pdf_env = {'PATH_INFO' => Pathname.new("file.txt"), 'REQUEST_URI' => Pathname.new("file.txt")}
-    end
-    
-    it "should replace .pdf in PATH_INFO when the extname is .pdf" do
-      @pdf.send :set_request_to_render_as_pdf, @pdf_env
-      @pdf_env['PATH_INFO'].should == "file"
-    end
-    
-    it "should replace .pdf in REQUEST_URI when the extname is .pdf" do
-      @pdf.send :set_request_to_render_as_pdf, @pdf_env
-      @pdf_env['REQUEST_URI'].should == "file"
-    end  
-    
-    it "should inform RAILS of itself by setting a request header" do
-      @pdf.send :set_request_to_render_as_pdf, @pdf_env
-      @pdf_env['MIDDLEWARE'].should == "PDFKit"
-    end
-  end
 end

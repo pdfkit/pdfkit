@@ -6,13 +6,9 @@ require 'rspec'
 require 'rspec/autorun'
 require 'mocha'
 require 'rack'
+require 'rack/test'
+require 'custom_wkhtmltopdf_path' if File.exists?(File.join(SPEC_ROOT, 'custom_wkhtmltopdf_path.rb'))
 
 RSpec.configure do |config|
-  
-  config.before do
-    PDFKit.any_instance.stubs(:wkhtmltopdf).returns(
-      File.join(SPEC_ROOT,'..','bin','wkhtmltopdf-proxy')
-    )
-  end
-  
+  include Rack::Test::Methods
 end

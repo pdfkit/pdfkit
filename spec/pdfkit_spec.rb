@@ -30,7 +30,7 @@ describe PDFKit do
     
     it "should provide default options" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
-      ['--disable-smart-shrinking', '--margin-top', '--margin-right', '--margin-bottom', '--margin-left'].each do |option|
+      ['--margin-top', '--margin-right', '--margin-bottom', '--margin-left'].each do |option|
         pdfkit.options.should have_key(option)
       end
     end
@@ -55,6 +55,10 @@ describe PDFKit do
     end
     
     it "will not include default options it is told to omit" do
+      PDFKit.configure do |config|
+        config.default_options[:disable_smart_shrinking] = true
+      end
+
       pdfkit = PDFKit.new('html')
       pdfkit.command.should include('--disable-smart-shrinking')
       pdfkit = PDFKit.new('html', :disable_smart_shrinking => false)

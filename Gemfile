@@ -6,4 +6,5 @@ group :development do
   gem "mocha"
   gem "jeweler"
   gem "rack"
+  gem "rack-test"
 end

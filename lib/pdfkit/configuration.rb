@@ -32,14 +32,12 @@ class PDFKit
   #   PDFKit.configure do |config|
   #     config.wkhtmltopdf = '/usr/bin/wkhtmltopdf'
   #   end
-  
+
   def self.configuration
     @configuration ||= Configuration.new
   end
-  
-  
+
   def self.configure
-    self.configuration 
     yield(configuration)
   end
 end
