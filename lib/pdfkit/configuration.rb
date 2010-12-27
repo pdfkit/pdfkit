@@ -6,7 +6,7 @@ class PDFKit
     def initialize
       @meta_tag_prefix = 'pdfkit-'
       @default_options = {
-        :disable_smart_shrinking => true,
+        :disable_smart_shrinking => false,
         :page_size => 'Letter',
         :margin_top => '0.75in',
         :margin_right => '0.75in',
