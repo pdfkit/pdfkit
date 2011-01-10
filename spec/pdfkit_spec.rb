@@ -105,6 +105,22 @@ describe PDFKit do
       pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Legal"'
       pdfkit.command[pdfkit.command.index('"--orientation"') + 1].should == '"Landscape"'
     end
+
+    it "should detect special pdfkit meta tags despite bad markup" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-page_size" content="Legal"/>
+            <meta name="pdfkit-orientation" content="Landscape"/>
+          </head>
+          <br>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Legal"'
+      pdfkit.command[pdfkit.command.index('"--orientation"') + 1].should == '"Landscape"'
+    end
+
   end
 
   context "#to_pdf" do
