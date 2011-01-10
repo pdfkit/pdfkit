@@ -79,23 +79,18 @@ class PDFKit
 
   protected
 
-    def find_options_in_meta(body)
-      pdfkit_meta_tags(body).inject({}) do |found, tag|
-        name = tag.attributes["name"].sub(/^#{PDFKit.configuration.meta_tag_prefix}/, '').to_sym
-        found.merge(name => tag.attributes["content"])
-      end
-    end
+    def find_options_in_meta(content)
+      # Read file if content is a File
+      content = content.read if content.is_a?(File)
 
-    def pdfkit_meta_tags(body)
-      require 'rexml/document'
-      xml_body = REXML::Document.new(body)
-      found = []
-      xml_body.elements.each("html/head/meta") do |tag|
-        found << tag if tag.attributes['name'].to_s =~ /^#{PDFKit.configuration.meta_tag_prefix}/
+      found = {}
+      content.scan(/<meta [^>]*>/) do |meta|
+        puts PDFKit.configuration.meta_tag_prefix
+        name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
+        found[name] = meta.scan(/content=["']([^"']*)/)[0][0]
       end
+
       found
-    rescue # rexml random crash on invalid xml
-      []
     end
 
     def style_tag_for(stylesheet)
