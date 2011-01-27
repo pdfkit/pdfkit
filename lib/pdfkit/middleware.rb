@@ -35,7 +35,7 @@ class PDFKit
     # Change relative paths to absolute
     def translate_paths(body, env)
       # Host with protocol
-      root = "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
+      root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
 
       body.gsub(/(href|src)=(['"])\/([^\"']*|[^"']*)['"]/, '\1=\2' + root + '\3\2')
     end
