@@ -1,6 +1,6 @@
 # PDFKit
 
-Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the backend which renders HTML using Webkit.
+Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the back-end which renders HTML using Webkit.
 
 ## Install
 
@@ -10,7 +10,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
 ### wkhtmltopdf
 
-1. Install by hand (recomended):
+1. Install by hand (recommended):
 
         https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF
 
@@ -79,7 +79,7 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
 
 **With conditions to limit routes that can be generated in pdf**
 
-    # conditions can be regexes (either one or an array)
+    # conditions can be regexps (either one or an array)
     config.middleware.use PDFKit::Middleware, {}, :only => %r[^/public]
     config.middleware.use PDFKit::Middleware, {}, :only => [%r[^/invoice], %r[^/public]]
 
@@ -101,11 +101,11 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
    like Passenger or try to embed your resources within your HTML to
    avoid extra HTTP requests.
 
-*  **Resources aren't included in the PDF:** Images, CSS, or Javascript
+*  **Resources aren't included in the PDF:** Images, CSS, or JavaScript
    does not seem to be downloading correctly in the PDF. This is due
    to the fact that wkhtmltopdf does not know where to find those files.
    Make sure you are using absolute paths (start with forward slash) to
-   your resources. If you are using PDFKit to generate pdfs from a raw
+   your resources. If you are using PDFKit to generate PDFs from a raw
    HTML source make sure you use complete paths (either file paths or 
    urls including the domain).
 
