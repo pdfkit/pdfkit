@@ -12,7 +12,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
 1. Install by hand (recommended):
 
-        https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF
+   <https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF>
 
 2. Try using the wkhtmltopdf-binary gem (mac + linux i386)
 
