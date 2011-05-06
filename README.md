@@ -54,6 +54,13 @@ If you're on Windows or you installed wkhtmltopdf by hand to a location other th
       }
     end
 
+If your external hostname is unavailable on the server where PDFKit is executed, you can configure PDFKit to use a custom root url that is prepended to the images/links in your HTML document. 
+
+    # config/initializers/pdfkit.rb
+    PDFKit.configure do |config|
+      config.root_url = "http://example.com"
+    end
+
 ## Middleware
 
 PDFKit comes with a middleware that allows users to get a PDF view of any page on your site by appending .pdf to the URL.
