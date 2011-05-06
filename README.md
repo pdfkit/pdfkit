@@ -116,6 +116,12 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
    HTML source make sure you use complete paths (either file paths or 
    urls including the domain).
 
+*  **Resource url differ from server env:** Image sources and hrefs in
+   the PDF link to the environment variables by default. The code is
+   executed on the server, so if the @env domain is blocked or used
+   interally, the PDF generated could be missing images. You can set a
+   root_url in the configuration that is used to point to these images.
+
 ## TODO
  - add amd64 support in --install-wkhtmltopdf
 
