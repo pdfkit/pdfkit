@@ -12,9 +12,9 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
 1. Install by hand (recommended):
 
-        https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF
+    <https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF>
 
-2. Try using the wkhtmltopdf-binary gem (mac + linux i386)
+2.  Try using the wkhtmltopdf-binary gem (mac + linux i386)
 
         gem install wkhtmltopdf-binary
 
@@ -89,8 +89,8 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
 
 ## Troubleshooting
 
-*  **Single thread issue:** In development environments it is common to run a 
-   single server process. This can cause issues when rendering your pdf 
+*  **Single thread issue:** In development environments it is common to run a
+   single server process. This can cause issues when rendering your pdf
    requires wkhtmltopdf to hit your server again (for images, js, css).
    This is because the resource requests will get blocked by the initial
    request and the initial request will be waiting on the resource
@@ -106,7 +106,7 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
    to the fact that wkhtmltopdf does not know where to find those files.
    Make sure you are using absolute paths (start with forward slash) to
    your resources. If you are using PDFKit to generate PDFs from a raw
-   HTML source make sure you use complete paths (either file paths or 
+   HTML source make sure you use complete paths (either file paths or
    urls including the domain).
 
 ## TODO
