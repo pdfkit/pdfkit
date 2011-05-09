@@ -151,6 +151,28 @@ describe PDFKit::Middleware do
       body.should == "NO MATCH"
     end
   end
+  
+  describe "#translate_paths with root_url configuration" do
+    before do
+      @pdf = PDFKit::Middleware.new({})
+      @env = { 'REQUEST_URI' => 'http://example.com/document.pdf', 'rack.url_scheme' => 'http', 'HTTP_HOST' => 'example.com' }
+      PDFKit.configure do |config|
+        config.root_url = "http://example.net/"
+      end
+    end
+
+    it "should add the root_url" do
+      @body = %{<html><head><link href='/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src="/test.png" /></body></html>}
+      body = @pdf.send :translate_paths, @body, @env
+      body.should == "<html><head><link href='http://example.net/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.net/test.png\" /></body></html>"
+    end
+    
+    after do
+      PDFKit.configure do |config|
+        config.root_url = nil
+      end
+    end
+  end
 
   it "should not get stuck rendering each request as pdf" do
     mock_app
