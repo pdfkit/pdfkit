@@ -10,6 +10,7 @@ class PDFKit
 
     def call(env)
       @request    = Rack::Request.new(env)
+      @render_pdf = false
 
       set_request_to_render_as_pdf(env) if render_as_pdf?
       status, headers, response = @app.call(env)
