@@ -17,7 +17,7 @@ class PDFKit
     end
 
     def wkhtmltopdf
-      @wkhtmltopdf ||= `which wkhtmltopdf`.chomp
+      @wkhtmltopdf ||= (defined?(Bundler) ? `bundle exec which wkhtmltopdf` : `which wkhtmltopdf`).chomp
     end
   end
 
