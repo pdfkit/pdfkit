@@ -196,6 +196,15 @@ describe PDFKit do
       file.should be_instance_of(File)
       File.read(file.path)[0...4].should == "%PDF" # PDF Signature at beginning of file
     end
+
+    it "should not truncate data (in Ruby 1.8.6)" do
+      file_path = File.join(SPEC_ROOT,'fixtures','example.html')
+      pdfkit = PDFKit.new(File.new(file_path))
+      pdf_data = pdfkit.to_pdf
+      file = pdfkit.to_file(@file_path)
+      file_data = open(@file_path, 'rb') {|io| io.read }
+      pdf_data.size.should == file_data.size
+    end
   end
 
   context "security" do
