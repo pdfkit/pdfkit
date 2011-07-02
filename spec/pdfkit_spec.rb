@@ -184,7 +184,7 @@ describe PDFKit do
       css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
       pdfkit.to_pdf
-      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style><html>")
+      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style></head>")
     end
 
   end

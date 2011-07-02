@@ -103,7 +103,7 @@ class PDFKit
 
       stylesheets.each do |stylesheet|
         if @source.to_s.match(/<\/head>/)
-          @source.to_s.gsub!(/(<\/head>)/, style_tag_for(stylesheet)+'\1')
+          @source = Source.new(@source.to_s.gsub(/(<\/head>)/, style_tag_for(stylesheet)+'\1'))
         else
           @source.to_s.insert(0, style_tag_for(stylesheet))
         end
