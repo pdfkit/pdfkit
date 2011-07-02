@@ -87,7 +87,7 @@ class PDFKit
       content.scan(/<meta [^>]*>/) do |meta|
         if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
           name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
-          found[name] = meta.scan(/content=["']([^"']*)/)[0][0]
+          found[name.to_sym] = meta.scan(/content=["']([^"']*)/)[0][0]
         end
       end
 
