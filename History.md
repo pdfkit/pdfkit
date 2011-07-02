@@ -1,3 +1,10 @@
+2011-07-02
+==================
+  * Bump to 0.5.2
+  * Fix of dealing with ActiveSupport::SafeBuffer >= 3.0.8.
+  * Fix for meta tag options getting dropped in REE 1.8.7.
+  * Fix on bundler environment detection.
+
 2011-06-17
 ==================
   * Bump to 0.5.1
