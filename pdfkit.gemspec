@@ -23,5 +23,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<rspec>, ["~> 2.2.0"])
   s.add_development_dependency(%q<mocha>, [">= 0.9.10"])
   s.add_development_dependency(%q<rack-test>, [">= 0.5.6"])
+  s.add_development_dependency(%q<activesupport>, [">= 3.0.8"])
 end
 

@@ -178,6 +178,15 @@ describe PDFKit do
       pdfkit.stylesheets << css
       lambda { pdfkit.to_pdf }.should raise_error(PDFKit::ImproperSourceError)
     end
+
+    it "should be able to deal with ActiveSupport::SafeBuffer" do
+      pdfkit = PDFKit.new(ActiveSupport::SafeBuffer.new "<html><head></head><body>Hai!</body></html>")
+      css = File.join(SPEC_ROOT,'fixtures','example.css')
+      pdfkit.stylesheets << css
+      pdfkit.to_pdf
+      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style><html>")
+    end
+
   end
 
   context "#to_file" do
