@@ -112,9 +112,6 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
    root_url configuration may be what you are looking for change your
    asset host.
 
-## TODO
- - add amd64 support in --install-wkhtmltopdf
-
 ## Note on Patches/Pull Requests
 
 * Fork the project.
