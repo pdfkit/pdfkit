@@ -51,7 +51,7 @@ class PDFKit
 
     args << (path || '-') # Write to file or stdout
 
-    args.map {|arg| %Q{"#{arg.gsub('"', '\"')}"}}
+    args.map {|arg| "\"#{arg.gsub('"', '\\"')}\"" }
   end
 
   def executable
