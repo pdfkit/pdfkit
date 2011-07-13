@@ -135,6 +135,43 @@ describe PDFKit do
       pdfkit.command[pdfkit.command.index('"--orientation"') + 1].should == '"Landscape"'
     end
 
+    it "should not have toc or cover options if they are not specified" do
+      body = %{
+        <html>
+          <head>
+            <meta name="test-page_size" content="Legal"/>
+            <meta name="pdfkit-orientation" content="Landscape"/>
+          </head>
+          <br>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.toc_options.should == { }
+      pdfkit.cover_options.should == { }
+      pdfkit.command.index('"toc"').should be_nil
+      pdfkit.command.index('"cover"').should be_nil
+    end
+
+    it "should accept toc and cover options" do
+      body = %{
+        <html>
+          <head>
+            <meta name="test-page_size" content="Legal"/>
+            <meta name="pdfkit-orientation" content="Landscape"/>
+          </head>
+          <br>
+        </html>
+      }
+
+      pdfkit = PDFKit.new(body, :toc_options => { :xsl_style_sheet => 'toc.xml'}, :cover_options => { :file => 'cover.html'})
+      pdfkit.toc_options.should ==  { "--xsl-style-sheet" => 'toc.xml' }
+      pdfkit.command.index('"toc"').should_not be_nil
+      pdfkit.command.index('"cover"').should_not be_nil
+
+      pdfkit.command[pdfkit.command.index('"--xsl-style-sheet"') + 1].should == '"toc.xml"'
+      pdfkit.command[pdfkit.command.index('"cover"') + 1].should == '"cover.html"'
+    end
+
   end
 
   context "#to_pdf" do

@@ -15,16 +15,23 @@ class PDFKit
   end
 
   attr_accessor :source, :stylesheets
-  attr_reader :options
+  attr_reader :options, :toc_options, :cover_options
 
   def initialize(url_file_or_html, options = {})
     @source = Source.new(url_file_or_html)
 
     @stylesheets = []
 
+    @toc_options   = options.delete(:toc_options) || { }
+    @cover_options = options.delete(:cover_options) || { }
+
     @options = PDFKit.configuration.default_options.merge(options)
+    @toc_options   = PDFKit.configuration.toc_options.merge(@toc_options)
+    @cover_options = PDFKit.configuration.cover_options.merge(@cover_options)
     @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
     @options = normalize_options(@options)
+    @toc_options = normalize_options(@toc_options)
+    @cover_options = normalize_options(@cover_options)
 
     raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
@@ -33,6 +40,8 @@ class PDFKit
     args = [executable]
     args += @options.to_a.flatten.compact
     args << '--quiet'
+    args += build_special_options('cover', cover_options, [:file])
+    args += build_special_options('toc', toc_options)
 
     if @source.html?
       args << '-' # Get HTML from stdin
@@ -107,6 +116,19 @@ class PDFKit
         else
           @source.to_s.insert(0, style_tag_for(stylesheet))
         end
+      end
+    end
+
+    def build_special_options(option_type, options, option_without_name = [])
+      if options.length > 0
+        args = [option_type]
+        plain_options = option_without_name.map { |option| options["--#{normalize_arg(option)}"] }
+
+        args += plain_options
+        args += options.select { |arg, value| option_without_name.find { |opt| opt != arg }.nil? }.flatten
+        args
+      else
+        []
       end
     end
 
