@@ -106,6 +106,94 @@ describe PDFKit::Middleware do
         end # string
 
       end
+
+      describe ":except" do
+
+        describe "regex" do
+          describe "one" do
+            before { mock_app({}, :except => %r[^/secret]) }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # one regex
+
+          describe "multiple" do
+            before { mock_app({}, :except => [%r[^/prawn], %r[^/secret]]) }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # multiple regex
+        end # regex
+
+        describe "string" do
+          describe "one" do
+            before { mock_app({}, :except => '/secret') }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # one string
+
+          describe "multiple" do
+            before { mock_app({}, :except => ['/prawn', '/secret']) }
+
+            context "matching" do
+              specify do
+                get 'http://www.example.org/public/test.pdf'
+                last_response.headers["Content-Type"].should == "application/pdf"
+                last_response.body.bytesize.should == PDFKit.new("Hello world!").to_pdf.bytesize
+              end
+            end
+
+            context "not matching" do
+              specify do
+                get 'http://www.example.org/secret/test.pdf'
+                last_response.headers["Content-Type"].should == "text/html"
+                last_response.body.should == "Hello world!"
+              end
+            end
+          end # multiple string
+        end # string
+
+      end
     end
 
     describe "remove .pdf from PATH_INFO and REQUEST_URI" do

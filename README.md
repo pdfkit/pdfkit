@@ -88,6 +88,12 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
     config.middleware.use PDFKit::Middleware, {}, :only => '/public'
     config.middleware.use PDFKit::Middleware, {}, :only => ['/invoice', '/public']
 
+    # conditions can be regexps (either one or an array)
+    config.middleware.use PDFKit::Middleware, {}, :except => [%r[^/prawn], %r[^/secret]]
+
+    # conditions can be strings (either one or an array)
+    config.middleware.use PDFKit::Middleware, {}, :except => ['/secret']
+
 ## Troubleshooting
 
 *  **Single thread issue:** In development environments it is common to run a

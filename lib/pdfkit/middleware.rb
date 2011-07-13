@@ -58,6 +58,17 @@ class PDFKit
             @request.path[0, pattern.length] == pattern
           end
         end
+      elsif request_path_is_pdf && @conditions[:except]
+        rules = [@conditions[:except]].flatten
+        rules.map do |pattern|
+          if pattern.is_a?(Regexp)
+            return false if @request.path =~ pattern
+          else
+            return false if @request.path[0, pattern.length] == pattern
+          end
+        end
+
+        return true
       else
         request_path_is_pdf
       end
