@@ -65,6 +65,15 @@ describe PDFKit do
       pdfkit.command.should_not include('"--disable-smart-shrinking"')
     end
 
+    it "should wrap with an arbitary command" do
+      PDFKit.configure do |config|
+        config.wrapper = "xvfb-run"
+      end
+
+      pdfkit = PDFKit.new('html')
+      pdfkit.command.should include('"xvfb-run"')
+    end
+
     it "should encapsulate string arguments in quotes" do
       pdfkit = PDFKit.new('html', :header_center => "foo [page]")
       pdfkit.command[pdfkit.command.index('"--header-center"') + 1].should == '"foo [page]"'

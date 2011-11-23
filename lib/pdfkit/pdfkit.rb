@@ -31,6 +31,7 @@ class PDFKit
 
   def command(path = nil)
     args = [executable]
+    args.unshift(PDFKit.configuration.wrapper) if PDFKit.configuration.wrapper
     args += @options.to_a.flatten.compact
     args << '--quiet'
 
