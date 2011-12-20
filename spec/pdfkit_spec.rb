@@ -28,6 +28,11 @@ describe PDFKit do
       pdfkit.options.should have_key('--page-size')
     end
 
+    it "should parse complex options into a cmd line friedly format" do
+      pdfkit = PDFKit.new('html', :replace => {'value' => 'something else'} )
+      pdfkit.options.should have_key('--replace')
+    end
+
     it "should provide default options" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
       ['--margin-top', '--margin-right', '--margin-bottom', '--margin-left'].each do |option|
@@ -48,10 +53,12 @@ describe PDFKit do
 
   context "command" do
     it "should contstruct the correct command" do
-      pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12)
+      pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12, :replace => {'foo' => 'bar'})
       pdfkit.command[0].should include('wkhtmltopdf')
       pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Letter"'
       pdfkit.command[pdfkit.command.index('"--toc-l1-font-size"') + 1].should == '"12"'
+      pdfkit.command[pdfkit.command.index('"--replace"') + 1].should == '"foo"'
+      pdfkit.command[pdfkit.command.index('"--replace"') + 2].should == '"bar"'
     end
 
     it "will not include default options it is told to omit" do
