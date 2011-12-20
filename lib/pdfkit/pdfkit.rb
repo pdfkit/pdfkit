@@ -127,8 +127,12 @@ class PDFKit
 
     def normalize_value(value)
       case value
-      when TrueClass
+      when TrueClass #ie, ==true, see http://www.ruby-doc.org/core-1.9.3/TrueClass.html
         nil
+      when Hash
+        value.to_a.flatten.collect{|x| x.to_s}
+      when Array
+        value.flatten.collect{|x| x.to_s}
       else
         value.to_s
       end
