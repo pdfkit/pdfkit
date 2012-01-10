@@ -53,6 +53,13 @@ describe PDFKit do
       pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Letter"'
       pdfkit.command[pdfkit.command.index('"--toc-l1-font-size"') + 1].should == '"12"'
     end
+    it "should ignore option values wich are empty" do
+      pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12, :grayscale => '')
+      pdfkit.command[0].should include('wkhtmltopdf')
+      pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Letter"'
+      pdfkit.command[pdfkit.command.index('"--toc-l1-font-size"') + 1].should == '"12"'
+      pdfkit.command[pdfkit.command.index('"--grayscale"') + 1].should_not == "\"\""
+    end
 
     it "will not include default options it is told to omit" do
       PDFKit.configure do |config|
