@@ -94,6 +94,10 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
     # conditions can be strings (either one or an array)
     config.middleware.use PDFKit::Middleware, {}, :except => ['/secret']
 
+**If pdf files required separate layout for
+
+    config.middleware.use PDFKit::Middleware, {}, :pdf_layout => true
+
 ## Troubleshooting
 
 *  **Single thread issue:** In development environments it is common to run a
