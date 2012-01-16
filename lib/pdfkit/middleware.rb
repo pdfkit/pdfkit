@@ -16,9 +16,9 @@ class PDFKit
       status, headers, response = @app.call(env)
 
       if rendering_pdf? &&
-          @conditions[:pdf_layout] ?
+          (@conditions[:pdf_layout] ?
             (headers['Content-Type'] =~ /(?:text\/html|application\/xhtml\+xml|application\/pdf)/) :
-            (headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/)
+            (headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/))
         body = response.respond_to?(:body) ? response.body : response.join
         body = body.join if body.is_a?(Array)
         body = PDFKit.new(translate_paths(body, env), @options).to_pdf
