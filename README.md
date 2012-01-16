@@ -97,7 +97,9 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
 **If pdf files required separate layout for
 
     config.middleware.use PDFKit::Middleware, {}, :pdf_layout => true
-
+    
+    Now you can create app/views/layouts/application.pdf.erb that will be used for PDF files.
+ 
 ## Troubleshooting
 
 *  **Single thread issue:** In development environments it is common to run a
@@ -121,7 +123,7 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
    urls including the domain). In restrictive server environments the
    root_url configuration may be what you are looking for change your
    asset host.
-
+   
 ## Note on Patches/Pull Requests
 
 * Fork the project.
