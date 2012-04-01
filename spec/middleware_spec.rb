@@ -196,7 +196,7 @@ describe PDFKit::Middleware do
       end
     end
 
-    describe "remove .pdf from PATH_INFO and REQUEST_URI" do
+    describe "remove .pdf from PATH_INFO and REQUEST_URI in standard" do
       before { mock_app }
 
       context "matching" do
@@ -204,6 +204,24 @@ describe PDFKit::Middleware do
           get 'http://www.example.org/public/file.pdf'
           @env["PATH_INFO"].should == "/public/file"
           @env["REQUEST_URI"].should == "/public/file"
+        end
+        specify do
+          get 'http://www.example.org/public/file.txt'
+          @env["PATH_INFO"].should == "/public/file.txt"
+          @env["REQUEST_URI"].should be_nil
+        end
+      end
+
+    end
+
+    describe "do not remove .pdf from PATH_INFO and REQUEST_URI in extension" do
+      before { mock_app({}, :pdf_layout => true) }
+
+      context "matching" do
+        specify do
+          get 'http://www.example.org/public/file.pdf'
+          @env["PATH_INFO"].should == "/public/file.pdf"
+          @env["REQUEST_URI"].should == "/public/file.pdf"
         end
         specify do
           get 'http://www.example.org/public/file.txt'
