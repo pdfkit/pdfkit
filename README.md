@@ -118,6 +118,9 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
    root_url configuration may be what you are looking for change your
    asset host.
 
+*  **Mangled output in the browser:** Be sure that your HTTP response
+   headers specify "Content-Type: application/pdf" 
+
 ## Note on Patches/Pull Requests
 
 * Fork the project.
