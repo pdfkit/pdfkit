@@ -27,7 +27,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     kit = PDFKit.new(html, :page_size => 'Letter')
     kit.stylesheets << '/path/to/css/file'
 
-    # Git an inline PDF
+    # Get an inline PDF
     pdf = kit.to_pdf
 
     # Save the PDF to a file
