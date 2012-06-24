@@ -1,7 +1,9 @@
 require 'spec_helper'
 
 describe PDFKit::Generator do
-  subject {PDFKit.generator}
+  let(:pdfkit_generator_class)  {PDFKit::Generator}
+  let(:pdfkit_generator)        {PDFKit.generator}
+  let(:pdfkit_configurations)   {PDFKit.configuration.default_options}
   before :all do
     @default_dir_path = File.join 'documents'
     @tmp_dir_path     = File.join 'pdfkit'
