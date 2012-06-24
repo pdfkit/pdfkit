@@ -38,6 +38,12 @@ class PDFKit
         def default_directory_path
           @__default_directory_path__ ||= PDFKit.configuration.default_options[:default_directory_path] || File.join('documents')
         end
+        # create the directory that will hold the generated pdf documents
+        #
+        # @return [Path] directory created for the generated pdf documents
+        def default_directory_creation
+          FileUtils.mkdir_p(default_directory_path)
+        end
       end
   end
 end
