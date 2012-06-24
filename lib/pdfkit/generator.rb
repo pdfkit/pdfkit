@@ -44,6 +44,12 @@ class PDFKit
         def default_directory_creation
           FileUtils.mkdir_p(default_directory_path)
         end
+        # return the temporary path for pdf_kit files support
+        #
+        # @return [Path] temporary directory path to use for pdfkit environment
+        def temporary_directory_path
+          @__temporary_directory_path__ ||= PDFKit.configuration.default_options[:support_directory_path] || File.join('pdfkit')
+        end
       end
   end
 end
