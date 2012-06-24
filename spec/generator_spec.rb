@@ -49,4 +49,25 @@ describe PDFKit::Generator do
       directories_down_precondition
     end
   end
+  describe "#pdf_kit_temporary_directory_path" do
+    before(:each) do # because we are testing class methods with cache ;)
+        PDFKit.send(:remove_const, 'Generator')
+        load './lib/pdfkit/generator.rb'
+    end
+    it "should return the path used by pdfkit to create the support files" do
+      pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
+    end
+    it "should return the path from PDFKit configurations in initializer" do
+      _pdfkit_configuration_default_path = File.join('pdfkit2')
+      pdfkit_configurations.stub!(:[]).with(:support_directory_path).and_return(_pdfkit_configuration_default_path)
+      # cant use subject because method was called in a previous test and so cache is set
+      pdfkit_generator_class.send(:temporary_directory_path).should == _pdfkit_configuration_default_path
+    end
+    it "should cache the path used by pdfkit to create the support files" do
+      File.should_receive(:join).once.with('pdfkit').and_return(@tmp_dir_path)
+      pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
+      # second call to test cache
+      pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
+    end
+  end
 end
