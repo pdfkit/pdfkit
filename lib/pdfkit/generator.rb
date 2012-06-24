@@ -28,5 +28,16 @@ class PDFKit
         @__pdfkit_generator__ ||= new
       end
     end
+
+    private
+      class << self
+        # return the path where generated document files are going to be saved
+        #
+        # @return [Path] path where generated pdf file is to be saved
+        #
+        def default_directory_path
+          @__default_directory_path__ ||= PDFKit.configuration.default_options[:default_directory_path] || File.join('documents')
+        end
+      end
   end
 end
