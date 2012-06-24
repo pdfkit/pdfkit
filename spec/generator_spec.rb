@@ -11,6 +11,11 @@ describe PDFKit::Generator do
     @header_path      = File.join @tmp_dir_path, 'header_support_file.html'
     @footer_path      = File.join @tmp_dir_path, 'footer_support_file.html'
   end
+  # precondition methods assurance
+  def directories_down_precondition
+    FileUtils.rm_rf(@default_dir_path)
+    File.directory?(@default_dir_path).should be_false
+  end
   describe "#default_directory_path" do
     before(:each) do # because we are testing class methods with cache ;)
         PDFKit.send(:remove_const, 'Generator')
@@ -30,6 +35,18 @@ describe PDFKit::Generator do
       pdfkit_generator_class.send(:default_directory_path).should == @default_dir_path
       # second call to test cache
       pdfkit_generator_class.send(:default_directory_path).should == @default_dir_path
+    end
+  end
+  describe "#default_directory_creation" do
+    it "should create the directory used by pdfkit to create the support files" do
+      # precondition
+      directories_down_precondition
+
+      pdfkit_generator_class.send(:default_directory_creation)
+      File.directory?(@default_dir_path).should be_true
+
+      # remove creted directory
+      directories_down_precondition
     end
   end
 end
