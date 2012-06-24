@@ -15,6 +15,8 @@ describe PDFKit::Generator do
   def directories_down_precondition
     FileUtils.rm_rf(@default_dir_path)
     File.directory?(@default_dir_path).should be_false
+    FileUtils.rm_rf(@tmp_dir_path)
+    File.directory?(@tmp_dir_path).should be_false
   end
   describe "#default_directory_path" do
     before(:each) do # because we are testing class methods with cache ;)
@@ -68,6 +70,15 @@ describe PDFKit::Generator do
       pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
       # second call to test cache
       pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
+    end
+  end
+  describe "#pdf_kit_temporary_directory_creation" do
+    it "should create the directory used by pdfkit to create the support files" do
+      # precondition
+      directories_down_precondition
+
+      pdfkit_generator_class.send(:temporary_directory_creation)
+      File.directory?(@tmp_dir_path).should be_true
     end
   end
 end
