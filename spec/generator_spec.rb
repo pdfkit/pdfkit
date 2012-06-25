@@ -115,4 +115,16 @@ describe PDFKit::Generator do
       pdfkit_generator_class.send(:temporary_file_paths)
     end
   end
+  describe "#temporary_files_creation" do
+    it "should create the temporary files to support pdf kit" do
+      # precondition
+      directories_down_precondition
+
+      pdfkit_generator_class.send(:temporary_files_creation)
+
+      %W{cover_support_file.html header_support_file.html footer_support_file.html}.each do |file_name|
+        File.exists?(File.join(@tmp_dir_path,file_name)).should be_true
+      end
+    end
+  end
 end
