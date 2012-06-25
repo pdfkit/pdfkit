@@ -22,10 +22,10 @@ def files_up_precondition
   File.exists?(@footer_path).should be_true
 end
 # methods need for options_for_pdfkit and method print
-def directory_path
+def default_directory_path
   File.join('documents')
 end
-def temporary_path
+def temporary_directory_path
   File.join('printer')
 end
 def create_temporary_folder
@@ -35,22 +35,22 @@ def destroy_temporary_folder
   FileUtils.rm_rf temporary_path
 end
 def path_to_document_cover_html_file
-  File.join(temporary_path, 'cover.html')
+  File.join(temporary_directory_path, 'cover.html')
 end
 def path_to_document_header_html_file
-  File.join(temporary_path, 'header.html')
+  File.join(temporary_directory_path, 'header.html')
 end
 def path_to_document_body_html_file
-  File.join(temporary_path, 'body.html')
+  File.join(temporary_directory_path, 'body.html')
 end
 def path_to_document_footer_html_file
-  File.join(temporary_path, 'footer.html')
+  File.join(temporary_directory_path, 'footer.html')
 end
 def path_to_document_pdf
-  Pathname.new(File.join(temporary_path, 'document.pdf'))
+  Pathname.new(File.join(temporary_directory_path, 'document.pdf'))
 end
 def delete_default_directory
-  FileUtils.rm_rf directory_path
+  FileUtils.rm_rf default_directory_path
 end
 def create_document_cover_html_file
   File.open(path_to_document_cover_html_file, 'w') {|f| f.write(path_to_document_cover_html_file)}
