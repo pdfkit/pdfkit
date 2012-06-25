@@ -11,6 +11,11 @@ describe PDFKit::Generator do
     @header_path      = File.join @tmp_dir_path, 'header_support_file.html'
     @footer_path      = File.join @tmp_dir_path, 'footer_support_file.html'
   end
+  # clean cache
+  def clean_cache
+    PDFKit.send(:remove_const, 'Generator')
+    load './lib/pdfkit/generator.rb'
+  end
   # precondition methods assurance
   def directories_down_precondition
     FileUtils.rm_rf(@default_dir_path)
