@@ -17,6 +17,12 @@ describe PDFKit::Generator do
     load './lib/pdfkit/generator.rb'
   end
   # precondition methods assurance
+  def directories_up_precondition
+    FileUtils.mkdir_p(@tmp_dir_path)
+    File.directory?(@tmp_dir_path).should be_true
+    FileUtils.mkdir_p(@default_dir_path)
+    File.directory?(@default_dir_path).should be_true
+  end
   def directories_down_precondition
     FileUtils.rm_rf(@default_dir_path)
     File.directory?(@default_dir_path).should be_false
