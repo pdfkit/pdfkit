@@ -90,4 +90,13 @@ describe PDFKit::Generator do
       File.directory?(@tmp_dir_path).should be_true
     end
   end
+  describe "#temporary_directory_deletion" do
+    it "should delete the directory used by pdfkit to create the support files" do
+      # precondition
+      directories_up_precondition
+
+      pdfkit_generator_class.send(:temporary_directory_deletion)
+      File.directory?(@tmp_dir_path).should be_false
+    end
+  end
 end
