@@ -123,6 +123,25 @@ class PDFKit
           # so no need to call pdf_kit_temporary_files_deletion
           temporary_directory_deletion
         end
+        # options used by pdfkit for create the document
+        #
+        #  @param [String] _title_ document title
+        #  @param [Hash] _document_configurations_ with the document pages configurations
+        #    - such as page size, margins, etc...
+        #  @return [Hash] with the options to be set on to be generated pdf document
+        def options_for_pdf_kit(_title_, _document_configurations_, _document_parts_)
+          # TODO: check if _title_ can be retrieved from _document_parts_
+          # inject the documents here
+          _options = {}.merge(PDFKit.configuration.default_options)
+          _options.merge!(_document_configurations_)
+          _document_parts = _document_parts_.nil? ?  temporary_file_paths : _document_parts_
+          _options.merge!({
+            :cover       => _document_parts[:cover],
+            :header_html => _document_parts[:header],
+            :footer_html => _document_parts[:footer],
+            :title       => _title_,
+          })
+        end
       end
   end
 end
