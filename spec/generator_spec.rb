@@ -162,4 +162,21 @@ describe PDFKit::Generator do
       File.exists?(@footer_path).should be_false
     end
   end
+  describe "#pdf_kit_set" do
+    context "should set the environment to support pdf kit in generating the pdf document" do
+      it "should create the pdf kit temporary directory" do
+        # precondition
+        directories_down_precondition
+
+        pdfkit_generator_class.send(:set_environment)
+        File.directory?(@tmp_dir_path).should be_true
+      end
+      it "should create the necessary pdf kit temporary files" do
+        pdfkit_generator_class.send(:set_environment)
+        File.exists?(@cover_path).should be_true
+        File.exists?(@header_path).should be_true
+        File.exists?(@footer_path).should be_true
+      end
+    end
+  end
 end
