@@ -117,6 +117,12 @@ class PDFKit
           # create the files
           temporary_files_creation # required temporary directory will be created by the method call
         end
+        # delete pdfkit support environment
+        def unset_environment
+          # remove temporary directory and all its contents
+          # so no need to call pdf_kit_temporary_files_deletion
+          temporary_directory_deletion
+        end
       end
   end
 end
