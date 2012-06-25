@@ -179,4 +179,20 @@ describe PDFKit::Generator do
       end
     end
   end
+  describe "#pdf_kit_unset" do
+    context "should unset the environment to support pdf kit in generating the pdf document" do
+      it "should delete the pdf kit support files with the pdf kit folder" do
+        # precondition
+        pdfkit_generator_class.send(:temporary_files_creation)
+        File.directory?(@tmp_dir_path).should be_true
+        files_up_precondition
+
+        pdfkit_generator_class.send(:unset_environment)
+        File.directory?(@tmp_dir_path).should be_false
+        File.exists?(@cover_path).should be_false
+        File.exists?(@header_path).should be_false
+        File.exists?(@footer_path).should be_false
+      end
+    end
+  end
 end
