@@ -34,6 +34,43 @@ describe PDFKit::Generator do
     File.exists?(@header_path).should be_true
     File.exists?(@footer_path).should be_true
   end
+  # methods need for options_for_pdfkit and method print
+  def temporary_path
+    File.join('printer')
+  end
+  def create_temporary_folder
+    FileUtils.mkdir_p temporary_path
+  end
+  def destroy_temporary_folder
+    FileUtils.rm_rf temporary_path
+  end
+  def path_to_document_cover_html_file
+    File.join(temporary_path, 'cover.html')
+  end
+  def path_to_document_header_html_file
+    File.join(temporary_path, 'header.html')
+  end
+  def path_to_document_body_html_file
+    File.join(temporary_path, 'body.html')
+  end
+  def path_to_document_footer_html_file
+    File.join(temporary_path, 'footer.html')
+  end
+  def path_to_document_pdf
+    Pathname.new(File.join(temporary_path, 'document.pdf'))
+  end
+  def create_document_cover_html_file
+    File.open(path_to_document_cover_html_file, 'w') {|f| f.write(path_to_document_cover_html_file)}
+  end
+  def create_document_header_html_file
+    File.open(path_to_document_header_html_file, 'w') {|f| f.write(path_to_document_header_html_file)}
+  end
+  def create_document_body_html_file
+    File.open(path_to_document_body_html_file, 'w') {|f| f.write(path_to_document_body_html_file)}
+  end
+  def create_document_footer_html_file
+    File.open(path_to_document_footer_html_file, 'w') {|f| f.write(path_to_document_footer_html_file)}
+  end
   describe "#default_directory_path" do
     before(:each) do # because we are testing class methods with cache ;)
       clean_cache
