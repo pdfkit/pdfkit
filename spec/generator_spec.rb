@@ -25,8 +25,7 @@ describe PDFKit::Generator do
   end
   describe "#default_directory_path" do
     before(:each) do # because we are testing class methods with cache ;)
-        PDFKit.send(:remove_const, 'Generator')
-        load './lib/pdfkit/generator.rb'
+      clean_cache
     end
     it "should return the default directory path" do
       pdfkit_generator_class.send(:default_directory_path).should == @default_dir_path
@@ -58,8 +57,7 @@ describe PDFKit::Generator do
   end
   describe "#pdf_kit_temporary_directory_path" do
     before(:each) do # because we are testing class methods with cache ;)
-        PDFKit.send(:remove_const, 'Generator')
-        load './lib/pdfkit/generator.rb'
+      clean_cache
     end
     it "should return the path used by pdfkit to create the support files" do
       pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
