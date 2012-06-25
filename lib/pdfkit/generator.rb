@@ -142,6 +142,24 @@ class PDFKit
             :title       => _title_,
           })
         end
+        # return the document path to be used in the generation of the pdf file
+        #
+        # @param [String] _pdf_document_path_or_name_ with the desired name for the pdf document to be generated or
+        #   the complete path for the pdf document to be generated
+        # @raise [ArgumentError] when _pdf_document_path_or_name_ is not of type String or Pathname
+        def document_path(_pdf_document_path_or_name_)
+          # When _pdf_document_path_or_name_ is of type String or Pathname
+          _argument_error_message = 'first argument should be the document full storage path of type Pathname or the document name'
+          raise ArgumentError, _argument_error_message unless _pdf_document_path_or_name_.is_a? String or _pdf_document_path_or_name_.is_a? Pathname
+
+          # create directory if it is not created before
+          default_directory_creation
+
+          # check if document name was given
+          return _pdf_document_path_or_name_.to_s if _pdf_document_path_or_name_.include? default_directory_path
+
+          File.join(default_directory_path, _pdf_document_path_or_name_)
+        end
       end
   end
 end
