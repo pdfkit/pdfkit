@@ -90,6 +90,21 @@ class PDFKit
             File.open(temporary_file_paths[file_name.to_sym], 'w')
           end
         end
+        # injects the content necessary into the support files
+        #   pdfkit uses to support its document creation
+        #
+        # @param [File]
+        # @return [Nil]
+        def temporary_files_injection(_cover_html_, _header_html_, _footer_html_)
+          # if files were not created before
+          temporary_files_creation
+          # inject content
+          File.open(temporary_file_paths[:cover], 'w')  {|f| f.write(_cover_html_)}
+          File.open(temporary_file_paths[:header], 'w') {|f| f.write(_header_html_)}
+          File.open(temporary_file_paths[:footer], 'w') {|f| f.write(_footer_html_)}
+
+          nil
+        end
       end
   end
 end
