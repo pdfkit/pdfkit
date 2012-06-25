@@ -64,6 +64,19 @@ class PDFKit
         def temporary_directory_deletion
           FileUtils.rm_rf(temporary_directory_path)
         end
+        # returns the pdf kit support files paths
+        #
+        # @return [Hash] with the support files paths
+        def temporary_file_paths
+          return @file_names_path unless @file_names_path.nil? || @file_names_path.empty?
+
+          @file_names_path = {}
+          %W{cover header footer}.each do |file_name|
+            _file_path = File.join(temporary_directory_path, "#{file_name}_support_file.html")
+            @file_names_path.merge!({"#{file_name}".to_sym => _file_path})
+          end
+          @file_names_path
+        end
       end
   end
 end
