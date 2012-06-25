@@ -232,4 +232,62 @@ describe PDFKit::Generator do
       end
     end
   end
+  describe "#options_for_pdf_kit" do
+    it "should set the options to pdf kit generate the pdf document out of strings" do
+      # set the pdf kit environment
+      pdfkit_generator_class.send(:set_environment)
+
+      _project_license_data = {:title => 'the title'}
+
+      _document_parts = {:title => 'the title', :cover => @cover_path, :header => @header_path, :footer => @footer_path}
+      _document_configurations = {:outline => true, :'margin-bottom' => 15, :'margin-top' => 15,
+                                  :'footer-spacing' => 5, :'header-spacing' => 5}
+
+      _options = pdfkit_generator_class.send(:options_for_pdf_kit, _document_parts[:title], _document_configurations, nil)
+
+      _options[:cover].should             == @cover_path
+      _options[:header_html].should       == @header_path
+      _options[:footer_html].should       == @footer_path
+      _options[:title].should             == 'the title'
+      _options[:outline].should be_true
+      _options[:'margin-top'].should      == 15
+      _options[:'margin-bottom'].should   == 15
+      _options[:'header-spacing'].should  == 5
+      _options[:'footer-spacing'].should  == 5
+
+      # unset the pdf kit environment
+      pdfkit_generator_class.send(:unset_environment)
+    end
+    it "should set the options to pdf kit generate the pdf document out of html files provided to the method call" do
+      _document_parts = {
+        :title => 'the title',
+        :cover => path_to_document_cover_html_file,
+        :header => path_to_document_header_html_file,
+        :footer => path_to_document_footer_html_file
+      }
+
+      _document_configurations = {:outline => true, :'margin-bottom' => 15, :'margin-top' => 15,
+                                  :'footer-spacing' => 5, :'header-spacing' => 5}
+
+      _options = pdfkit_generator_class.send(:options_for_pdf_kit, _document_parts[:title], _document_configurations, _document_parts)
+
+      _options[:cover].should             == path_to_document_cover_html_file
+      _options[:header_html].should       == path_to_document_header_html_file
+      _options[:footer_html].should       == path_to_document_footer_html_file
+      _options[:title].should             == 'the title'
+      _options[:outline].should be_true
+      _options[:'margin-top'].should      == 15
+      _options[:'margin-bottom'].should   == 15
+      _options[:'header-spacing'].should  == 5
+      _options[:'footer-spacing'].should  == 5
+    end
+    it "should prefer document configurations passed in method arguments than the ones set in pdfkit default options" do
+      PDFKit.configuration.default_options[:page_size].should_not == 'A5'
+      pdfkit_generator_class.send(:options_for_pdf_kit, 'the title', {:page_size => 'A5'}, nil)[:page_size].should == 'A5'
+    end
+    it "should always set cover, header, footer and title according to the configuration set by this module" do
+      PDFKit.configuration.stub!(:default_options).and_return({:header_html => 'bad_header_html'})
+      pdfkit_generator_class.send(:options_for_pdf_kit, 'the title', {:header_html => 'header_html_path'}, nil)[:header_html].should_not == 'bad_header_html'
+    end
+  end
 end
