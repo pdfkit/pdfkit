@@ -127,4 +127,20 @@ describe PDFKit::Generator do
       end
     end
   end
+  describe "#pdf_kit_temporary_files_injection" do
+    it "should inject the stream content into the support files" do
+      # precondition
+      pdfkit_generator_class.send(:temporary_files_creation)
+
+      _cover_content  = "<p>COVER:  CODE SHOULD BE REUSABLE...ALWAYS :D!</p><p>I have said that many times.</p>"
+      _header_content = "<p>HEADER: CODE SHOULD BE REUSABLE...ALWAYS :D!</p><p>I have said that many times.</p>"
+      _footer_content = "<p>FOOTER: CODE SHOULD BE REUSABLE...ALWAYS :D!</p><p>I have said that many times.</p>"
+
+      pdfkit_generator_class.send(:temporary_files_injection, _cover_content, _header_content, _footer_content)
+
+      File.read(@cover_path).should  == _cover_content
+      File.read(@header_path).should == _header_content
+      File.read(@footer_path).should == _footer_content
+    end
+  end
 end
