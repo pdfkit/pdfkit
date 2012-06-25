@@ -99,4 +99,20 @@ describe PDFKit::Generator do
       File.directory?(@tmp_dir_path).should be_false
     end
   end
+  describe "#temporary_files_path" do
+    before(:each) do # because we are testing class methods with cache ;)
+      clean_cache
+    end
+    it "should return the temporary files path" do
+      # cant use subject because method was called in a previous test and so cache is set
+      pdfkit_generator_class.send(:temporary_file_paths).should == {:cover => @cover_path, :header => @header_path, :footer => @footer_path}
+    end
+    it "should return the cached support file paths" do
+      pdfkit_generator_class.should_receive(:temporary_directory_path).exactly(3).times.and_return(@tmp_dir_path)
+
+      pdfkit_generator_class.send(:temporary_file_paths)
+      # second call to test cache
+      pdfkit_generator_class.send(:temporary_file_paths)
+    end
+  end
 end
