@@ -57,6 +57,13 @@ class PDFKit
         def temporary_directory_creation
           FileUtils.mkdir_p(temporary_directory_path)
         end
+        # deletes the temporary directory path where temporary html files
+        #   created for pdf kit were put
+        #
+        # @return [Fixnum]
+        def temporary_directory_deletion
+          FileUtils.rm_rf(temporary_directory_path)
+        end
       end
   end
 end
