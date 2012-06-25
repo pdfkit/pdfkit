@@ -29,6 +29,11 @@ describe PDFKit::Generator do
     FileUtils.rm_rf(@tmp_dir_path)
     File.directory?(@tmp_dir_path).should be_false
   end
+  def files_up_precondition
+    File.exists?(@cover_path).should be_true
+    File.exists?(@header_path).should be_true
+    File.exists?(@footer_path).should be_true
+  end
   describe "#default_directory_path" do
     before(:each) do # because we are testing class methods with cache ;)
       clean_cache
@@ -141,6 +146,20 @@ describe PDFKit::Generator do
       File.read(@cover_path).should  == _cover_content
       File.read(@header_path).should == _header_content
       File.read(@footer_path).should == _footer_content
+    end
+  end
+  describe "#temporary_files_deletion" do
+    it "should delete the temporary support files created" do
+      # precondition
+      pdfkit_generator_class.send(:temporary_files_creation)
+      files_up_precondition
+
+      # delete files
+      pdfkit_generator_class.send(:temporary_files_deletion)
+      # they should not exist
+      File.exists?(@cover_path).should be_false
+      File.exists?(@header_path).should be_false
+      File.exists?(@footer_path).should be_false
     end
   end
 end
