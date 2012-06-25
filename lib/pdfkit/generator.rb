@@ -77,6 +77,19 @@ class PDFKit
           end
           @file_names_path
         end
+        # creates the support temporary files necessary to the creation
+        #   of the document by pdfkit
+        #
+        # @note required directory will be created in case it does not exist yet
+        def temporary_files_creation
+          # if directory does not exist create it
+          temporary_directory_creation
+
+          # create the temporary files
+          %W{cover header footer}.each do |file_name|
+            File.open(temporary_file_paths[file_name.to_sym], 'w')
+          end
+        end
       end
   end
 end
