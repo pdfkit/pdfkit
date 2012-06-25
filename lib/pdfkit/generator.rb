@@ -105,6 +105,13 @@ class PDFKit
 
           nil
         end
+        # deletes the temporary files used by pdfkit to support
+        #   its document creation
+        def temporary_files_deletion
+          Dir.foreach(temporary_directory_path) do |f|
+            File.delete(File.join(temporary_directory_path, f)) unless f == '.' or f == '..'
+          end
+        end
       end
   end
 end
