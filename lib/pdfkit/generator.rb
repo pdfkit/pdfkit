@@ -112,6 +112,11 @@ class PDFKit
             File.delete(File.join(temporary_directory_path, f)) unless f == '.' or f == '..'
           end
         end
+        # create pdfkit support environment
+        def set_environment
+          # create the files
+          temporary_files_creation # required temporary directory will be created by the method call
+        end
       end
   end
 end
