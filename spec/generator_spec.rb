@@ -12,6 +12,9 @@ describe PDFKit::Generator do
     @header_path      = File.join @tmp_dir_path, 'header_support_file.html'
     @footer_path      = File.join @tmp_dir_path, 'footer_support_file.html'
   end
+  after :all do
+    delete_default_directory
+  end
   describe "#default_directory_path" do
     before(:each) do # because we are testing class methods with cache ;)
       clean_cache
