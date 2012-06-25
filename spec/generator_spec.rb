@@ -290,4 +290,23 @@ describe PDFKit::Generator do
       pdfkit_generator_class.send(:options_for_pdf_kit, 'the title', {:header_html => 'header_html_path'}, nil)[:header_html].should_not == 'bad_header_html'
     end
   end
+  describe "#document_path" do
+    before :each do
+      @document_path = File.join('documents','generated_pdf_document.pdf')
+    end
+    it "should raise error due to bad argument type" do
+      _raise_error_message = 'first argument should be the document full storage path of type Pathname or the document name'
+      lambda { pdfkit_generator_class.send(:document_path, 1) }.should raise_error(ArgumentError, _raise_error_message)
+    end
+    context "when only document name is sent" do
+      it "should return the full document path for the pdf document to be generated" do
+        pdfkit_generator_class.send(:document_path, 'generated_pdf_document.pdf').should == @document_path.to_s
+      end
+    end
+    context "when only document full path is sent" do
+      it "should return the full document path for the pdf document to be generated" do
+        pdfkit_generator_class.send(:document_path, @document_path).should == @document_path.to_s
+      end
+    end
+  end
 end
