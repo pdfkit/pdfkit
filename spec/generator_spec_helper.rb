@@ -23,10 +23,10 @@ def files_up_precondition
 end
 # methods need for options_for_pdfkit and method print
 def default_directory_path
-  File.join('documents')
+  Pathname.new join('documents')
 end
 def temporary_directory_path
-  File.join('printer')
+  Pathname.new File.join('printer')
 end
 def create_temporary_folder
   FileUtils.mkdir_p temporary_path
@@ -35,19 +35,19 @@ def destroy_temporary_folder
   FileUtils.rm_rf temporary_path
 end
 def path_to_document_cover_html_file
-  File.join(temporary_directory_path, 'cover.html')
+  Pathname.new File.join(temporary_directory_path, 'cover.html')
 end
 def path_to_document_header_html_file
-  File.join(temporary_directory_path, 'header.html')
+  Pathname.new File.join(temporary_directory_path, 'header.html')
 end
 def path_to_document_body_html_file
-  File.join(temporary_directory_path, 'body.html')
+  Pathname.new File.join(temporary_directory_path, 'body.html')
 end
 def path_to_document_footer_html_file
-  File.join(temporary_directory_path, 'footer.html')
+  Pathname.new File.join(temporary_directory_path, 'footer.html')
 end
 def path_to_document_pdf
-  Pathname.new(File.join(temporary_directory_path, 'document.pdf'))
+  Pathname.new File.join(temporary_directory_path, 'document.pdf')
 end
 def delete_default_directory
   FileUtils.rm_rf default_directory_path
