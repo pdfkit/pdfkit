@@ -1,8 +1,7 @@
 class PDFKit
-  class << self
-    def generator
-      Generator.instance
-    end
+  # @return Generator singleton instance
+  def self.generator
+    Generator.instance
   end
   # The class provides methods for generating a pdf document
   # use PdfKit.generator.generate(...) to generate document
@@ -22,13 +21,12 @@ class PDFKit
   class Generator
     # make new method private to avoid class instanciation from outside
     private_class_method :new
-
-    class << self
-      def instance
-        @__pdfkit_generator__ ||= new
-      end
+    # instanciate the class once to create the singleton instance
+    #
+    # @return [Object] class instance
+    def self.instance
+      @__pdfkit_generator__ ||= new
     end
-
     # builds a the different parts of a document to generate a pdf out of it
     #
     # @param [String] _pdf_document_path_or_name_ indicating the place where to store the pdf generated file or the desired document filename
