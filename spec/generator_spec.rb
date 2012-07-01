@@ -259,4 +259,37 @@ describe PDFKit::Generator do
       end
     end
   end
+  describe "#print" do
+    def set_pre_conditions
+      create_temporary_folder
+      create_document_cover_html_file
+      create_document_header_html_file
+      create_document_body_html_file
+      create_document_footer_html_file
+      create_document_css_file
+    end
+    def unset_pre_conditions
+      destroy_temporary_folder
+    end
+    before :all do
+      @options            = {:margin_top => '0.75in', :margin_right => '0.75in', :margin_bottom => '0.75in', :margin_left => '0.75in',
+                             :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 }
+      @stylesheets_paths  = [path_to_css]
+    end
+    it "should return a contract out of html files" do
+      # create necessary html files to pass to method
+      set_pre_conditions
+
+      _body_content = File.read(path_to_document_body_html_file)
+      @options.merge!({ :title => 'the title', :cover => path_to_document_cover_html_file, :header_html => path_to_document_header_html_file,
+                        :body  => _body_content, :footer_html => path_to_document_footer_html_file})
+
+      _generated_pdf_document = pdfkit_generator_class.send(:print, path_to_document_pdf.to_s, @options, @stylesheets_paths)
+
+      _generated_pdf_document.should be_instance_of File
+
+      # destroy the created necessary html files passed to method
+      unset_pre_conditions
+    end
+  end
 end
