@@ -262,17 +262,6 @@ describe PDFKit::Generator do
       end
     end
     describe "#print" do
-      def set_pre_conditions
-        create_temporary_folder
-        create_document_cover_html_file
-        create_document_header_html_file
-        create_document_body_html_file
-        create_document_footer_html_file
-        create_document_css_file
-      end
-      def unset_pre_conditions
-        destroy_temporary_folder
-      end
       before :all do
         @options            = {:margin_top => '0.75in', :margin_right => '0.75in', :margin_bottom => '0.75in', :margin_left => '0.75in',
                                :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 }
