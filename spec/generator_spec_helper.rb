@@ -29,10 +29,10 @@ def temporary_directory_path
   Pathname.new File.join('printer')
 end
 def create_temporary_folder
-  FileUtils.mkdir_p temporary_path
+  FileUtils.mkdir_p temporary_directory_path
 end
 def destroy_temporary_folder
-  FileUtils.rm_rf temporary_path
+  FileUtils.rm_rf temporary_directory_path
 end
 def path_to_document_cover_html_file
   Pathname.new File.join(temporary_directory_path, 'cover.html')
