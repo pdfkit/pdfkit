@@ -23,7 +23,7 @@ def files_up_precondition
 end
 # methods need for options_for_pdfkit and method print
 def default_directory_path
-  Pathname.new join('documents')
+  Pathname.new File.join('documents')
 end
 def temporary_directory_path
   Pathname.new File.join('printer')
@@ -47,7 +47,7 @@ def path_to_document_footer_html_file
   Pathname.new File.join(temporary_directory_path, 'footer.html')
 end
 def path_to_document_pdf
-  Pathname.new File.join(temporary_directory_path, 'document.pdf')
+  File.join(temporary_directory_path, 'document.pdf')
 end
 def path_to_css
   Pathname.new File.join(temporary_directory_path, 'license.css')
@@ -69,4 +69,15 @@ def create_document_footer_html_file
 end
 def create_document_css_file
   File.open(path_to_css, 'w') {|f| f.write(path_to_css)}
+end
+def set_pre_conditions
+  create_temporary_folder
+  create_document_cover_html_file
+  create_document_header_html_file
+  create_document_body_html_file
+  create_document_footer_html_file
+  create_document_css_file
+end
+def unset_pre_conditions
+  destroy_temporary_folder
 end
