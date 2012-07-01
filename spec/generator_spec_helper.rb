@@ -49,6 +49,9 @@ end
 def path_to_document_pdf
   Pathname.new File.join(temporary_directory_path, 'document.pdf')
 end
+def path_to_css
+  Pathname.new File.join(temporary_directory_path, 'license.css')
+end
 def delete_default_directory
   FileUtils.rm_rf default_directory_path
 end
@@ -63,4 +66,7 @@ def create_document_body_html_file
 end
 def create_document_footer_html_file
   File.open(path_to_document_footer_html_file, 'w') {|f| f.write(path_to_document_footer_html_file)}
+end
+def create_document_css_file
+  File.open(path_to_css, 'w') {|f| f.write(path_to_css)}
 end
