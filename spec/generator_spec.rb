@@ -17,6 +17,26 @@ describe PDFKit::Generator do
   end
 
   context "class methods" do
+    describe "+self.generator" do
+      it "should be instance of Generator" do
+        PDFKit.generator.should be_instance_of PDFKit::Generator
+      end
+    end
+    describe "+self.instance" do
+      it "should not be instanciated directly" do
+        proc {PDFKit::Generator.new}.should raise_error
+      end
+      it "should return an instance of Generator" do
+        PDFKit::Generator.instance.should be_instance_of PDFKit::Generator
+      end
+      it "should not instanciate another object of class Generator" do
+        clean_cache
+        PDFKit::Generator.should_receive(:new).once.and_return('INSTANCE')
+        PDFKit::Generator.instance
+        # second call to test cache
+        PDFKit::Generator.instance.should == 'INSTANCE'
+      end
+    end
     describe "-self.default_directory_path" do
       before(:each) do # because we are testing class methods with cache ;)
         clean_cache
