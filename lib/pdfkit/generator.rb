@@ -63,7 +63,23 @@ class PDFKit
       # return the document
       _document
     end
-
+    # generates a pdf document out of html files, except body part that must be a string
+    #
+    # The difference between this method print and generate method is that of the document parts are passed as HTML FILES
+    # and won't be therefore generated from HTML STRINGS auxiliar methods
+    #
+    # @param [String] _pdf_document_path_ indicating the place where to store the pdf generated file
+    # @note use always .pdf extension in either full storage path or document name
+    # @param [Hash] _options_ with the options to pdf kit including the different document parts html file paths
+    # @param [Array] _stylesheet_path_ path where the stylesheet of the pdf document to be used is stored
+    # @return [File] the pdf document file
+    # @note generated pdf document file path can be obtained by using path method
+    def pdf(_pdf_document_path_, _options_, _stylesheets_paths_)
+      # get the document path for the pdf document to be generated
+      _pdf_document_path = self.class.document_path(_pdf_document_path_or_name_)
+      # generate the document pdf
+      self.class.print(_pdf_document_path, _options, _stylesheets_paths_)
+    end
     private
       class << self
         # return the path where generated document files are going to be saved
