@@ -341,11 +341,11 @@ describe PDFKit::Generator do
           # cache must be clean be class has cached stuff previously
           clean_cache
 
-          _defaut_dir_path = File.join('agreementsxpto')
-          PDFKit.configuration.default_options.stub!(:[]).with(:default_directory_path).and_return(_defaut_dir_path)
+          _default_dir_path = File.join('agreementsxpto')
+          PDFKit.configuration.default_options.stub!(:[]).with(:default_directory_path).and_return(_default_dir_path)
           PDFKit.configuration.default_options.stub!(:[]).with(:support_directory_path).and_return(@tmp_dir_path)
 
-          _document_path = "#{_defaut_dir_path}/the_document_required.pdf"
+          _document_path = "#{_default_dir_path}/the_document_required.pdf"
           # cant use subject because method was called in a previous test and so cache is set
           _document = pdfkit_generator.generate(@document_name, @document_parts, @document_configurations, @stylesheets_paths)
 
@@ -354,8 +354,8 @@ describe PDFKit::Generator do
 
           File.exists?(_document_path).should be_true
           # due to the nature of being a test it should remove the created directory
-          FileUtils.rm_rf(_defaut_dir_path)
-          File.exists?(_defaut_dir_path).should be_false
+          FileUtils.rm_rf(_default_dir_path)
+          File.exists?(_default_dir_path).should be_false
         end
       end
     end
