@@ -17,7 +17,7 @@ describe PDFKit::Generator do
   end
 
   context "class methods" do
-    describe "#default_directory_path" do
+    describe "-self.default_directory_path" do
       before(:each) do # because we are testing class methods with cache ;)
         clean_cache
       end
@@ -37,7 +37,7 @@ describe PDFKit::Generator do
         pdfkit_generator_class.send(:default_directory_path).should == @default_dir_path
       end
     end
-    describe "#default_directory_creation" do
+    describe "-self.default_directory_creation" do
       it "should create the directory used by pdfkit to create the support files" do
         # precondition
         directories_down_precondition
@@ -49,7 +49,7 @@ describe PDFKit::Generator do
         directories_down_precondition
       end
     end
-    describe "#pdf_kit_temporary_directory_path" do
+    describe "-self.temporary_directory_path" do
       before(:each) do # because we are testing class methods with cache ;)
         clean_cache
       end
@@ -69,7 +69,7 @@ describe PDFKit::Generator do
         pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
       end
     end
-    describe "#pdf_kit_temporary_directory_creation" do
+    describe "-self.temporary_directory_creation" do
       it "should create the directory used by pdfkit to create the support files" do
         # precondition
         directories_down_precondition
@@ -78,7 +78,7 @@ describe PDFKit::Generator do
         File.directory?(@tmp_dir_path).should be_true
       end
     end
-    describe "#temporary_directory_deletion" do
+    describe "-self.temporary_directory_deletion" do
       it "should delete the directory used by pdfkit to create the support files" do
         # precondition
         directories_up_precondition
@@ -87,7 +87,7 @@ describe PDFKit::Generator do
         File.directory?(@tmp_dir_path).should be_false
       end
     end
-    describe "#temporary_files_path" do
+    describe "-self.temporary_files_path" do
       before(:each) do # because we are testing class methods with cache ;)
         clean_cache
       end
@@ -103,7 +103,7 @@ describe PDFKit::Generator do
         pdfkit_generator_class.send(:temporary_file_paths)
       end
     end
-    describe "#temporary_files_creation" do
+    describe "-self.temporary_files_creation" do
       it "should create the temporary files to support pdf kit" do
         # precondition
         directories_down_precondition
@@ -115,7 +115,7 @@ describe PDFKit::Generator do
         end
       end
     end
-    describe "#pdf_kit_temporary_files_injection" do
+    describe "-self.pdf_kit_temporary_files_injection" do
       it "should inject the stream content into the support files" do
         # precondition
         pdfkit_generator_class.send(:temporary_files_creation)
@@ -131,7 +131,7 @@ describe PDFKit::Generator do
         File.read(@footer_path).should == _footer_content
       end
     end
-    describe "#temporary_files_deletion" do
+    describe "-self.temporary_files_deletion" do
       it "should delete the temporary support files created" do
         # precondition
         pdfkit_generator_class.send(:temporary_files_creation)
@@ -145,7 +145,7 @@ describe PDFKit::Generator do
         File.exists?(@footer_path).should be_false
       end
     end
-    describe "#pdf_kit_set" do
+    describe "-self.pdf_kit_set" do
       context "should set the environment to support pdf kit in generating the pdf document" do
         it "should create the pdf kit temporary directory" do
           # precondition
@@ -162,7 +162,7 @@ describe PDFKit::Generator do
         end
       end
     end
-    describe "#pdf_kit_unset" do
+    describe "-self.pdf_kit_unset" do
       context "should unset the environment to support pdf kit in generating the pdf document" do
         it "should delete the pdf kit support files with the pdf kit folder" do
           # precondition
@@ -178,7 +178,7 @@ describe PDFKit::Generator do
         end
       end
     end
-    describe "#options_for_pdf_kit" do
+    describe "-self.options_for_pdf_kit" do
       it "should set the options to pdf kit generate the pdf document out of strings" do
         # set the pdf kit environment
         pdfkit_generator_class.send(:set_environment)
@@ -242,7 +242,7 @@ describe PDFKit::Generator do
         _result[:title].should == 'the title'
       end
     end
-    describe "#document_path" do
+    describe "-self.document_path" do
       before :each do
         @document_path = File.join('documents','generated_pdf_document.pdf')
       end
@@ -261,7 +261,7 @@ describe PDFKit::Generator do
         end
       end
     end
-    describe "#print" do
+    describe "-self.print" do
       before :all do
         @options            = {:margin_top => '0.75in', :margin_right => '0.75in', :margin_bottom => '0.75in', :margin_left => '0.75in',
                                :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 }
@@ -285,7 +285,7 @@ describe PDFKit::Generator do
     end
   end
   context "instance methods" do
-    describe "#generate" do
+    describe "+generate" do
       before :all do
         # directory where generated files by this test are going to be temporary stored
         @document_support_directory_path = default_directory_path
