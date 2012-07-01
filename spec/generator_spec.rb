@@ -284,4 +284,81 @@ describe PDFKit::Generator do
       end
     end
   end
+  context "instance methods" do
+    describe "#generate" do
+      before :all do
+        # directory where generated files by this test are going to be temporary stored
+        @document_support_directory_path = default_directory_path
+        @document_name = 'the_document_required.pdf'
+        # use the tmp file to store the generated contract
+        @document_full_storage_path = @document_support_directory_path.join(@document_name).to_s
+
+        @cover_content  = '<p>this is the cover</p>'
+        @header_content = '<p>this is the header</p>'
+        @body_content   = '<p>this is really nice</p>'
+        @footer_content = '<p>this is the footer</p>'
+        # should be in haml and generate makes the conversion
+        @document_parts   = {:title => 'the title', :cover => @cover_content, :header => @header_content, :body => @body_content, :footer => @footer_content}
+        @document_configurations = {:margin_top => '0.75in', :margin_right => '0.75in', :margin_bottom => '0.75in', :margin_left => '0.75in',
+                               :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 }
+
+        @stylesheets_paths = [path_to_css]
+      end
+      before :each do
+        set_pre_conditions
+      end
+      after :each do
+        unset_pre_conditions
+      end
+      context "receiving full path" do
+        it "should raise error when first argument is not of type String or Pathname" do
+          lambda { pdfkit_generator.generate(1, nil, nil, nil) }.should raise_error(ArgumentError, 'first argument should be the document full storage path of type Pathname or the document name')
+        end
+        it "should save a document by using provided full storage path" do
+          set_pre_conditions
+
+          _document = pdfkit_generator.generate(@document_full_storage_path, @document_parts, @document_configurations, @stylesheets_paths)
+
+          _document.path.should == @document_full_storage_path.to_s
+          _document.should be_instance_of File
+
+          File.exists?(@document_full_storage_path).should be_true
+
+          unset_pre_conditions
+        end
+      end
+      context "receiving the document name only" do
+        it "should save a document by using default path" do
+          _document_path = File.join(default_directory_path, @document_name)
+          _document = pdfkit_generator.generate(@document_name, @document_parts, @document_configurations, @stylesheets_paths)
+
+          _document.path.should include(_document_path)
+          _document.should be_instance_of File
+          File.exists?(_document_path).should be_true
+        end
+        it "should save a document in the directory provided in the pdfkit initializer under :default_directory_path" do
+          # precondition
+          # cache must be clean be class has cached stuff previously
+          clean_cache
+
+          _defaut_dir_path = File.join('agreementsxpto')
+          PDFKit.configuration.default_options.stub!(:[]).with(:default_directory_path).and_return(_defaut_dir_path)
+          PDFKit.configuration.default_options.stub!(:[]).with(:support_directory_path).and_return(@tmp_dir_path)
+
+          _document_path = "#{_defaut_dir_path}/the_document_required.pdf"
+          # cant use subject because method was called in a previous test and so cache is set
+          _document = pdfkit_generator.generate(@document_name, @document_parts, @document_configurations, @stylesheets_paths)
+
+          _document.path.should == _document_path
+          _document.should be_instance_of File
+
+          File.exists?(_document_path).should be_true
+          # due to the nature of being a test it should remove the created directory
+          FileUtils.rm_rf(_defaut_dir_path)
+          File.exists?(_defaut_dir_path).should be_false
+        end
+      end
+    end
+
+  end
 end
