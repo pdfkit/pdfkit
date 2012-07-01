@@ -379,6 +379,9 @@ describe PDFKit::Generator do
         end
       end
     end
-
+    describe "+pdf" do
+      it "is specced in the -self.print method test" do
+      end
+    end
   end
 end
