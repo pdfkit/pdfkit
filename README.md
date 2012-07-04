@@ -107,6 +107,14 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
    around this issue you may want to run a server with multiple workers
    like Passenger or try to embed your resources within your HTML to
    avoid extra HTTP requests.
+   
+   Example solution (rails / bundler), add unicorn to the development 
+   group in your Gemfile `gem 'unicorn'` then run `bundle`. Next, add a 
+   file `config/unicorn.conf` with
+   
+        worker_processes 3
+   
+   Then to run the app `unicorn_rails -c config/unicorn.conf` (from rails_root)
 
 *  **Resources aren't included in the PDF:** Images, CSS, or JavaScript
    does not seem to be downloading correctly in the PDF. This is due
