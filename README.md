@@ -96,18 +96,27 @@ PDFKit comes with a middleware that allows users to get a PDF view of any page o
 
 
 ## Generator
-  # This class takes care of easing pdf document generation
-  # Use the method available by this class when generating pdfs
 
-  # In order to get the generator instance call:
-  PDFKit.generator # singleton
+**General**
 
-  # In order to generate a pdf document out of html strings call:
-  PDFKit.generator.generate(_pdf_document_path_or_name_, _document_parts_, _document_configurations_, _stylesheets_paths_)
+    # This class takes care of easing pdf document generation
+    # Use the two methods available by this class when generating pdfs
 
-  # In order to generate a pdf document out of html files call:
-  # body parameter should be a html string anyways
-  PDFKit.generator.pdf(_pdf_document_path_, _options_, _stylesheets_paths_)
+**In order to get the generator instance call:**
+
+    # singleton
+    PDFKit.generator
+
+**In order to generate a pdf document out of html strings call:**
+
+    PDFKit.generator.generate(_pdf_document_path_or_name_, _document_parts_, _document_configurations_, _stylesheets_paths_)
+
+**In order to generate a pdf document out of html files call:**
+
+    # body parameter should be a html string anyways
+    PDFKit.generator.pdf(_pdf_document_path_, _options_, _stylesheets_paths_)
+
+*Note:* Check documentation for more
 
 ## Troubleshooting
 
