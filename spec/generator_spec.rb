@@ -360,7 +360,8 @@ describe PDFKit::Generator do
       end
       context "receiving full path" do
         it "should raise error when first argument is not of type String or Pathname" do
-          lambda { pdfkit_generator.generate(1, nil, nil, nil) }.should raise_error(ArgumentError, 'first argument should be the document full storage path of type Pathname or the document name')
+          _raise_error_message = 'first argument should be the document full storage path of type Pathname or the document name'
+          lambda { pdfkit_generator.generate(1, nil, nil, nil) }.should raise_error(ArgumentError, _raise_error_message)
         end
         it "should save a document by using provided full storage path" do
           set_pre_conditions
