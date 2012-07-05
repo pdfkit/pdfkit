@@ -107,7 +107,12 @@ describe PDFKit::Generator do
       end
       it "should return the temporary files path" do
         # cant use subject because method was called in a previous test and so cache is set
-        pdfkit_generator_class.send(:temporary_file_paths).should == {:cover => path_to_temporary_document_cover_html_file, :header => path_to_temporary_document_header_html_file, :footer => path_to_temporary_document_footer_html_file}
+        _temporary_file_paths = {
+          :cover => path_to_temporary_document_cover_html_file,
+          :header => path_to_temporary_document_header_html_file,
+          :footer => path_to_temporary_document_footer_html_file
+        }
+        pdfkit_generator_class.send(:temporary_file_paths).should == _temporary_file_paths
       end
       it "should return the cached support file paths" do
         pdfkit_generator_class.should_receive(:temporary_directory_path).exactly(3).times.and_return(temporary_directory_path)
@@ -199,9 +204,18 @@ describe PDFKit::Generator do
 
         _project_license_data = {:title => 'the title'}
 
-        _document_parts = {:title => 'the title', :cover => path_to_temporary_document_cover_html_file.to_s, :header => path_to_temporary_document_header_html_file.to_s, :footer => path_to_temporary_document_footer_html_file.to_s}
-        _document_configurations = {:outline => true, :'margin-bottom' => 15, :'margin-top' => 15,
-                                    :'footer-spacing' => 5, :'header-spacing' => 5}
+        _document_parts = {
+          :title => 'the title',
+          :cover => path_to_temporary_document_cover_html_file.to_s,
+          :header => path_to_temporary_document_header_html_file.to_s,
+          :footer => path_to_temporary_document_footer_html_file.to_s
+        }
+        _document_configurations = {
+          :outline => true,
+          :'margin-bottom' => 15,
+          :'margin-top' => 15,
+          :'footer-spacing' => 5, :'header-spacing' => 5
+        }
 
         _options = pdfkit_generator_class.send(:options_for_pdf_kit, _document_parts, _document_configurations)
 
@@ -277,17 +291,26 @@ describe PDFKit::Generator do
     end
     describe "-self.print" do
       before :all do
-        @options            = {:margin_top => '0.75in', :margin_right => '0.75in', :margin_bottom => '0.75in', :margin_left => '0.75in',
-                               :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 }
-        @stylesheets_paths  = [path_to_css]
+        @options = {
+          :margin_top => '0.75in',
+          :margin_right => '0.75in',
+          :margin_bottom => '0.75in',
+          :margin_left => '0.75in',
+          :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 
+        }
+        @stylesheets_paths = [path_to_css]
       end
       it "should return a contract out of html files" do
         # create necessary html files to pass to method
         set_pre_conditions
 
         _body_content = File.read(path_to_document_body_html_file)
-        @options.merge!({ :title => 'the title', :cover => path_to_document_cover_html_file, :header_html => path_to_document_header_html_file,
-                          :body  => _body_content, :footer_html => path_to_document_footer_html_file})
+        @options.merge!({
+          :title => 'the title',
+          :cover => path_to_document_cover_html_file,
+          :header_html => path_to_document_header_html_file,
+          :body  => _body_content, :footer_html => path_to_document_footer_html_file
+        })
 
         _generated_pdf_document = pdfkit_generator_class.send(:print, path_to_document_pdf.to_s, @options, @stylesheets_paths)
 
@@ -312,9 +335,20 @@ describe PDFKit::Generator do
         @body_content   = "<p>this is a body paragraph</p>" * 10
         @footer_content = '<p>this is the footer</p>'
         # should be in haml and generate makes the conversion
-        @document_parts   = {:title => 'the title', :cover => @cover_content, :header => @header_content, :body => @body_content, :footer => @footer_content}
-        @document_configurations = {:margin_top => '0.75in', :margin_right => '0.75in', :margin_bottom => '0.75in', :margin_left => '0.75in',
-                               :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 }
+        @document_parts = {
+          :title => 'the title',
+          :cover => @cover_content,
+          :header => @header_content,
+          :body => @body_content,
+          :footer => @footer_content
+        }
+        @document_configurations = {
+          :margin_top => '0.75in',
+          :margin_right => '0.75in',
+          :margin_bottom => '0.75in',
+          :margin_left => '0.75in',
+          :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5
+        }
 
         @stylesheets_paths = Array(path_to_css)
       end
