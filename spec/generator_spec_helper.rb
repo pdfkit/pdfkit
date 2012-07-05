@@ -34,6 +34,15 @@ end
 def destroy_temporary_folder
   FileUtils.rm_rf temporary_directory_path
 end
+def path_to_temporary_document_cover_html_file
+  @path_to_temporary_document_cover_html_file ||= temporary_directory_path.join('cover_support_file.html')
+end
+def path_to_temporary_document_header_html_file
+  @path_to_temporary_document_header_html_file ||= temporary_directory_path.join('header_support_file.html')
+end
+def path_to_temporary_document_footer_html_file
+  @path_to_temporary_document_footer_html_file ||= temporary_directory_path.join('footer_support_file.html')
+end
 def path_to_document_cover_html_file
   @path_to_document_cover_html_file ||= temporary_directory_path.join('cover.html')
 end
