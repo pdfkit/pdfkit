@@ -5,17 +5,9 @@ describe PDFKit::Generator do
   let(:pdfkit_generator_class)  {PDFKit::Generator}
   let(:pdfkit_generator)        {PDFKit.generator}
   let(:pdfkit_configurations)   {PDFKit.configuration.default_options}
-  before :all do
-    @default_dir_path = File.join 'documents'
-    @tmp_dir_path     = File.join 'pdfkit'
-    @cover_path       = File.join @tmp_dir_path, 'cover_support_file.html'
-    @header_path      = File.join @tmp_dir_path, 'header_support_file.html'
-    @footer_path      = File.join @tmp_dir_path, 'footer_support_file.html'
-  end
   after :all do
     delete_default_directory
   end
-
   context "class methods" do
     describe "+self.generator" do
       it "should be instance of Generator" do
@@ -38,23 +30,24 @@ describe PDFKit::Generator do
       end
     end
     describe "-self.default_directory_path" do
-      before(:each) do # because we are testing class methods with cache ;)
-        clean_cache
+      before(:each) do
+        clean_cache # because we are testing class methods with cache ;)
       end
       it "should return the default directory path" do
-        pdfkit_generator_class.send(:default_directory_path).should == @default_dir_path
+        pdfkit_generator_class.send(:default_directory_path).should == default_directory_path
       end
       it "should return the path from PDFKit configurations in initializer" do
-        _pdfkit_configuration_default_path = File.join('documents2')
+        _pdfkit_configuration_default_path = Pathname.new(File.join('documents2'))
         pdfkit_configurations.stub!(:[], :default_directory_path).and_return(_pdfkit_configuration_default_path)
         # cant use subject because method was called in a previous test and so cache is set
         pdfkit_generator_class.default_directory_path.should == _pdfkit_configuration_default_path
       end
       it "should cache the path used by pdf" do
-        File.should_receive(:join).once.with('documents').and_return(@default_dir_path)
-        pdfkit_generator_class.send(:default_directory_path).should == @default_dir_path
+        _default_directory_path = default_directory_path
+        Pathname.should_receive(:new).once.with('documents').and_return(_default_directory_path)
+        pdfkit_generator_class.send(:default_directory_path).should == default_directory_path
         # second call to test cache
-        pdfkit_generator_class.send(:default_directory_path).should == @default_dir_path
+        pdfkit_generator_class.send(:default_directory_path).should == default_directory_path
       end
     end
     describe "-self.default_directory_creation" do
@@ -63,7 +56,7 @@ describe PDFKit::Generator do
         directories_down_precondition
 
         pdfkit_generator_class.send(:default_directory_creation)
-        File.directory?(@default_dir_path).should be_true
+        File.directory?(default_directory_path).should be_true
 
         # remove creted directory
         directories_down_precondition
@@ -74,7 +67,7 @@ describe PDFKit::Generator do
         clean_cache
       end
       it "should return the path used by pdfkit to create the support files" do
-        pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
+        pdfkit_generator_class.send(:temporary_directory_path).should == temporary_directory_path
       end
       it "should return the path from PDFKit configurations in initializer" do
         _pdfkit_configuration_default_path = File.join('pdfkit2')
@@ -83,10 +76,11 @@ describe PDFKit::Generator do
         pdfkit_generator_class.send(:temporary_directory_path).should == _pdfkit_configuration_default_path
       end
       it "should cache the path used by pdfkit to create the support files" do
-        File.should_receive(:join).once.with('pdfkit').and_return(@tmp_dir_path)
-        pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
+        _temporary_directory_path = temporary_directory_path
+        Pathname.should_receive(:new).once.with('pdfkit').and_return(_temporary_directory_path)
+        pdfkit_generator_class.send(:temporary_directory_path).should == temporary_directory_path
         # second call to test cache
-        pdfkit_generator_class.send(:temporary_directory_path).should == @tmp_dir_path
+        pdfkit_generator_class.send(:temporary_directory_path).should == temporary_directory_path
       end
     end
     describe "-self.temporary_directory_creation" do
@@ -95,7 +89,7 @@ describe PDFKit::Generator do
         directories_down_precondition
 
         pdfkit_generator_class.send(:temporary_directory_creation)
-        File.directory?(@tmp_dir_path).should be_true
+        File.directory?(temporary_directory_path).should be_true
       end
     end
     describe "-self.temporary_directory_deletion" do
@@ -104,7 +98,7 @@ describe PDFKit::Generator do
         directories_up_precondition
 
         pdfkit_generator_class.send(:temporary_directory_deletion)
-        File.directory?(@tmp_dir_path).should be_false
+        File.directory?(temporary_directory_path).should be_false
       end
     end
     describe "-self.temporary_files_path" do
@@ -113,10 +107,10 @@ describe PDFKit::Generator do
       end
       it "should return the temporary files path" do
         # cant use subject because method was called in a previous test and so cache is set
-        pdfkit_generator_class.send(:temporary_file_paths).should == {:cover => @cover_path, :header => @header_path, :footer => @footer_path}
+        pdfkit_generator_class.send(:temporary_file_paths).should == {:cover => path_to_temporary_document_cover_html_file, :header => path_to_temporary_document_header_html_file, :footer => path_to_temporary_document_footer_html_file}
       end
       it "should return the cached support file paths" do
-        pdfkit_generator_class.should_receive(:temporary_directory_path).exactly(3).times.and_return(@tmp_dir_path)
+        pdfkit_generator_class.should_receive(:temporary_directory_path).exactly(3).times.and_return(temporary_directory_path)
 
         pdfkit_generator_class.send(:temporary_file_paths)
         # second call to test cache
@@ -131,7 +125,7 @@ describe PDFKit::Generator do
         pdfkit_generator_class.send(:temporary_files_creation)
 
         %W{cover_support_file.html header_support_file.html footer_support_file.html}.each do |file_name|
-          File.exists?(File.join(@tmp_dir_path,file_name)).should be_true
+          File.exists?(File.join(temporary_directory_path,file_name)).should be_true
         end
       end
     end
@@ -146,9 +140,9 @@ describe PDFKit::Generator do
 
         pdfkit_generator_class.send(:temporary_files_injection, _cover_content, _header_content, _footer_content)
 
-        File.read(@cover_path).should  == _cover_content
-        File.read(@header_path).should == _header_content
-        File.read(@footer_path).should == _footer_content
+        File.read(path_to_temporary_document_cover_html_file).should  == _cover_content
+        File.read(path_to_temporary_document_header_html_file).should == _header_content
+        File.read(path_to_temporary_document_footer_html_file).should == _footer_content
       end
     end
     describe "-self.temporary_files_deletion" do
@@ -160,9 +154,9 @@ describe PDFKit::Generator do
         # delete files
         pdfkit_generator_class.send(:temporary_files_deletion)
         # they should not exist
-        File.exists?(@cover_path).should be_false
-        File.exists?(@header_path).should be_false
-        File.exists?(@footer_path).should be_false
+        File.exists?(path_to_temporary_document_cover_html_file).should be_false
+        File.exists?(path_to_temporary_document_header_html_file).should be_false
+        File.exists?(path_to_temporary_document_footer_html_file).should be_false
       end
     end
     describe "-self.pdf_kit_set" do
@@ -172,13 +166,13 @@ describe PDFKit::Generator do
           directories_down_precondition
 
           pdfkit_generator_class.send(:set_environment)
-          File.directory?(@tmp_dir_path).should be_true
+          File.directory?(temporary_directory_path).should be_true
         end
         it "should create the necessary pdf kit temporary files" do
           pdfkit_generator_class.send(:set_environment)
-          File.exists?(@cover_path).should be_true
-          File.exists?(@header_path).should be_true
-          File.exists?(@footer_path).should be_true
+          File.exists?(path_to_temporary_document_cover_html_file).should be_true
+          File.exists?(path_to_temporary_document_header_html_file).should be_true
+          File.exists?(path_to_temporary_document_footer_html_file).should be_true
         end
       end
     end
@@ -187,14 +181,14 @@ describe PDFKit::Generator do
         it "should delete the pdf kit support files with the pdf kit folder" do
           # precondition
           pdfkit_generator_class.send(:temporary_files_creation)
-          File.directory?(@tmp_dir_path).should be_true
+          File.directory?(temporary_directory_path).should be_true
           files_up_precondition
 
           pdfkit_generator_class.send(:unset_environment)
-          File.directory?(@tmp_dir_path).should be_false
-          File.exists?(@cover_path).should be_false
-          File.exists?(@header_path).should be_false
-          File.exists?(@footer_path).should be_false
+          File.directory?(temporary_directory_path).should be_false
+          File.exists?(path_to_temporary_document_cover_html_file).should be_false
+          File.exists?(path_to_temporary_document_header_html_file).should be_false
+          File.exists?(path_to_temporary_document_footer_html_file).should be_false
         end
       end
     end
@@ -205,15 +199,15 @@ describe PDFKit::Generator do
 
         _project_license_data = {:title => 'the title'}
 
-        _document_parts = {:title => 'the title', :cover => @cover_path.to_s, :header => @header_path.to_s, :footer => @footer_path.to_s}
+        _document_parts = {:title => 'the title', :cover => path_to_temporary_document_cover_html_file.to_s, :header => path_to_temporary_document_header_html_file.to_s, :footer => path_to_temporary_document_footer_html_file.to_s}
         _document_configurations = {:outline => true, :'margin-bottom' => 15, :'margin-top' => 15,
                                     :'footer-spacing' => 5, :'header-spacing' => 5}
 
         _options = pdfkit_generator_class.send(:options_for_pdf_kit, _document_parts, _document_configurations)
 
-        _options[:cover].should             == @cover_path
-        _options[:header_html].should       == @header_path
-        _options[:footer_html].should       == @footer_path
+        _options[:cover].should             == path_to_temporary_document_cover_html_file
+        _options[:header_html].should       == path_to_temporary_document_header_html_file
+        _options[:footer_html].should       == path_to_temporary_document_footer_html_file
         _options[:title].should             == 'the title'
         _options[:outline].should be_true
         _options[:'margin-top'].should      == 15
@@ -264,7 +258,7 @@ describe PDFKit::Generator do
     end
     describe "-self.document_path" do
       before :each do
-        @document_path = File.join('documents','generated_pdf_document.pdf')
+        @document_path = Pathname.new(File.join('documents','generated_pdf_document.pdf'))
       end
       it "should raise error due to bad argument type" do
         _raise_error_message = 'first argument should be the document full storage path of type Pathname or the document name'
@@ -311,18 +305,18 @@ describe PDFKit::Generator do
         @document_support_directory_path = default_directory_path
         @document_name = 'the_document_required.pdf'
         # use the tmp file to store the generated contract
-        @document_full_storage_path = @document_support_directory_path.join(@document_name).to_s
+        @document_full_storage_path = @document_support_directory_path.join(@document_name)
 
         @cover_content  = '<p>this is the cover</p>'
         @header_content = '<p>this is the header</p>'
-        @body_content   = '<p>this is really nice</p>'
+        @body_content   = "<p>this is a body paragraph</p>" * 10
         @footer_content = '<p>this is the footer</p>'
         # should be in haml and generate makes the conversion
         @document_parts   = {:title => 'the title', :cover => @cover_content, :header => @header_content, :body => @body_content, :footer => @footer_content}
         @document_configurations = {:margin_top => '0.75in', :margin_right => '0.75in', :margin_bottom => '0.75in', :margin_left => '0.75in',
                                :outline => true, :'header-spacing' => 5, :'footer-spacing' => 5 }
 
-        @stylesheets_paths = [path_to_css]
+        @stylesheets_paths = Array(path_to_css)
       end
       before :each do
         set_pre_conditions
@@ -349,10 +343,10 @@ describe PDFKit::Generator do
       end
       context "receiving the document name only" do
         it "should save a document by using default path" do
-          _document_path = File.join(default_directory_path, @document_name)
+          _document_path = Pathname.new(default_directory_path).join(@document_name)
           _document = pdfkit_generator.generate(@document_name, @document_parts, @document_configurations, @stylesheets_paths)
 
-          _document.path.should include(_document_path)
+          _document.path.should == _document_path.to_s
           _document.should be_instance_of File
           File.exists?(_document_path).should be_true
         end
@@ -361,15 +355,15 @@ describe PDFKit::Generator do
           # cache must be clean be class has cached stuff previously
           clean_cache
 
-          _default_dir_path = File.join('agreementsxpto')
+          _default_dir_path = Pathname.new('agreementsxpto')
           PDFKit.configuration.default_options.stub!(:[]).with(:default_directory_path).and_return(_default_dir_path)
           PDFKit.configuration.default_options.stub!(:[]).with(:support_directory_path).and_return(@tmp_dir_path)
 
-          _document_path = "#{_default_dir_path}/the_document_required.pdf"
+          _document_path = _default_dir_path.join("the_document_required.pdf")
           # cant use subject because method was called in a previous test and so cache is set
           _document = pdfkit_generator.generate(@document_name, @document_parts, @document_configurations, @stylesheets_paths)
 
-          _document.path.should == _document_path
+          _document.path.should == _document_path.to_s
           _document.should be_instance_of File
 
           File.exists?(_document_path).should be_true
