@@ -1,11 +1,11 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :default_options, :root_url
-    attr_writer :wkhtmltopdf
+    attr_accessor :meta_tag_prefix, :default_options_wkhtmltopdf, :default_options_wkhtmltoimage, :root_url
+    attr_writer :wkhtmltopdf, :wkhtmltoimage
 
     def initialize
       @meta_tag_prefix = 'pdfkit-'
-      @default_options = {
+      @default_options_wkhtmltopdf = {
         :disable_smart_shrinking => false,
         :page_size => 'Letter',
         :margin_top => '0.75in',
@@ -14,10 +14,16 @@ class PDFKit
         :margin_left => '0.75in',
         :encoding => "UTF-8"
       }
+      @default_options_wkhtmltoimage = {
+      }
     end
 
     def wkhtmltopdf
       @wkhtmltopdf ||= (defined?(Bundler::GemfileError) ? `bundle exec which wkhtmltopdf` : `which wkhtmltopdf`).chomp
+    end
+
+    def wkhtmltoimage
+      @wkhtmltoimage ||= (defined?(Bundler::GemfileError) ? `bundle exec which wkhtmltoimage` : `which wkhtmltoimage`).chomp
     end
   end
 
@@ -30,7 +36,8 @@ class PDFKit
   #
   # @example
   #   PDFKit.configure do |config|
-  #     config.wkhtmltopdf = '/usr/bin/wkhtmltopdf'
+  #     config.wkhtmltopdf   = '/usr/bin/wkhtmltopdf'
+  #     config.wkhtmltoimage = '/usr/bin/wkhtmltoimage'
   #   end
 
   def self.configuration
