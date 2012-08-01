@@ -18,7 +18,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
         gem install wkhtmltopdf-binary
 
-*Note:* The automated installer has been removed.
+*Note:* The automated installers have been removed.
 
 ## Usage
 
