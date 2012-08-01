@@ -1,6 +1,6 @@
 # PDFKit
 
-Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the back-end which renders HTML using Webkit.
+Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) and wkhtmltoimage on the back-end which renders HTML using Webkit.
 
 ## Install
 
@@ -8,11 +8,11 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
     gem install pdfkit
 
-### wkhtmltopdf
+### wkhtmltopdf and wkhtmltoimage
 
 1. Install by hand (recommended):
 
-    <https://github.com/pdfkit/pdfkit/wiki/Installing-WKHTMLTOPDF>
+    <https://github.com/pdfkit/pdfkit/wiki/Installing-WKHTMLTOPDF-and-WKHTMLTOIMAGE>
 
 2.  Try using the wkhtmltopdf-binary gem (mac + linux i386)
 
@@ -31,7 +31,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     pdf = kit.to_pdf
 
     # Save the PDF to a file
-    file = kit.to_file('/path/to/save/pdf')
+    file = kit.to_file('/path/to/save/pdf','pdf')
 
     # PDFKit.new can optionally accept a URL or a File.
     # Stylesheets can not be added when source is provided as a URL of File.
@@ -40,6 +40,16 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
     # Add any kind of option through meta tags
     PDFKit.new('<html><head><meta name="pdfkit-page_size" content="Letter")
+    
+    # PDFKit.new takes the HTML and any options for wkhtmltoimage
+    # run `wkhtmltoimage --extended-help` for a full list of options
+    kit = PDFKit.new(html, :width => 640, :quality => 75)
+
+    # Get an inline PNG
+    png = kit.to_png
+
+    # Save the PNG to a file
+    file = kit.to_file('/path/to/save/png','png')
 
 ## Configuration
 
@@ -47,10 +57,14 @@ If you're on Windows or you installed wkhtmltopdf by hand to a location other th
 
     # config/initializers/pdfkit.rb
     PDFKit.configure do |config|
-      # config.wkhtmltopdf = '/path/to/wkhtmltopdf'
-      # config.default_options = {
+      # config.wkhtmltopdf   = '/path/to/wkhtmltopdf'
+      # config.default_options_wkhtmltopdf = {
       #   :page_size => 'Legal',
       #   :print_media_type => true
+      # }
+      # config.wkhtmltoimage = '/path/to/wkhtmltoimage'
+      # config.default_options_wkhtmltoimage = {
+      #   :width => 640
       # }
       # config.root_url = "http://localhost" # Use only if your external hostname is unavailable on the server.
     end
