@@ -1,9 +1,9 @@
 class PDFKit
 
   class NoExecutableError < StandardError
-    def initialize
-      msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
-      msg << ">> Please install wkhtmltopdf - https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF"
+    def initialize(bin)
+      msg  = "No #{bin} executable found at #{PDFKit.configuration.send(bin)}\n"
+      msg << ">> Please install #{bin} - https://github.com/pdfkit/PDFKit/wiki/Installing-#{bin.to_s.upcase}"
       super(msg)
     end
   end
@@ -15,24 +15,35 @@ class PDFKit
   end
 
   attr_accessor :source, :stylesheets
-  attr_reader :options
+  attr_reader :options_wkhtmltopdf, :options_wkhtmltoimage
 
   def initialize(url_file_or_html, options = {})
     @source = Source.new(url_file_or_html)
 
     @stylesheets = []
 
-    @options = PDFKit.configuration.default_options.merge(options)
-    @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
-    @options = normalize_options(@options)
+    # wkhtmltopdf options
+    @options_wkhtmltopdf = PDFKit.configuration.default_options_wkhtmltopdf.merge(options)
+    @options_wkhtmltopdf.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    @options_wkhtmltopdf = normalize_options(@options_wkhtmltopdf)
+    raise NoExecutableError.new(:wkhtmltopdf) unless File.exists?(PDFKit.configuration.wkhtmltopdf)
 
-    raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
+    # wkhtmltoimage options
+    @options_wkhtmltoimage = PDFKit.configuration.default_options_wkhtmltoimage.merge(options)
+    @options_wkhtmltoimage.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    @options_wkhtmltoimage = normalize_options(@options_wkhtmltoimage)
+    raise NoExecutableError.new(:wkhtmltoimage) unless File.exists?(PDFKit.configuration.wkhtmltoimage)
   end
 
-  def command(path = nil)
-    args = [executable]
-    args += @options.to_a.flatten.compact
-    args << '--quiet'
+  def command(format, path = nil)
+    args = [executable(format)]
+    case binary_name(format)
+      when :wkhtmltopdf   then
+        args += @options_wkhtmltopdf.to_a.flatten.compact
+        args << '--quiet'
+      when :wkhtmltoimage then
+        args += @options_wkhtmltoimage.to_a.flatten.compact
+    end
 
     if @source.html?
       args << '-' # Get HTML from stdin
@@ -45,8 +56,8 @@ class PDFKit
     args.map {|arg| %Q{"#{arg.gsub('"', '\"')}"}}
   end
 
-  def executable
-    default = PDFKit.configuration.wkhtmltopdf
+  def executable(format)
+    default = PDFKit.configuration.send( binary_name(format) )
     return default if default !~ /^\// # its not a path, so nothing we can do
     if File.exist?(default)
       default
@@ -55,10 +66,21 @@ class PDFKit
     end
   end
 
+  def binary_name(format)
+    case format
+      when /pdf/         then
+        return :wkhtmltopdf
+      when /jpg|png|gif/ then
+        return :wkhtmltoimage
+      else
+        raise UnknownFormatError.new("Unknown format: #{format}\nValid formats are: pdf, jpg, png, gif")
+    end
+  end
+
   def to_pdf(path=nil)
     append_stylesheets
 
-    args = command(path)
+    args = command('pdf',path)
     invoke = args.join(' ')
 
     result = IO.popen(invoke, "wb+") do |pdf|
@@ -72,8 +94,27 @@ class PDFKit
     return result
   end
 
-  def to_file(path)
-    self.to_pdf(path)
+  def to_image(format='png',path=nil)
+    options_wkhtmltoimage['--format'] = format
+    append_stylesheets
+
+    args = command(format,path)
+    invoke = args.join(' ')
+
+    result = IO.popen(invoke, "wb+") do |img|
+      img.puts(@source.to_s) if @source.html?
+      img.close_write
+      img.gets(nil)
+    end
+    result = File.read(path) if path
+
+    raise "command failed: #{invoke}" if result.to_s.strip.empty?
+    return result
+  end
+
+  def to_file(path, format='pdf')
+    convert = format.to_s.eql?( 'pdf' ) ? [:to_pdf,path] : [:to_image, format, path]
+    self.send(*convert)
     File.new(path)
   end
 
