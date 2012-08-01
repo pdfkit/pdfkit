@@ -112,6 +112,13 @@ class PDFKit
     return result
   end
 
+  # Image format shortcuts
+  ['jpg','png','gif'].each do |format|
+    define_method("to_#{format}".to_sym) do |*params|
+      to_image(format,*params)
+    end
+  end
+
   def to_file(path, format='pdf')
     convert = format.to_s.eql?( 'pdf' ) ? [:to_pdf,path] : [:to_image, format, path]
     self.send(*convert)
