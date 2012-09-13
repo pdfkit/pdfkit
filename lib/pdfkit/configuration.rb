@@ -1,6 +1,6 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :default_options, :root_url
+    attr_accessor :meta_tag_prefix, :default_options, :root_url, :toc_options, :cover_options
     attr_writer :wkhtmltopdf
 
     def initialize
@@ -14,6 +14,9 @@ class PDFKit
         :margin_left => '0.75in',
         :encoding => "UTF-8"
       }
+
+      @toc_options   = { }
+      @cover_options = { }
     end
 
     def wkhtmltopdf
