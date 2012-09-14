@@ -164,6 +164,16 @@ describe PDFKit do
       pdfkit.source.to_s.should include("<style>#{File.read(css)}</style>")
     end
 
+    it "should accept stylesheet from a URL" do
+      pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
+      pdfkit.should_receive(:open).
+             with("http://example.org/style.css").
+             and_return("#content { backgroud: #000; }")
+      pdfkit.stylesheets << 'http://example.org/style.css'
+      pdfkit.to_pdf
+      pdfkit.source.to_s.should include("<style>#content { backgroud: #000; }</style>")
+    end
+
     it "should prepend style tags if the HTML doesn't have a head tag" do
       pdfkit = PDFKit.new("<html><body>Hai!</body></html>")
       css = File.join(SPEC_ROOT,'fixtures','example.css')

@@ -1,3 +1,5 @@
+require 'open-uri'
+
 class PDFKit
 
   class NoExecutableError < StandardError
@@ -95,7 +97,8 @@ class PDFKit
     end
 
     def style_tag_for(stylesheet)
-      "<style>#{File.read(stylesheet)}</style>"
+      stylesheet_content = open(stylesheet) { |f| f.read }
+      "<style>#{stylesheet_content}</style>"
     end
 
     def append_stylesheets
