@@ -95,7 +95,7 @@ class PDFKit
     end
 
     def style_tag_for(stylesheet)
-      "<style>#{File.read(stylesheet)}</style>"
+      "<style>#{File.read(stylesheet)}</style>".gsub('\\', '\\\\\\\\')
     end
 
     def append_stylesheets
