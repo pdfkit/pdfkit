@@ -3,7 +3,7 @@ class PDFKit
   class NoExecutableError < StandardError
     def initialize
       msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
-      msg << ">> Please install wkhtmltopdf - https://github.com/jdpace/PDFKit/wiki/Installing-WKHTMLTOPDF"
+      msg << ">> Please install wkhtmltopdf - https://github.com/pdfkit/pdfkit/wiki/Installing-WKHTMLTOPDF"
       super(msg)
     end
   end
