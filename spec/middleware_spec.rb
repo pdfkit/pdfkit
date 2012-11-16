@@ -2,15 +2,15 @@ require 'spec_helper'
 
 def app; Rack::Lint.new(@app); end
 
-def mock_app(options = {}, conditions = {})
+def mock_app(options = {}, conditions = {}, response_status=200, exclude_error=nil)
   main_app = lambda { |env|
     @env = env
     headers = {'Content-Type' => "text/html"}
-    [200, headers, @body || ['Hello world!']]
+    [response_status, headers, @body || ['Hello world!']]
   }
 
   builder = Rack::Builder.new
-  builder.use PDFKit::Middleware, options, conditions
+  builder.use PDFKit::Middleware, options, conditions, exclude_error
   builder.run main_app
   @app = builder.to_app
 end
@@ -18,6 +18,32 @@ end
 describe PDFKit::Middleware do
 
   describe "#call" do
+    describe "exclude_error" do
+      context "success code in response" do
+        specify do
+          mock_app({}, {})
+          get 'http://www.example.org/public/test.pdf'
+          last_response.headers["Content-Type"].should == "application/pdf"
+        end
+      end
+
+      context "error code in response and enable to exclude the error" do
+        specify do
+          mock_app({}, {}, 500, true)
+          get 'http://www.example.org/public/test.pdf'
+          last_response.headers["Content-Type"].should == "text/html"
+        end
+      end
+
+      context "error code in response and disable to exclude the error" do
+        specify do
+          mock_app({}, {}, 500, false)
+          get 'http://www.example.org/public/test.pdf'
+          last_response.headers["Content-Type"].should == "application/pdf"
+        end
+      end
+    end
+    
     describe "conditions" do
       describe ":only" do
 
