@@ -33,7 +33,9 @@ class PDFKit
   end
 
   def command(path = nil)
-    args = @options.to_a.flatten.compact
+    args = [executable]
+    args += @options.to_a.flatten.compact
+    args << '--quiet'
 
     if @source.html?
       args << '-' # Get HTML from stdin
@@ -93,8 +95,8 @@ class PDFKit
       found = {}
       content.scan(/<meta [^>]*>/) do |meta|
         if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
-          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
-          found[name] = meta.scan(/content=["']([^"'\\]+)["']/)[0][0]
+          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
+          found[name.to_sym] = meta.scan(/content=["']([^"']*)/)[0][0]
         end
       end
 
@@ -130,18 +132,8 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
-
-        # The actual option for wkhtmltopdf
         normalized_key = "--#{normalize_arg key}"
-
-        # If the option is repeatable, attempt to normalize all values
-        if REPEATABLE_OPTIONS.include? normalized_key
-          normalize_repeatable_value(value) do |normalized_key_piece, normalized_value|
-            normalized_options[[normalized_key, normalized_key_piece]] = normalized_value
-          end
-        else # Otherwise, just normalize it like usual
-          normalized_options[normalized_key] = normalize_value(value)
-        end
+        normalized_options[normalized_key] = normalize_value(value)
       end
 
       normalized_options

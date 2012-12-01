@@ -241,6 +241,33 @@ describe PDFKit do
       end
     end
 
+    it "should not prefix cover and toc meta tags" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" content="Toc" />
+            <meta name="pdfkit-cover" content="some.html"/>
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"Toc"'
+      pdfkit.command[pdfkit.command.index('"cover"') + 1].should == '"some.html"'
+    end
+
+    it "should work for meta tags without content" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" />
+            <meta name="pdfkit-orientation" content="Landscape" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"--orientation"'
+    end
+
   end
 
   context "#to_pdf" do
