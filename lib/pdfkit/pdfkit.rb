@@ -31,8 +31,8 @@ class PDFKit
 
   def command(path = nil)
     args = [executable]
-    args += @options.to_a.flatten.compact
     args << '--quiet'
+    args += @options.to_a.flatten.compact
 
     if @source.html?
       args << '-' # Get HTML from stdin
@@ -87,7 +87,8 @@ class PDFKit
       content.scan(/<meta [^>]*>/) do |meta|
         if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
           name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
-          found[name.to_sym] = meta.scan(/content=["']([^"']*)/)[0][0]
+          meta_content = meta.scan(/content=["']([^"']*)/)[0]
+          found[name.to_sym] = meta_content ? meta_content[0] : true
         end
       end
 
@@ -115,7 +116,9 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
-        normalized_key = "--#{normalize_arg key}"
+        normalized_key = normalize_arg(key)
+        normalized_key = "--#{normalized_key}" unless ['toc','cover'].include?(normalized_key)
+
         normalized_options[normalized_key] = normalize_value(value)
       end
       normalized_options
