@@ -153,13 +153,66 @@ describe PDFKit do
       body = %{
         <html>
           <head>
+            <meta name="pdfkit-default-header" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"--default-header"') + 1][0..2].should == '"--'
+    end
+
+    it "should put toc option just before the page and page options" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"-"'
+    end
+
+    it "should put a toc-option right after toc" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+            <meta name="pdfkit-xsl-style-sheet" content="toc.xsl"/>
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"--xsl-style-sheet"'
+    end
+
+    it "should put cover before page and page options" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-cover" content="cover.html" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"cover"') + 2].should == '"-"'
+    end
+
+    it "should work for meta tags without content" do
+      body = %{
+        <html>
+          <head>
             <meta name="pdfkit-toc" />
             <meta name="pdfkit-orientation" content="Landscape" />
           </head>
         </html>
       }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('"toc"') + 1][0..2].should == '"--'
+      pdfkit.command[pdfkit.command.index('"toc"') + 1][0..2].should == '"-"'
     end
 
   end
