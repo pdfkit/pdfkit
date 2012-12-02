@@ -159,7 +159,7 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"--orientation"'
+      pdfkit.command[pdfkit.command.index('"toc"') + 1][0..2].should == '"--'
     end
 
   end
