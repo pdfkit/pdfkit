@@ -1,3 +1,5 @@
+require 'shellwords'
+
 class PDFKit
 
   class NoExecutableError < StandardError
@@ -42,7 +44,7 @@ class PDFKit
 
     args << (path || '-') # Write to file or stdout
 
-    args.map {|arg| %Q{"#{arg.gsub('"', '\"')}"}}
+    args.map {|arg| %Q{"#{arg.shellescape}"}}
   end
 
   def executable

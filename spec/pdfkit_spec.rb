@@ -67,7 +67,12 @@ describe PDFKit do
 
     it "should encapsulate string arguments in quotes" do
       pdfkit = PDFKit.new('html', :header_center => "foo [page]")
-      pdfkit.command[pdfkit.command.index('"--header-center"') + 1].should == '"foo [page]"'
+      pdfkit.command[pdfkit.command.index('"--header-center"') + 1].should == '"foo\ \[page\]"'
+    end
+
+    it "should sanitize string arguments" do
+      pdfkit = PDFKit.new('html', :header_center => "$(ls)")
+      pdfkit.command[pdfkit.command.index('"--header-center"') + 1].should == '"\$\(ls\)"'
     end
 
     it "read the source from stdin if it is html" do
