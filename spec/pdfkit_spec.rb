@@ -192,6 +192,10 @@ describe PDFKit do
       pdfkit.source.to_s.should include("<style>#{File.read(css)}</style></head>")
     end
 
+    it "should throw an error if it is unable to connect" do
+      pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
+      lambda { pdfkit.to_pdf }.should raise_error
+    end
   end
 
   context "#to_file" do
@@ -237,5 +241,4 @@ describe PDFKit do
       File.exist?(@test_path).should be_false
     end
   end
-
 end

@@ -70,7 +70,8 @@ class PDFKit
     end
     result = File.read(path) if path
 
-    raise "command failed: #{invoke}" if result.to_s.strip.empty?
+    # $? is thread safe per http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
+    raise "command failed: #{invoke}" if result.to_s.strip.empty? or !$?.success?
     return result
   end
 
