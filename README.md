@@ -53,6 +53,7 @@ If you're on Windows or you installed wkhtmltopdf by hand to a location other th
       #   :print_media_type => true
       # }
       # config.root_url = "http://localhost" # Use only if your external hostname is unavailable on the server.
+      # config.wrapper = "xvfb-run" # Specify a wrapper program to invoke around wkhtmltopdf
     end
 
 ## Middleware
