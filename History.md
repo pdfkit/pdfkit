@@ -1,3 +1,8 @@
+2013-02-21
+==================
+  * Bump to 0.5.3
+  * Fix security vulnerability due to unsanitized strings being passed to `wkhtmltopdf` (https://github.com/pdfkit/pdfkit/issues/164)
+
 2011-07-02
 ==================
   * Bump to 0.5.2
