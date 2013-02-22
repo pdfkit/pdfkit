@@ -139,6 +139,12 @@ describe PDFKit do
       pdfkit = PDFKit.new(body)
       pdfkit.command[pdfkit.command.index('"--orientation"') + 1].should == '"Landscape"'
     end
+    
+    it "should support few values for one key" do
+      pdfkit = PDFKit.new('html', cookie: ['name', 'value'])
+      pdfkit.command.should include("\"name\"")
+      pdfkit.command.should include("\"value\"")
+    end
 
   end
 

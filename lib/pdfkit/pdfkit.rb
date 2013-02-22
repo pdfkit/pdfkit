@@ -132,6 +132,8 @@ class PDFKit
       case value
       when TrueClass
         nil
+      when Array
+        value
       else
         value.to_s
       end
