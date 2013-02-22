@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Jared Pace", "Relevance"]
   s.email       = ["jared@codewordstudios.com"]
-  s.homepage    = "http://github.com/jdpace/PDFKit"
+  s.homepage    = "https://github.com/pdfkit/pdfkit"
   s.summary     = "HTML+CSS -> PDF"
   s.description = "Uses wkhtmltopdf to create PDFs using HTML"
 
