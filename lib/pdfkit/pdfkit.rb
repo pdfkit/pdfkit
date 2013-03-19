@@ -44,7 +44,7 @@ class PDFKit
 
     args << (path || '-') # Write to file or stdout
 
-    args.map {|arg| "#{arg.shellescape}"}
+    args.map {|arg| arg.shellescape}
   end
 
   def executable
