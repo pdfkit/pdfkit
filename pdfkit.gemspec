@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
 
   # Developmnet Dependencies
   s.add_development_dependency(%q<rake>, ["~>0.9.2"])
+  s.add_development_dependency(%q<rdoc>, ["~> 4.0.1"])
   s.add_development_dependency(%q<rspec>, ["~> 2.2.0"])
   s.add_development_dependency(%q<mocha>, [">= 0.9.10"])
   s.add_development_dependency(%q<rack-test>, [">= 0.5.6"])
