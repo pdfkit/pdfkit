@@ -5,9 +5,9 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 ## Install
 
 ### PDFKit
-
-    gem install pdfkit
-
+```
+gem install pdfkit
+```
 ### wkhtmltopdf
 
 1. Install by hand (recommended):
@@ -15,85 +15,82 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
     <https://github.com/pdfkit/pdfkit/wiki/Installing-WKHTMLTOPDF>
 
 2.  Try using the wkhtmltopdf-binary gem (mac + linux i386)
-
-        gem install wkhtmltopdf-binary
-
+```
+gem install wkhtmltopdf-binary
+```
 *Note:* The automated installer has been removed.
 
 ## Usage
+```ruby
+# PDFKit.new takes the HTML and any options for wkhtmltopdf
+# run `wkhtmltopdf --extended-help` for a full list of options
+kit = PDFKit.new(html, :page_size => 'Letter')
+kit.stylesheets << '/path/to/css/file'
 
-    # PDFKit.new takes the HTML and any options for wkhtmltopdf
-    # run `wkhtmltopdf --extended-help` for a full list of options
-    kit = PDFKit.new(html, :page_size => 'Letter')
-    kit.stylesheets << '/path/to/css/file'
+# Get an inline PDF
+pdf = kit.to_pdf
 
-    # Get an inline PDF
-    pdf = kit.to_pdf
+# Save the PDF to a file
+file = kit.to_file('/path/to/save/pdf')
 
-    # Save the PDF to a file
-    file = kit.to_file('/path/to/save/pdf')
+# PDFKit.new can optionally accept a URL or a File.
+# Stylesheets can not be added when source is provided as a URL of File.
+kit = PDFKit.new('http://google.com')
+kit = PDFKit.new(File.new('/path/to/html'))
 
-    # PDFKit.new can optionally accept a URL or a File.
-    # Stylesheets can not be added when source is provided as a URL of File.
-    kit = PDFKit.new('http://google.com')
-    kit = PDFKit.new(File.new('/path/to/html'))
-
-    # Add any kind of option through meta tags
-    PDFKit.new('<html><head><meta name="pdfkit-page_size" content="Letter"')
-
+# Add any kind of option through meta tags
+PDFKit.new('<html><head><meta name="pdfkit-page_size" content="Letter"')
+```
 ## Configuration
-
 If you're on Windows or you installed wkhtmltopdf by hand to a location other than /usr/local/bin you will need to tell PDFKit where the binary is. You can configure PDFKit like so:
-
-    # config/initializers/pdfkit.rb
-    PDFKit.configure do |config|
-      # config.wkhtmltopdf = '/path/to/wkhtmltopdf'
-      # config.default_options = {
-      #   :page_size => 'Legal',
-      #   :print_media_type => true
-      # }
-      # config.root_url = "http://localhost" # Use only if your external hostname is unavailable on the server.
-    end
-
+```ruby
+# config/initializers/pdfkit.rb
+PDFKit.configure do |config|
+  # config.wkhtmltopdf = '/path/to/wkhtmltopdf'
+  # config.default_options = {
+  #   :page_size => 'Legal',
+  #   :print_media_type => true
+  # }
+  # config.root_url = "http://localhost" # Use only if your external hostname is unavailable on the server.
+end
+```
 ## Middleware
-
 PDFKit comes with a middleware that allows users to get a PDF view of any page on your site by appending .pdf to the URL.
 
 ### Middleware Setup
-
 **Non-Rails Rack apps**
-
-    # in config.ru
-    require 'pdfkit'
-    use PDFKit::Middleware
-
+```ruby
+# in config.ru
+require 'pdfkit'
+use PDFKit::Middleware
+```
 **Rails apps**
-
-    # in application.rb(Rails3) or environment.rb(Rails2)
-    require 'pdfkit'
-    config.middleware.use PDFKit::Middleware
-
+```ruby
+# in application.rb(Rails3) or environment.rb(Rails2)
+require 'pdfkit'
+config.middleware.use PDFKit::Middleware
+```
 **With PDFKit options**
-
-    # options will be passed to PDFKit.new
-    config.middleware.use PDFKit::Middleware, :print_media_type => true
-
+```ruby
+# options will be passed to PDFKit.new
+config.middleware.use PDFKit::Middleware, :print_media_type => true
+```
 **With conditions to limit routes that can be generated in pdf**
+```ruby
+# conditions can be regexps (either one or an array)
+config.middleware.use PDFKit::Middleware, {}, :only => %r[^/public]
+config.middleware.use PDFKit::Middleware, {}, :only => [%r[^/invoice], %r[^/public]]
 
-    # conditions can be regexps (either one or an array)
-    config.middleware.use PDFKit::Middleware, {}, :only => %r[^/public]
-    config.middleware.use PDFKit::Middleware, {}, :only => [%r[^/invoice], %r[^/public]]
+# conditions can be strings (either one or an array)
+config.middleware.use PDFKit::Middleware, {}, :only => '/public'
+config.middleware.use PDFKit::Middleware, {}, :only => ['/invoice', '/public']
 
-    # conditions can be strings (either one or an array)
-    config.middleware.use PDFKit::Middleware, {}, :only => '/public'
-    config.middleware.use PDFKit::Middleware, {}, :only => ['/invoice', '/public']
+# conditions can be regexps (either one or an array)
+config.middleware.use PDFKit::Middleware, {}, :except => [%r[^/prawn], %r[^/secret]]
 
-    # conditions can be regexps (either one or an array)
-    config.middleware.use PDFKit::Middleware, {}, :except => [%r[^/prawn], %r[^/secret]]
-
-    # conditions can be strings (either one or an array)
-    config.middleware.use PDFKit::Middleware, {}, :except => ['/secret']
-
+# conditions can be strings (either one or an array)
+config.middleware.use PDFKit::Middleware, {}, :except => ['/secret']
+```
 ## Troubleshooting
 
 *  **Single thread issue:** In development environments it is common to run a
