@@ -33,7 +33,7 @@ class PDFKit
 
   def command(path = nil)
     args = [executable]
-    args += @options.to_a.flatten.compact
+    args += @options.to_a.flatten.compact.delete_if { |v| v.empty? }
     args << '--quiet'
 
     if @source.html?
