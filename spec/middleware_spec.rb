@@ -5,8 +5,7 @@ def app; Rack::Lint.new(@app); end
 def mock_app(options = {}, conditions = {})
   main_app = lambda { |env|
     @env = env
-    headers = {'Content-Type' => "text/html"}
-    [200, headers, @body || ['Hello world!']]
+    [200, headers.dup, @body || ['Hello world!']]
   }
 
   builder = Rack::Builder.new
@@ -16,8 +15,39 @@ def mock_app(options = {}, conditions = {})
 end
 
 describe PDFKit::Middleware do
+  let(:headers) { {'Content-Type' => "text/html"} }
 
   describe "#call" do
+    describe "caching" do
+      let(:headers) { {'Content-Type' => "text/html", 'ETag' => 'foo', 'Cache-Control' => 'max-age=2592000, public'} }
+
+      context "by default" do
+        before { mock_app }
+
+        it "deletes ETag" do
+          get 'http://www.example.org/public/test.pdf'
+          last_response.headers["ETag"].should be_nil
+        end
+        it "deletes Cache-Control" do
+          get 'http://www.example.org/public/test.pdf'
+          last_response.headers["Cache-Control"].should be_nil
+        end
+      end
+
+      context "when on" do
+        before { mock_app({}, :caching => true) }
+
+        it "preserves ETag" do
+          get 'http://www.example.org/public/test.pdf'
+          last_response.headers["ETag"].should_not be_nil
+        end
+        it "preserves Cache-Control" do
+          get 'http://www.example.org/public/test.pdf'
+          last_response.headers["Cache-Control"].should_not be_nil
+        end
+      end
+    end
+
     describe "conditions" do
       describe ":only" do
 
