@@ -11,6 +11,7 @@ class PDFKit
     def call(env)
       @request    = Rack::Request.new(env)
       @render_pdf = false
+      @caching    = @conditions.delete(:caching) { false }
 
       set_request_to_render_as_pdf(env) if render_as_pdf?
       status, headers, response = @app.call(env)
@@ -21,9 +22,11 @@ class PDFKit
         body = PDFKit.new(translate_paths(body, env), @options).to_pdf
         response = [body]
 
-        # Do not cache PDFs
-        headers.delete('ETag')
-        headers.delete('Cache-Control')
+        unless @caching
+          # Do not cache PDFs
+          headers.delete('ETag')
+          headers.delete('Cache-Control')
+        end
 
         headers["Content-Length"]         = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
         headers["Content-Type"]           = "application/pdf"
