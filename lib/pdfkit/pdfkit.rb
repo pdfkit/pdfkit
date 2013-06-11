@@ -44,7 +44,7 @@ class PDFKit
 
     args << (path || '-') # Write to file or stdout
 
-    args.map {|arg| arg.shellescape}
+    args.shelljoin
   end
 
   def executable
@@ -60,8 +60,7 @@ class PDFKit
   def to_pdf(path=nil)
     append_stylesheets
 
-    args = command(path)
-    invoke = args.join(' ')
+    invoke = command(path)
 
     result = IO.popen(invoke, "wb+") do |pdf|
       pdf.puts(@source.to_s) if @source.html?
