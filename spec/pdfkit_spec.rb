@@ -54,11 +54,11 @@ describe PDFKit do
   context "command" do
     it "should contstruct the correct command" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12, :replace => {'foo' => 'bar'})
-      pdfkit.command[0].should include('wkhtmltopdf')
-      pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Letter"'
-      pdfkit.command[pdfkit.command.index('"--toc-l1-font-size"') + 1].should == '"12"'
-      pdfkit.command[pdfkit.command.index('"--replace"') + 1].should == '"foo"'
-      pdfkit.command[pdfkit.command.index('"--replace"') + 2].should == '"bar"'
+      command = pdfkit.command
+      command.should include "wkhtmltopdf"
+      command.should include "--page-size Letter"
+      command.should include "--toc-l1-font-size 12"
+      command.should include "--replace foo bar"
     end
 
     it "will not include default options it is told to omit" do
@@ -67,41 +67,41 @@ describe PDFKit do
       end
 
       pdfkit = PDFKit.new('html')
-      pdfkit.command.should include('"--disable-smart-shrinking"')
+      pdfkit.command.should include('--disable-smart-shrinking')
       pdfkit = PDFKit.new('html', :disable_smart_shrinking => false)
-      pdfkit.command.should_not include('"--disable-smart-shrinking"')
+      pdfkit.command.should_not include('--disable-smart-shrinking')
     end
 
     it "should encapsulate string arguments in quotes" do
       pdfkit = PDFKit.new('html', :header_center => "foo [page]")
-      pdfkit.command[pdfkit.command.index('"--header-center"') + 1].should == '"foo\ \[page\]"'
+      pdfkit.command.should include "--header-center foo\\ \\[page\\]"
     end
 
     it "should sanitize string arguments" do
       pdfkit = PDFKit.new('html', :header_center => "$(ls)")
-      pdfkit.command[pdfkit.command.index('"--header-center"') + 1].should == '"\$\(ls\)"'
+      pdfkit.command.should include "--header-center \\$\\(ls\\)"
     end
 
     it "read the source from stdin if it is html" do
       pdfkit = PDFKit.new('html')
-      pdfkit.command[-2..-1].should == ['"-"', '"-"']
+      pdfkit.command.should match /- -$/
     end
 
     it "specify the URL to the source if it is a url" do
       pdfkit = PDFKit.new('http://google.com')
-      pdfkit.command[-2..-1].should == ['"http://google.com"', '"-"']
+      pdfkit.command.should match /http:\/\/google.com -$/
     end
 
     it "should specify the path to the source if it is a file" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
-      pdfkit.command[-2..-1].should == [%Q{"#{file_path}"}, '"-"']
+      pdfkit.command.should match /#{file_path} -$/
     end
 
     it "should specify the path for the ouput if a apth is given" do
       file_path = "/path/to/output.pdf"
       pdfkit = PDFKit.new("html")
-      pdfkit.command(file_path).last.should == %Q{"#{file_path}"}
+      pdfkit.command(file_path).should match /#{file_path}$/
     end
 
     it "should detect special pdfkit meta tags" do
@@ -114,8 +114,9 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Legal"'
-      pdfkit.command[pdfkit.command.index('"--orientation"') + 1].should == '"Landscape"'
+      command = pdfkit.command
+      command.should include "--page-size Legal"
+      command.should include "--orientation Landscape"
     end
 
     it "should detect special pdfkit meta tags despite bad markup" do
@@ -129,8 +130,9 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('"--page-size"') + 1].should == '"Legal"'
-      pdfkit.command[pdfkit.command.index('"--orientation"') + 1].should == '"Landscape"'
+      command = pdfkit.command
+      command.should include "--page-size Legal"
+      command.should include "--orientation Landscape"
     end
 
     it "should skip non-pdfkit meta tags" do
@@ -144,7 +146,9 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('"--orientation"') + 1].should == '"Landscape"'
+      command = pdfkit.command
+      command.should_not include "--page-size Legal"
+      command.should include "--orientation Landscape"
     end
 
   end
