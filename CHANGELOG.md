@@ -1,3 +1,8 @@
+2013-06-12
+==================
+  * Bump to 0.5.4
+  * Fix broken page numbers (https://github.com/pdfkit/pdfkit/pull/181)
+
 2013-02-21
 ==================
   * Bump to 0.5.3
