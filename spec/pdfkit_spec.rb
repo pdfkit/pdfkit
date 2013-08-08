@@ -203,9 +203,9 @@ describe PDFKit do
       pdfkit.source.to_s.should include("<style>#{File.read(css)}</style></head>")
     end
 
-    it "should throw an error if it is unable to connect" do
+    it "should throw an error if it is unable to connect", :focus => true do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
-      lambda { pdfkit.to_pdf }.should raise_error
+      lambda { pdfkit.to_pdf }.should raise_error /exitstatus=1/
     end
   end
 
