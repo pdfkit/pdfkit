@@ -67,10 +67,10 @@ class PDFKit
       pdf.close_write
       pdf.gets(nil)
     end
+    status = $? # $? is thread safe per http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
     result = File.read(path) if path
 
-    # $? is thread safe per http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if result.to_s.strip.empty? or !$?.success?
+    raise "command failed (exitstatus=#{status.exitstatus}): #{invoke}" unless successful?(result, status)
     return result
   end
 
@@ -138,6 +138,18 @@ class PDFKit
       else
         value.to_s
       end
+    end
+
+    def successful?(result, status_info)
+      result.to_s.strip.empty? or successful_exit_statuses.include?(status_info.exitstatus)
+    end
+
+    def successful_exit_statuses
+      # Some of the codes: https://code.google.com/p/wkhtmltopdf/issues/detail?id=1088
+      [
+        0, # all good
+        2 # returned when assets are missing (404): https://code.google.com/p/wkhtmltopdf/issues/detail?id=548
+      ]
     end
 
 end
