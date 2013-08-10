@@ -196,19 +196,50 @@ describe PDFKit::Middleware do
       end
     end
 
-    describe "remove .pdf from PATH_INFO and REQUEST_URI" do
-      before { mock_app }
+  describe "remove .pdf from PATH_INFO and REQUEST_URI" do
+    before { mock_app }
 
       context "matching" do
+
         specify do
           get 'http://www.example.org/public/file.pdf'
           @env["PATH_INFO"].should == "/public/file"
           @env["REQUEST_URI"].should == "/public/file"
+          @env["SCRIPT_NAME"].should be_empty
         end
         specify do
           get 'http://www.example.org/public/file.txt'
           @env["PATH_INFO"].should == "/public/file.txt"
           @env["REQUEST_URI"].should be_nil
+          @env["SCRIPT_NAME"].should be_empty
+        end
+      end
+
+      context "subdomain matching" do
+        before do
+          main_app = lambda { |env|
+            @env = env
+            @env['SCRIPT_NAME'] = '/example.org'
+            headers = {'Content-Type' => "text/html"}
+            [200, headers, @body || ['Hello world!']]
+          }
+
+          builder = Rack::Builder.new
+          builder.use PDFKit::Middleware
+          builder.run main_app
+          @app = builder.to_app
+        end
+        specify do
+          get 'http://example.org/sub/public/file.pdf'
+          @env["PATH_INFO"].should == "/sub/public/file"
+          @env["REQUEST_URI"].should == "/sub/public/file"
+          @env["SCRIPT_NAME"].should == "/example.org"
+        end
+        specify do
+          get 'http://example.org/sub/public/file.txt'
+          @env["PATH_INFO"].should == "/sub/public/file.txt"
+          @env["REQUEST_URI"].should be_nil
+          @env["SCRIPT_NAME"].should == "/example.org"
         end
       end
 
@@ -239,7 +270,7 @@ describe PDFKit::Middleware do
       body.should == "NO MATCH"
     end
   end
-  
+
   describe "#translate_paths with root_url configuration" do
     before do
       @pdf = PDFKit::Middleware.new({})
@@ -254,7 +285,7 @@ describe PDFKit::Middleware do
       body = @pdf.send :translate_paths, @body, @env
       body.should == "<html><head><link href='http://example.net/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.net/test.png\" /></body></html>"
     end
-    
+
     after do
       PDFKit.configure do |config|
         config.root_url = nil

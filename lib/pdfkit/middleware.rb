@@ -76,8 +76,12 @@ class PDFKit
 
     def set_request_to_render_as_pdf(env)
       @render_pdf = true
+
       path = @request.path.sub(%r{\.pdf$}, '')
+      path = path.sub(@request.script_name, '')
+
       %w[PATH_INFO REQUEST_URI].each { |e| env[e] = path }
+
       env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
       env["Rack-Middleware-PDFKit"] = "true"
     end
