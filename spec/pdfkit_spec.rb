@@ -208,7 +208,7 @@ describe PDFKit do
       lambda { pdfkit.to_pdf }.should raise_error /exitstatus=1/
     end
 
-    it "should generate PDF if there are missing HREF link" do
+    it "should generate PDF if there are missing assets" do
       pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>")
       pdf = pdfkit.to_pdf
       pdf[0...4].should == "%PDF" # PDF Signature at the beginning
