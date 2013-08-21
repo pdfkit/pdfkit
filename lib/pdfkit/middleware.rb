@@ -27,6 +27,10 @@ class PDFKit
           headers.delete('ETag')
           headers.delete('Cache-Control')
         end
+        if headers['PDFKit-save-pdf']
+          File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
+          headers.delete('PDFKit-save-pdf')
+        end
 
         headers["Content-Length"]         = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
         headers["Content-Type"]           = "application/pdf"
