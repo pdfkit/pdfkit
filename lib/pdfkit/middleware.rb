@@ -2,10 +2,11 @@ class PDFKit
 
   class Middleware
 
-    def initialize(app, options = {}, conditions = {})
+    def initialize(app, options = {}, conditions = {}, exclude_error=nil)
       @app        = app
       @options    = options
       @conditions = conditions
+      @exclude_error = exclude_error
     end
 
     def call(env)
@@ -15,7 +16,7 @@ class PDFKit
       set_request_to_render_as_pdf(env) if render_as_pdf?
       status, headers, response = @app.call(env)
 
-      if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
+      if skip_error?(status) && rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.respond_to?(:body) ? response.body : response.join
         body = body.join if body.is_a?(Array)
         body = PDFKit.new(translate_paths(body, env), @options).to_pdf
@@ -33,6 +34,9 @@ class PDFKit
     end
 
     private
+    def skip_error? status
+      !@exclude_error || status == 200
+    end
 
     # Change relative paths to absolute
     def translate_paths(body, env)
