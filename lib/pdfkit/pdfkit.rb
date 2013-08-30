@@ -1,3 +1,4 @@
+require 'rbconfig'
 require 'shellwords'
 
 class PDFKit
@@ -44,7 +45,11 @@ class PDFKit
 
     args << (path || '-') # Write to file or stdout
 
-    args.shelljoin
+    if RbConfig::CONFIG['host_os'] =~ /mswin|mingw/ # Windows
+      args.map{|str| str =~ /\s/ ? "\"#{str.gsub('"', '\"')}\"" : str}.join(' ')
+    else # Linux, OSX
+      args.shelljoin
+    end
   end
 
   def executable

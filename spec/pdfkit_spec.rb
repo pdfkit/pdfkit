@@ -72,14 +72,32 @@ describe PDFKit do
       pdfkit.command.should_not include('--disable-smart-shrinking')
     end
 
-    it "should encapsulate string arguments in quotes" do
-      pdfkit = PDFKit.new('html', :header_center => "foo [page]")
-      pdfkit.command.should include "--header-center foo\\ \\[page\\]"
+    context "on Linux platform" do
+      before { stub_const("RbConfig::CONFIG", {'host_os' => 'linux'}) }
+
+      it "should encapsulate string arguments in quotes" do
+        pdfkit = PDFKit.new('html', :header_center => "foo [page]")
+        pdfkit.command.should include "--header-center foo\\ \\[page\\]"
+      end
+
+      it "should sanitize string arguments" do
+        pdfkit = PDFKit.new('html', :header_center => "$(ls)")
+        pdfkit.command.should include "--header-center \\$\\(ls\\)"
+      end
     end
 
-    it "should sanitize string arguments" do
-      pdfkit = PDFKit.new('html', :header_center => "$(ls)")
-      pdfkit.command.should include "--header-center \\$\\(ls\\)"
+    context "on Windows platform" do
+      before { stub_const("RbConfig::CONFIG", {'host_os' => 'mingw'}) }
+
+      it "should encapsulate string arguments in quotes" do
+        pdfkit = PDFKit.new('html', :header_center => "foo [\"page\"]")
+        pdfkit.command.should include "--header-center \"foo [\\\"page\\\"]\""
+      end
+
+      it "should not sanitize string arguments" do
+        pdfkit = PDFKit.new('html', :header_center => "$(ls)")
+        pdfkit.command.should include "--header-center $(ls)"
+      end
     end
 
     it "read the source from stdin if it is html" do
