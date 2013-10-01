@@ -22,6 +22,14 @@ class PDFKit
         body = PDFKit.new(translate_paths(body, env), @options).to_pdf
         response = [body]
 
+        if headers['PDFKit-save-pdf']
+          begin
+            File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
+          rescue
+          end
+          headers.delete('PDFKit-save-pdf')
+        end
+
         unless @caching
           # Do not cache PDFs
           headers.delete('ETag')
