@@ -23,7 +23,12 @@ class PDFKit
         response = [body]
 
         if headers['PDFKit-save-pdf']
-          File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
+          begin
+            File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
+          rescue
+            #don't crash
+#git pull --rebase git://github.com/pdfkit/pdfkit
+          end
           headers.delete('PDFKit-save-pdf')
         end
 

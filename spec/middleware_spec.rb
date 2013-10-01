@@ -2,9 +2,10 @@ require 'spec_helper'
 
 def app; Rack::Lint.new(@app); end
 
-def mock_app(options = {}, conditions = {})
+def mock_app(options = {}, conditions = {}, custom_headers = {})
   main_app = lambda { |env|
     @env = env
+    headers = {'Content-Type' => "text/html"}.merge custom_headers
     [200, headers.dup, @body || ['Hello world!']]
   }
 
@@ -223,6 +224,27 @@ describe PDFKit::Middleware do
           end # multiple string
         end # string
 
+      end
+
+      describe "saving generated pdf to disk" do
+	before do
+	  headers = { 'PDFKit-save-pdf' => 'spec/test_save.pdf' }
+          mock_app({}, {only: '/public'}, headers)
+	end
+
+        context "when header PDFKit-save-pdf is present" do
+          it "should saved the .pdf to disk" do
+	    get 'http://www.example.org/public/test_save.pdf'
+            File.exists?('spec/test_save.pdf').should be_true
+	  end
+
+          it "should not raise when target directory does not exist"
+          it "should not raise when target directory is not writeable"
+        end
+
+        context "when header PDFKit-save-pdf is not present" do
+          it "should not saved the .pdf to disk"
+        end
       end
     end
 
