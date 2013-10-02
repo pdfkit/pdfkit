@@ -228,22 +228,34 @@ describe PDFKit::Middleware do
 
       describe "saving generated pdf to disk" do
 	before do
-	  headers = { 'PDFKit-save-pdf' => 'spec/test_save.pdf' }
-          mock_app({}, {only: '/public'}, headers)
+          #make sure tests don't find an old test_save.pdf
+          File.delete('spec/test_save.pdf') if File.exists?('spec/test_save.pdf')
+          File.exists?('spec/test_save.pdf').should be_false
 	end
 
         context "when header PDFKit-save-pdf is present" do
           it "should saved the .pdf to disk" do
+	    headers = { 'PDFKit-save-pdf' => 'spec/test_save.pdf' }
+            mock_app({}, {only: '/public'}, headers)
 	    get 'http://www.example.org/public/test_save.pdf'
             File.exists?('spec/test_save.pdf').should be_true
 	  end
 
-          it "should not raise when target directory does not exist"
-          it "should not raise when target directory is not writeable"
+          it "should not raise when target directory does not exist" do
+	    headers = { 'PDFKit-save-pdf' => '/this/dir/does/not/exist/spec/test_save.pdf' }
+            mock_app({}, {only: '/public'}, headers)
+            expect {
+              get 'http://www.example.com/public/test_save.pdf'
+            }.not_to raise_error(Exception)
+          end
         end
 
         context "when header PDFKit-save-pdf is not present" do
-          it "should not saved the .pdf to disk"
+          it "should not saved the .pdf to disk" do
+            mock_app({}, {only: '/public'}, {} )
+	    get 'http://www.example.org/public/test_save.pdf'
+            File.exists?('spec/test_save.pdf').should be_false
+          end
         end
       end
     end

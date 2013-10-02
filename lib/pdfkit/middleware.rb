@@ -26,6 +26,7 @@ class PDFKit
           begin
             File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
           rescue
+            #don't crash
           end
           headers.delete('PDFKit-save-pdf')
         end
