@@ -5,8 +5,8 @@ def app; Rack::Lint.new(@app); end
 def mock_app(options = {}, conditions = {}, custom_headers = {})
   main_app = lambda { |env|
     @env = env
-    headers = {'Content-Type' => "text/html"}.merge custom_headers
-    [200, headers.dup, @body || ['Hello world!']]
+    full_headers = headers.merge custom_headers
+    [200, full_headers, @body || ['Hello world!']]
   }
 
   builder = Rack::Builder.new
