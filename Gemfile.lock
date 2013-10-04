@@ -45,3 +45,4 @@ DEPENDENCIES
   rake (~> 0.9.2)
   rdoc (~> 4.0.1)
   rspec (~> 2.2.0)
+  wkhtmltopdf-binary (~> 0.9.5)
