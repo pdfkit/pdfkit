@@ -205,7 +205,7 @@ describe PDFKit do
 
     it "should throw an error if it is unable to connect" do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
-      lambda { pdfkit.to_pdf }.should raise_error
+      lambda { pdfkit.to_pdf }.should raise_error /exitstatus=1/
     end
   end
 
