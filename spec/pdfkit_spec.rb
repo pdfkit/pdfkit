@@ -151,6 +151,86 @@ describe PDFKit do
       command.should include "--orientation Landscape"
     end
 
+    it "should not prefix cover and toc meta tags" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" content="Toc" />
+            <meta name="pdfkit-cover" content="some.html"/>
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"Toc"'
+      pdfkit.command[pdfkit.command.index('"cover"') + 1].should == '"some.html"'
+    end
+
+    it "should work for meta tags without content" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-default-header" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"--default-header"') + 1][0..2].should == '"--'
+    end
+
+    it "should put toc option just before the page and page options" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"-"'
+    end
+
+    it "should put a toc-option right after toc" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+            <meta name="pdfkit-xsl-style-sheet" content="toc.xsl"/>
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"--xsl-style-sheet"'
+    end
+
+    it "should put cover before page and page options" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-cover" content="cover.html" />
+            <meta name="pdfkit-javascript-delay" content="20" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"cover"') + 2].should == '"-"'
+    end
+
+    it "should work for meta tags without content" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-toc" />
+            <meta name="pdfkit-orientation" content="Landscape" />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command[pdfkit.command.index('"toc"') + 1][0..2].should == '"-"'
+    end
+
   end
 
   context "#to_pdf" do

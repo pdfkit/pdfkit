@@ -1,6 +1,13 @@
 require 'shellwords'
 
 class PDFKit
+  GLOBAL_OPTIONS = ["--collate", "--grayscale", "--page-size", "--page-height",
+                    "--orientation", "--lowquality", "--margin-top", "--margin-right",
+                    "--margin-bottom", "--margin-left","--title", '--encoding',
+                    "--disable-smart-shrinking"]
+
+  TOC_OPTIONS = ["--disable-dotted-lines", "--toc-header-text", "--toc-level-indentation",
+                 "--disable-toc-links", "--toc-text-size-shrink", "--xsl-style-sheet"]
 
   class NoExecutableError < StandardError
     def initialize
@@ -33,14 +40,38 @@ class PDFKit
 
   def command(path = nil)
     args = [executable]
-    args += @options.to_a.flatten.compact
     args << '--quiet'
+
+    temp_options = @options.clone
+
+
+    global_options = temp_options.to_a - temp_options.delete_if{|key, value| GLOBAL_OPTIONS.include?(key) }.to_a
+    if global_options
+      args += global_options.flatten.compact
+    end
+
+    if temp_options.has_key?("cover")
+      temp_option = temp_options.delete("cover")
+      args += {"cover" => temp_option}.to_a.flatten.compact
+    end
+
+    if temp_options.has_key?("toc")
+      temp_option = temp_options.delete("toc")
+      args += {"toc" => temp_option}.to_a.flatten.compact
+    end
+
+    toc_options = temp_options.to_a - temp_options.delete_if{|key, value| TOC_OPTIONS.include?(key) }.to_a
+    if toc_options
+      args += toc_options.flatten.compact
+    end
 
     if @source.html?
       args << '-' # Get HTML from stdin
     else
       args << @source.to_s
     end
+
+    args += temp_options.to_a.flatten.compact
 
     args << (path || '-') # Write to file or stdout
 
@@ -89,7 +120,8 @@ class PDFKit
       content.scan(/<meta [^>]*>/) do |meta|
         if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
           name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
-          found[name.to_sym] = meta.scan(/content=["']([^"']*)/)[0][0]
+          meta_content = meta.scan(/content=["']([^"']*)/)[0]
+          found[name.to_sym] = meta_content ? meta_content[0] : true
         end
       end
 
@@ -117,7 +149,9 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
-        normalized_key = "--#{normalize_arg key}"
+        normalized_key = normalize_arg(key)
+        normalized_key = "--#{normalized_key}" unless ['toc','cover'].include?(normalized_key)
+
         normalized_options[normalized_key] = normalize_value(value)
       end
       normalized_options
