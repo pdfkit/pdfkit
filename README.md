@@ -98,6 +98,17 @@ config.middleware.use PDFKit::Middleware, {}, :except => [%r[^/prawn], %r[^/secr
 # conditions can be strings (either one or an array)
 config.middleware.use PDFKit::Middleware, {}, :except => ['/secret']
 ```
+**Saving the generated .pdf to disk**
+
+Setting the `PDFKit-save-pdf` header will cause PDFKit to write the generated .pdf to the file indicated by the value of the header.
+
+For example:
+```ruby
+headers['PDFKit-save-pdf'] = 'path/to/saved.pdf'
+```
+
+Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent back to the client.  If the path is not writable/non-existant the write will fail silently.  The `PDFKit-save-pdf` header is never sent back to the client.
+
 ## Troubleshooting
 
 *  **Single thread issue:** In development environments it is common to run a
