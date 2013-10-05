@@ -65,12 +65,11 @@ class PDFKit
     result = IO.popen(invoke, "wb+") do |pdf|
       pdf.puts(@source.to_s) if @source.html?
       pdf.close_write
-      pdf.gets(nil)
+      pdf.gets(nil) if path.nil?
     end
-    result = File.read(path) if path
 
-    # $? is thread safe per http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed: #{invoke}" if result.to_s.strip.empty? or !$?.success?
+    raise "command failed: #{invoke}" if (path && File.size(path) == 0) || (path.nil? && result.to_s.strip.empty?) || !$?.success?
+
     return result
   end
 
