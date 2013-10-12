@@ -203,6 +203,14 @@ describe PDFKit do
       pdfkit.source.to_s.should include("<style>#{File.read(css)}</style></head>")
     end
 
+    it "should escape \\X in stylesheets" do
+      pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
+      css = File.join(SPEC_ROOT,'fixtures','example_with_hex_symbol.css')
+      pdfkit.stylesheets << css
+      pdfkit.to_pdf
+      pdfkit.source.to_s.should include("<style>#{File.read(css)}</style></head>")
+    end
+
     it "should throw an error if it is unable to connect" do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
       lambda { pdfkit.to_pdf }.should raise_error

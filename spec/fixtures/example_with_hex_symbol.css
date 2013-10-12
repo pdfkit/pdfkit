@@ -1,0 +1,3 @@
+.test:before {
+    content: '\2039';
+}
