@@ -69,9 +69,16 @@ describe PDFKit::Source do
       source.to_s.should == __FILE__
     end
     
-    it "should return the url if passed a url like string" do
-      source = PDFKit::Source.new('http://google.com')
-      source.to_s.should == 'http://google.com'
+    context 'when the source is a url' do
+      it "should return the url" do
+        source = PDFKit::Source.new('http://google.com')
+        source.to_s.should == 'http://google.com'
+      end
+
+      it "should return the url with escaped ampersands" do
+        source = PDFKit::Source.new('http://google.com/?q=test&lang=en&country=us')
+        source.to_s.should == 'http://google.com/?q=test\\&lang=en\\&country=us'
+      end
     end
   end
   
