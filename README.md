@@ -14,7 +14,7 @@ gem install pdfkit
 
     <https://github.com/pdfkit/pdfkit/wiki/Installing-WKHTMLTOPDF>
 
-2.  Try using the wkhtmltopdf-binary gem (mac + linux i386)
+2.  Try using the `wkhtmltopdf-binary` gem (mac + linux i386)
 ```
 gem install wkhtmltopdf-binary
 ```
@@ -48,7 +48,7 @@ pass it in a hash:
 kit = PDFKit.new(url, cookie: {cookie_name, cookie_value})
 ```
 ## Configuration
-If you're on Windows or you installed wkhtmltopdf by hand to a location other than /usr/local/bin you will need to tell PDFKit where the binary is. You can configure PDFKit like so:
+If you're on Windows or you installed wkhtmltopdf by hand to a location other than `/usr/local/bin` you will need to tell PDFKit where the binary is. You can configure PDFKit like so:
 ```ruby
 # config/initializers/pdfkit.rb
 PDFKit.configure do |config|
@@ -147,7 +147,7 @@ Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent
 ## Note on Patches/Pull Requests
 
 * Fork the project.
-* Setup your development environment with: gem install bundler; bundle install
+* Setup your development environment with: `gem install bundler`; `bundle install`
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
