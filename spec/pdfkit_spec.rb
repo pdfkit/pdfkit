@@ -213,7 +213,13 @@ describe PDFKit do
 
     it "should throw an error if it is unable to connect" do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
-      lambda { pdfkit.to_pdf }.should raise_error
+      lambda { pdfkit.to_pdf }.should raise_error /exitstatus=2/
+    end
+
+    it "should generate PDF if there are missing assets" do
+      pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>", ignore_load_errors: true)
+      pdf = pdfkit.to_pdf
+      pdf[0...4].should == "%PDF" # PDF Signature at the beginning
     end
   end
 

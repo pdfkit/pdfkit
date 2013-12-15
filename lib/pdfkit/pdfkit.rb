@@ -70,7 +70,7 @@ class PDFKit
     result = File.read(path) if path
 
     # $? is thread safe per http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed: #{invoke}" if result.to_s.strip.empty? or !$?.success?
+    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if result.to_s.strip.empty? or !successful?($?)
     return result
   end
 
@@ -138,6 +138,23 @@ class PDFKit
       else
         value.to_s
       end
+    end
+
+    def successful?(status)
+      return true if status.success?
+
+      # Some of the codes: https://code.google.com/p/wkhtmltopdf/issues/detail?id=1088
+      # returned when assets are missing (404): https://code.google.com/p/wkhtmltopdf/issues/detail?id=548
+      return true if status.exitstatus == 2 && error_handling?
+
+      false
+    end
+
+    def error_handling?
+      @options.key?('--ignore-load-errors') ||
+        # wkhtmltopdf v0.10.0 beta4 replaces ignore-load-errors with load-error-handling
+        # https://code.google.com/p/wkhtmltopdf/issues/detail?id=55
+        %w(skip ignore).include?(@options['--load-error-handling'])
     end
 
 end
