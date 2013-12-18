@@ -25,6 +25,7 @@ class PDFKit
     @stylesheets = []
 
     @options = PDFKit.configuration.default_options.merge(options)
+    @options.delete(:quiet) if PDFKit.configuration.verbose?
     @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
     @options = normalize_options(@options)
 
@@ -34,7 +35,6 @@ class PDFKit
   def command(path = nil)
     args = [executable]
     args += @options.to_a.flatten.compact
-    args << '--quiet'
 
     if @source.html?
       args << '-' # Get HTML from stdin
