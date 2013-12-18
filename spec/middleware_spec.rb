@@ -328,6 +328,12 @@ describe PDFKit::Middleware do
       body.should == "<link href=\"http://example.com/stylesheets/application.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" />"
     end
 
+    it "should correctly parse relative url with double quotes" do
+      @body = %{<link href='//fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>}
+      body = @pdf.send :translate_paths, @body, @env
+      body.should == "<link href='//fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>"
+    end
+
     it "should return the body even if there are no valid substitutions found" do
       @body = "NO MATCH"
       body = @pdf.send :translate_paths, @body, @env
