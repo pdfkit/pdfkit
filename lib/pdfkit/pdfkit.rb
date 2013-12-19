@@ -88,8 +88,8 @@ class PDFKit
       found = {}
       content.scan(/<meta [^>]*>/) do |meta|
         if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
-          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
-          found[name.to_sym] = meta.scan(/content=["']([^"']*)/)[0][0]
+          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
+          found[name] = meta.scan(/content=["'](.*[^\\])["']/)[0][0]
         end
       end
 
@@ -117,7 +117,12 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
-        normalized_key = "--#{normalize_arg key}"
+        normalized_key = if key.is_a? Array
+                           ["--#{normalize_arg key.first}"] + key[1..-1].map(&:to_s)
+                         else
+                           "--#{normalize_arg key}"
+                         end
+
         normalized_options[normalized_key] = normalize_value(value)
       end
       normalized_options
