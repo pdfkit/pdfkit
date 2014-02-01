@@ -40,12 +40,15 @@ kit = PDFKit.new(File.new('/path/to/html'))
 
 # Add any kind of option through meta tags
 PDFKit.new('<html><head><meta name="pdfkit-page_size" content="Letter"')
+PDFKit.new('<html><head><meta name="pdfkit-cookie cookie_name1" content="cookie_value1"')
+PDFKit.new('<html><head><meta name="pdfkit-cookie cookie_name2" content="cookie_value2"')
 ```
 ### Using cookies in scraping
 If you want to pass a cookie to cookie to pdfkit to scrape a website, you can 
 pass it in a hash:
 ```ruby
-kit = PDFKit.new(url, cookie: {cookie_name, cookie_value})
+kit = PDFKit.new(url, cookie: {cookie_name: :cookie_value})
+kit = PDFKit.new(url, [:cookie, :cookie_name1] => :cookie_val1, [:cookie, :cookie_name2] => :cookie_val2)
 ```
 ## Configuration
 If you're on Windows or you installed wkhtmltopdf by hand to a location other than `/usr/local/bin` you will need to tell PDFKit where the binary is. You can configure PDFKit like so:

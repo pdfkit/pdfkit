@@ -61,6 +61,19 @@ describe PDFKit do
       command.should include "--replace foo bar"
     end
 
+    it "should setup one cookie only" do
+      pdfkit = PDFKit.new('html', cookie: {cookie_name: :cookie_value})
+      command = pdfkit.command
+      command.should include "--cookie cookie_name cookie_value"
+    end
+
+    it "should setup multiple cookies" do
+      pdfkit = PDFKit.new('html', [:cookie, :cookie_name1] => :cookie_val1, [:cookie, :cookie_name2] => :cookie_val2)
+      command = pdfkit.command
+      command.should include "--cookie cookie_name1 cookie_val1"
+      command.should include "--cookie cookie_name2 cookie_val2"
+    end
+
     it "will not include default options it is told to omit" do
       PDFKit.configure do |config|
         config.default_options[:disable_smart_shrinking] = true
@@ -117,6 +130,20 @@ describe PDFKit do
       command = pdfkit.command
       command.should include "--page-size Legal"
       command.should include "--orientation Landscape"
+    end
+
+    it "should detect cookies meta tag" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-cookie rails_session" content='rails_session_value' />
+            <meta name="pdfkit-cookie cookie_variable" content='cookie_variable_value' />
+          </head>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      command = pdfkit.command
+      command.should include "--cookie rails_session rails_session_value --cookie cookie_variable cookie_variable_value"
     end
 
     it "should detect special pdfkit meta tags despite bad markup" do
