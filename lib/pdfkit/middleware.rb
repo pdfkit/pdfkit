@@ -36,13 +36,14 @@ class PDFKit
           headers.delete('ETag')
           headers.delete('Cache-Control')
         end
+
         if headers['PDFKit-save-pdf']
           File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
           headers.delete('PDFKit-save-pdf')
         end
 
-        headers["Content-Length"]         = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
-        headers["Content-Type"]           = "application/pdf"
+        headers['Content-Length']         = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
+        headers['Content-Type']           = 'application/pdf'
       end
 
       [status, headers, response]
@@ -55,7 +56,7 @@ class PDFKit
       # Host with protocol
       root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
 
-      body.gsub(/(href|src)=(['"])\/([^\"']*|[^"']*)['"]/, '\1=\2' + root + '\3\2')
+      body.gsub(/(href|src)=(['"])\/([^\/]([^\"']*|[^"']*))['"]/, '\1=\2' + root + '\3\2')
     end
 
     def rendering_pdf?
@@ -99,7 +100,7 @@ class PDFKit
       %w[PATH_INFO REQUEST_URI].each { |e| env[e] = path }
 
       env['HTTP_ACCEPT'] = concat(env['HTTP_ACCEPT'], Rack::Mime.mime_type('.html'))
-      env["Rack-Middleware-PDFKit"] = "true"
+      env['Rack-Middleware-PDFKit'] = 'true'
     end
 
     def concat(accepts, type)
