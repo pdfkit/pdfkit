@@ -127,8 +127,8 @@ class PDFKit
 
         # If the option is repeatable, attempt to normalize all values
         if REPEATABLE_OPTIONS.include? normalized_key
-          normalize_repeatable_value(value) do |normalized_value|
-            normalized_options[normalized_key] = normalized_value
+          normalize_repeatable_value(value) do |normalized_key_piece, normalized_value|
+            normalized_options[[normalized_key, normalized_key_piece]] = normalized_value
           end
         else # Otherwise, just normalize it like usual
           normalized_options[normalized_key] = normalize_value(value)
@@ -157,18 +157,16 @@ class PDFKit
 
     def normalize_repeatable_value(value)
       case value
-      when TrueClass
-        yield value
       when Hash
-        value.each_pair do |k, v|
-          yield "#{k.to_s} #{v.to_s}"
+        value.each_pair do |key, value|
+          yield [normalize_value(key), normalize_value(value)]
         end
       when Array
-        value.each do |item|
-          yield normalize_value(item)
+        value.each do |(key, value)|
+          yield [normalize_value(key), normalize_value(value)]
         end
       else
-        normalize_value(item)
+        [normalize_value(value), '']
       end
     end
 
