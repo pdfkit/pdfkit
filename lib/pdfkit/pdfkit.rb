@@ -81,6 +81,8 @@ class PDFKit
 
   protected
 
+    REPEATABLE_OPTIONS = %w[--allow, --cookie, --custom-header, --post, --post-file, --run-script]
+
     def find_options_in_meta(content)
       # Read file if content is a File
       content = content.read if content.is_a?(File)
@@ -117,14 +119,20 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
-        normalized_key = if key.is_a? Array
-                           ["--#{normalize_arg key.first}"] + key[1..-1].map(&:to_s)
-                         else
-                           "--#{normalize_arg key}"
-                         end
 
-        normalized_options[normalized_key] = normalize_value(value)
+        # The actual option for wkhtmltopdf
+        normalized_key = "--#{normalize_arg key}"
+
+        # If the option is repeatable, attempt to normalize all values
+        if REPEATABLE_OPTIONS.include? normalized_key
+          normalize_repeatable_value(value) do |normalized_value|
+            normalized_options[normalized_key] = normalized_value
+          end
+        else # Otherwise, just normalize it like usual
+          normalized_options[normalized_key] = normalize_value(value)
+        end
       end
+
       normalized_options
     end
 
@@ -142,6 +150,23 @@ class PDFKit
         value.flatten.collect{|x| x.to_s}
       else
         value.to_s
+      end
+    end
+
+    def normalize_repeatable_value(value)
+      case value
+      when TrueClass
+        yield value
+      when Hash
+        value.each_pair do |k, v|
+          yield "#{k.to_s} #{v.to_s}"
+        end
+      when Array
+        value.each do |item|
+          yield normalize_value(item)
+        end
+      else
+        normalize_value(item)
       end
     end
 

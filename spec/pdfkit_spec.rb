@@ -67,8 +67,15 @@ describe PDFKit do
       command.should include "--cookie cookie_name cookie_value"
     end
 
-    it "should setup multiple cookies" do
-      pdfkit = PDFKit.new('html', [:cookie, :cookie_name1] => :cookie_val1, [:cookie, :cookie_name2] => :cookie_val2)
+    it "should setup multiple cookies when passed a hash" do
+      pdfkit = PDFKit.new('html', :cookie => {:cookie_name1 => :cookie_val1, :cookie_name2 => :cookie_val2})
+      command = pdfkit.command
+      command.should include "--cookie cookie_name1 cookie_val1"
+      command.should include "--cookie cookie_name2 cookie_val2"
+    end
+
+    it "should setup multiple cookies when passed an array of tuples" do
+      pdfkit = PDFKit.new('html', :cookie => [[:cookie_name1, :cookie_val1], [:cookie_name2, :cookie_val2]])
       command = pdfkit.command
       command.should include "--cookie cookie_name1 cookie_val1"
       command.should include "--cookie cookie_name2 cookie_val2"
