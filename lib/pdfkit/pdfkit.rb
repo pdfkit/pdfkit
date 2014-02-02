@@ -81,6 +81,10 @@ class PDFKit
 
   protected
 
+    # Pulled from:
+    # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
+    REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
+
     def find_options_in_meta(content)
       # Read file if content is a File
       content = content.read if content.is_a?(File)
@@ -88,9 +92,17 @@ class PDFKit
       found = {}
       content.scan(/<meta [^>]*>/) do |meta|
         if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
-          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
-          found[name.to_sym] = meta.scan(/content=["']([^"']*)/)[0][0]
+          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
+          found[name] = meta.scan(/content=["'](.*[^\\])["']/)[0][0]
         end
+      end
+
+      tuple_keys = found.keys.select { |k| k.is_a? Array }
+      tuple_keys.each do |key|
+        value = found.delete key
+        new_key = key.shift
+        found[new_key] ||= {}
+        found[new_key][key] = value
       end
 
       found
@@ -117,9 +129,20 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
+
+        # The actual option for wkhtmltopdf
         normalized_key = "--#{normalize_arg key}"
-        normalized_options[normalized_key] = normalize_value(value)
+
+        # If the option is repeatable, attempt to normalize all values
+        if REPEATABLE_OPTIONS.include? normalized_key
+          normalize_repeatable_value(value) do |normalized_key_piece, normalized_value|
+            normalized_options[[normalized_key, normalized_key_piece]] = normalized_value
+          end
+        else # Otherwise, just normalize it like usual
+          normalized_options[normalized_key] = normalize_value(value)
+        end
       end
+
       normalized_options
     end
 
@@ -137,6 +160,17 @@ class PDFKit
         value.flatten.collect{|x| x.to_s}
       else
         value.to_s
+      end
+    end
+
+    def normalize_repeatable_value(value)
+      case value
+      when Hash, Array
+        value.each do |(key, value)|
+          yield [normalize_value(key), normalize_value(value)]
+        end
+      else
+        [normalize_value(value), '']
       end
     end
 
