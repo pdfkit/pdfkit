@@ -83,7 +83,7 @@ class PDFKit
 
     # Pulled from:
     # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
-    REPEATABLE_OPTIONS = %w[--allow, --cookie, --custom-header, --post, --post-file, --run-script]
+    REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
 
     def find_options_in_meta(content)
       # Read file if content is a File
@@ -157,11 +157,7 @@ class PDFKit
 
     def normalize_repeatable_value(value)
       case value
-      when Hash
-        value.each_pair do |key, value|
-          yield [normalize_value(key), normalize_value(value)]
-        end
-      when Array
+      when Hash, Array
         value.each do |(key, value)|
           yield [normalize_value(key), normalize_value(value)]
         end
