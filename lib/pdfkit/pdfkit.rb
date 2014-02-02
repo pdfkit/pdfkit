@@ -97,6 +97,14 @@ class PDFKit
         end
       end
 
+      tuple_keys = found.keys.select { |k| k.is_a? Array }
+      tuple_keys.each do |key|
+        value = found.delete key
+        new_key = key.shift
+        found[new_key] ||= {}
+        found[new_key][key] = value
+      end
+
       found
     end
 
