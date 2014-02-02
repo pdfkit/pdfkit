@@ -81,6 +81,8 @@ class PDFKit
 
   protected
 
+    # Pulled from:
+    # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
     REPEATABLE_OPTIONS = %w[--allow, --cookie, --custom-header, --post, --post-file, --run-script]
 
     def find_options_in_meta(content)
