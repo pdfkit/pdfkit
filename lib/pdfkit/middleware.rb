@@ -23,11 +23,7 @@ class PDFKit
         response = [body]
 
         if headers['PDFKit-save-pdf']
-          begin
-            File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
-          rescue
-            #don't crash
-          end
+          File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) } rescue nil
           headers.delete('PDFKit-save-pdf')
         end
 
@@ -35,11 +31,6 @@ class PDFKit
           # Do not cache PDFs
           headers.delete('ETag')
           headers.delete('Cache-Control')
-        end
-
-        if headers['PDFKit-save-pdf']
-          File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) }
-          headers.delete('PDFKit-save-pdf')
         end
 
         headers['Content-Length']         = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
