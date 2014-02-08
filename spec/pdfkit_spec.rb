@@ -207,15 +207,25 @@ describe PDFKit do
         config.verbose = false
       end
     end
+  end
+
+  context 'configuration' do
+    before do
+      @path = PDFKit.configuration.wkhtmltopdf
+    end
+
+    after do
+      PDFKit.configuration.wkhtmltopdf = @path
+    end
 
     it "should allow the user to set a different pdf renderer" do
       PDFKit.configure do |config|
-        config.pdf_renderer = '/usr/bin/fake_html_renderer'
+        config.pdf_renderer = `which which`.chomp
       end
 
       pdfkit = PDFKit.new('html')
       pdfkit.command.should_not include 'wkhtmltopdf'
-      pdfkit.command.should include 'fake_html_renderer'
+      pdfkit.command.should include 'which'
     end
   end
 
