@@ -185,6 +185,29 @@ describe PDFKit do
       command.should include "--orientation Landscape"
     end
 
+    it "should not use quiet" do
+      pdfkit = PDFKit.new('html', quiet: false)
+      pdfkit.command.should_not include '--quiet'
+    end
+
+    it "should use quiet option by defautl" do
+      pdfkit = PDFKit.new('html')
+      pdfkit.command.should include '--quiet'
+    end
+
+    it "should not use quiet option in verbose mode" do
+      PDFKit.configure do |config|
+        config.verbose = true
+      end
+
+      pdfkit = PDFKit.new('html')
+      pdfkit.command.should_not include '--quiet'
+
+      PDFKit.configure do |config|
+        config.verbose = false
+      end
+    end
+
   end
 
   context "#to_pdf" do
@@ -245,9 +268,16 @@ describe PDFKit do
       pdfkit.source.to_s.should include("<style>#{File.read(css)}</style></head>")
     end
 
+    #NOTICE: This test is failed if use wkhtmltopdf-binary (0.9.9.1)
     it "should throw an error if it is unable to connect" do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
       lambda { pdfkit.to_pdf }.should raise_error /exitstatus=2/
+    end
+
+    it "should not throw an error if it is unable to connect", pending: 'this test works for wkhtmltopdf-binary (0.9.9.1)' do
+      pdfkit = PDFKit.new("http://localhost/this-should-not-be-found/404.html")
+      pdf = pdfkit.to_pdf
+      pdf[0...4].should == "%PDF" # PDF Signature at the beginning
     end
 
     it "should generate PDF if there are missing assets" do
