@@ -208,6 +208,15 @@ describe PDFKit do
       end
     end
 
+    it "should allow the user to set a different pdf renderer" do
+      PDFKit.configure do |config|
+        config.pdf_renderer = '/usr/bin/fake_html_renderer'
+      end
+
+      pdfkit = PDFKit.new('html')
+      pdfkit.command.should_not include 'wkhtmltopdf'
+      pdfkit.command.should include 'fake_html_renderer'
+    end
   end
 
   context "#to_pdf" do
