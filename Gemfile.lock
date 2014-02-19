@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pdfkit (0.5.4)
+    pdfkit (0.6.0)
 
 GEM
   remote: https://rubygems.org/
