@@ -1,3 +1,14 @@
+2014-02-18
+==================
+  * Bump to 0.6.0
+  * Added ability to run wkhtmltopdf without `--quiet`
+  * Now handles repeatable options as both config parameters and meta tag
+    options
+  * Fix status code 2 being treated as failure
+  * Escape `\X` in styesheets
+  * Allow controllers to set PDFKit-save-pdf
+  * Fix Middleware not respecting subdomains in path
+
 2013-06-12
 ==================
   * Bump to 0.5.4
