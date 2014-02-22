@@ -2,6 +2,7 @@ class PDFKit
   class Configuration
     attr_accessor :meta_tag_prefix, :default_options, :root_url
     attr_writer :wkhtmltopdf, :verbose
+    alias :pdf_renderer= :wkhtmltopdf=
 
     def initialize
       @verbose         = false
@@ -42,6 +43,14 @@ class PDFKit
   #   PDFKit.configure do |config|
   #     config.wkhtmltopdf = '/usr/bin/wkhtmltopdf'
   #     config.verbose     = true
+  #   end
+  #
+  # Alternatively if you wish to use a different implementation:
+  #
+  # @example
+  #   PDFKit.configure do |config|
+  #     config.pdf_renderer = `which weasyprint`.chomp
+  #     config.verbose      = true
   #   end
 
   def self.configuration
