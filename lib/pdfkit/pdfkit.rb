@@ -61,8 +61,9 @@ class PDFKit
     append_stylesheets
 
     invoke = command(path)
+    encoding = options['--encoding'] || 'ASCII-8BIT'
 
-    result = IO.popen(invoke, "wb+") do |pdf|
+    result = IO.popen(invoke, "wb+", :encoding => encoding) do |pdf|
       pdf.puts(@source.to_s) if @source.html?
       pdf.close_write
       pdf.gets(nil)
