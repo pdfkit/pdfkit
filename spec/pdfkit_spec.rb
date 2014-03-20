@@ -167,6 +167,20 @@ describe PDFKit do
       command.should_not include "--disable-smart-shrinking true"
     end
 
+    it "should detect names with hyphens instead of underscores" do
+      body = %{
+        <html>
+          <head>
+            <meta content='Portrait' name='pdfkit-orientation'/>
+            <meta content="10mm" name="pdfkit-margin-bottom"/>
+          </head>
+          <br>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      pdfkit.command.should_not include 'name\='
+    end
+
     it "should detect special pdfkit meta tags despite bad markup" do
       body = %{
         <html>
