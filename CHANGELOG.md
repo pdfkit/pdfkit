@@ -1,3 +1,10 @@
+2014-04-20
+==================
+  * Bump to 0.6.2
+  * There was a bug where parsing meta tags would include the option name
+    causing an invalid command to be generated. This was fixed in #229 after
+    being reported by Frank Oxener.
+
 2014-02-18
 ==================
   * Bump to 0.6.0
