@@ -171,6 +171,7 @@ describe PDFKit do
       body = %{
         <html>
           <head>
+            <meta content='Portrait' name='pdfkit-orientation'/>
             <meta content="10mm" name="pdfkit-margin-bottom"/>
           </head>
           <br>
