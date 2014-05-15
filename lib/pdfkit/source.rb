@@ -17,7 +17,19 @@ class PDFKit
     end
     
     def to_s
-      file? ? @source.path : @source
+      if file?
+        @source.path
+      elsif url?
+        escaped_url
+      else
+        @source
+      end
+    end
+
+    private
+
+    def escaped_url
+      @source.gsub '&', '\\\\&'
     end
   end
 end
