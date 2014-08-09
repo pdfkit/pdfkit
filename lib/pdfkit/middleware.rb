@@ -51,7 +51,7 @@ class PDFKit
     end
 
     def rendering_pdf?
-      @render_pdf
+      @render_pdf || false
     end
 
     def render_as_pdf?

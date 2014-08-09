@@ -2,7 +2,6 @@
 require 'spec_helper'
 
 describe PDFKit do
-
   context "initialization" do
     it "should accept HTML as the source" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
@@ -355,7 +354,7 @@ describe PDFKit do
     it "should not allow shell injection in options" do
       pdfkit = PDFKit.new('html', :header_center => "a title\"; touch #{@test_path} #")
       pdfkit.to_pdf
-      expect(File.exist?(@test_path)).to be_false
+      expect(File.exist?(@test_path)).to eq(false)
     end
   end
 end

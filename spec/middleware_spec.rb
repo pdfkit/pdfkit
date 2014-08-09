@@ -16,11 +16,19 @@ def mock_app(options = {}, conditions = {}, custom_headers = {})
 end
 
 describe PDFKit::Middleware do
-  let(:headers) { {'Content-Type' => "text/html"} }
+  let(:headers) do
+    {'Content-Type' => "text/html"}
+  end
 
   describe "#call" do
     describe "caching" do
-      let(:headers) { {'Content-Type' => "text/html", 'ETag' => 'foo', 'Cache-Control' => 'max-age=2592000, public'} }
+      let(:headers) do
+        {
+          'Content-Type' => "text/html",
+          'ETag' => 'foo',
+          'Cache-Control' => 'max-age=2592000, public'
+        }
+      end
 
       context "by default" do
         before { mock_app }
@@ -42,6 +50,7 @@ describe PDFKit::Middleware do
           get 'http://www.example.org/public/test.pdf'
           expect(last_response.headers["ETag"]).not_to be_nil
         end
+
         it "preserves Cache-Control" do
           get 'http://www.example.org/public/test.pdf'
           expect(last_response.headers["Cache-Control"]).not_to be_nil
@@ -230,7 +239,7 @@ describe PDFKit::Middleware do
 	before do
           #make sure tests don't find an old test_save.pdf
           File.delete('spec/test_save.pdf') if File.exists?('spec/test_save.pdf')
-          expect(File.exists?('spec/test_save.pdf')).to be_false
+          expect(File.exists?('spec/test_save.pdf')).to eq(false)
 	end
 
         context "when header PDFKit-save-pdf is present" do
@@ -238,7 +247,7 @@ describe PDFKit::Middleware do
 	    headers = { 'PDFKit-save-pdf' => 'spec/test_save.pdf' }
             mock_app({}, {only: '/public'}, headers)
 	    get 'http://www.example.org/public/test_save.pdf'
-            expect(File.exists?('spec/test_save.pdf')).to be_true
+            expect(File.exists?('spec/test_save.pdf')).to eq(true)
 	  end
 
           it "should not raise when target directory does not exist" do
@@ -254,7 +263,7 @@ describe PDFKit::Middleware do
           it "should not saved the .pdf to disk" do
             mock_app({}, {only: '/public'}, {} )
 	    get 'http://www.example.org/public/test_save.pdf'
-            expect(File.exists?('spec/test_save.pdf')).to be_false
+            expect(File.exists?('spec/test_save.pdf')).to eq(false)
           end
         end
       end
@@ -366,19 +375,18 @@ describe PDFKit::Middleware do
   it "should not get stuck rendering each request as pdf" do
     mock_app
     # false by default. No requests.
-    expect(@app.send(:rendering_pdf?)).to be_false
+    expect(@app.send(:rendering_pdf?)).to eq(false)
 
     # Remain false on a normal request
     get 'http://www.example.org/public/file'
-    expect(@app.send(:rendering_pdf?)).to be_false
+    expect(@app.send(:rendering_pdf?)).to eq(false)
 
     # Return true on a pdf request.
     get 'http://www.example.org/public/file.pdf'
-    expect(@app.send(:rendering_pdf?)).to be_true
+    expect(@app.send(:rendering_pdf?)).to eq(true)
 
     # Restore to false on any non-pdf request.
     get 'http://www.example.org/public/file'
-    expect(@app.send(:rendering_pdf?)).to be_false
+    expect(@app.send(:rendering_pdf?)).to eq(false)
   end
-
 end

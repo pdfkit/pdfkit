@@ -3,7 +3,6 @@ $LOAD_PATH.unshift(SPEC_ROOT)
 $LOAD_PATH.unshift(File.join(SPEC_ROOT, '..', 'lib'))
 require 'pdfkit'
 require 'rspec'
-require 'rspec/autorun'
 require 'mocha'
 require 'rack'
 require 'rack/test'

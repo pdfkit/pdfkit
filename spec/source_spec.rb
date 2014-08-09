@@ -74,5 +74,4 @@ describe PDFKit::Source do
       expect(source.to_s).to eq('http://google.com')
     end
   end
-  
 end
