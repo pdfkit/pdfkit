@@ -33,7 +33,7 @@ class PDFKit
   end
 
   def command(path = nil)
-    args = [executable]
+    args = []
     args += @options.to_a.flatten.compact
 
     if @source.html?
@@ -44,7 +44,7 @@ class PDFKit
 
     args << (path || '-') # Write to file or stdout
 
-    args.shelljoin
+    [executable, args.shelljoin].join ' '
   end
 
   def executable
