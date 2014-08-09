@@ -26,7 +26,7 @@ describe PDFKit::Source do
   
   describe "#file?" do
     it "should return true if passed a file" do
-      source = PDFKit::Source.new(File.new(__FILE__))
+      source = PDFKit::Source.new(::File.new(__FILE__))
       expect(source).to be_file
     end
     
@@ -48,7 +48,7 @@ describe PDFKit::Source do
     end
     
     it "should return false if passed a file" do
-      source = PDFKit::Source.new(File.new(__FILE__))
+      source = PDFKit::Source.new(::File.new(__FILE__))
       expect(source).not_to be_html
     end
     
@@ -65,7 +65,7 @@ describe PDFKit::Source do
     end
     
     it "should return a path if passed a file" do
-      source = PDFKit::Source.new(File.new(__FILE__))
+      source = PDFKit::Source.new(::File.new(__FILE__))
       expect(source.to_s).to eq(__FILE__)
     end
     
