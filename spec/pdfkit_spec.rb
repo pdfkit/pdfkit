@@ -69,7 +69,7 @@ describe PDFKit do
     it "should not break Windows paths" do
       pdfkit = PDFKit.new('html')
       PDFKit.configuration.stub(:wkhtmltopdf) { 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe' }
-      pdfkit.command.should_not include('Program\ Files')
+      expect(pdfkit.command).not_to include('Program\ Files')
     end
 
     it "should setup multiple cookies when passed a hash" do
