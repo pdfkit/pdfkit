@@ -1,3 +1,10 @@
+2014-08-xx
+=================
+  * Bump to 0.7.0
+  * Fix issue #230 where PDFKit called `bundle exec` without a Gemfile
+  * Fix issue #183 where PDFKit broke the path to wkhtmltopdf.exe by escaping
+    spaces in paths
+
 2014-04-20
 ==================
   * Bump to 0.6.2
