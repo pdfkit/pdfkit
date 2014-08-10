@@ -6,6 +6,7 @@ class PDFKit
       @app        = app
       @options    = options
       @conditions = conditions
+      @render_pdf = false
     end
 
     def call(env)
@@ -51,7 +52,7 @@ class PDFKit
     end
 
     def rendering_pdf?
-      @render_pdf || false
+      @render_pdf
     end
 
     def render_as_pdf?
