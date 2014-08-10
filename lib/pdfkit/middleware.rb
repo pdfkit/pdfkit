@@ -56,25 +56,16 @@ class PDFKit
     end
 
     def render_as_pdf?
-      request_path_is_pdf = @request.path.match(%r{\.pdf$})
+      request_path = @request.path
+      request_path_is_pdf = request_path.match(%r{\.pdf$})
 
       if request_path_is_pdf && @conditions[:only]
-        rules = [@conditions[:only]].flatten
-        rules.any? do |pattern|
-          if pattern.is_a?(Regexp)
-            @request.path =~ pattern
-          else
-            @request.path[0, pattern.length] == pattern
-          end
+        conditions_as_regexp(@conditions[:only]).any? do |pattern|
+          request_path =~ pattern
         end
       elsif request_path_is_pdf && @conditions[:except]
-        rules = [@conditions[:except]].flatten
-        rules.map do |pattern|
-          if pattern.is_a?(Regexp)
-            return false if @request.path =~ pattern
-          else
-            return false if @request.path[0, pattern.length] == pattern
-          end
+        conditions_as_regexp(@conditions[:except]).each do |pattern|
+          return false if request_path =~ pattern
         end
 
         return true
@@ -99,5 +90,10 @@ class PDFKit
       (accepts || '').split(',').unshift(type).compact.join(',')
     end
 
+    def conditions_as_regexp(conditions)
+      [conditions].flatten.map do |pattern|
+        pattern.is_a?(Regexp) ? pattern : Regexp.new('^' + pattern)
+      end
+    end
   end
 end
