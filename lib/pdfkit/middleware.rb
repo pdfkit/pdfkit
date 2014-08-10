@@ -58,29 +58,11 @@ class PDFKit
     def render_as_pdf?
       request_path_is_pdf = @request.path.match(%r{\.pdf$})
 
-      if request_path_is_pdf && @conditions[:only]
-        rules = [@conditions[:only]].flatten
-        rules.any? do |pattern|
-          if pattern.is_a?(Regexp)
-            @request.path =~ pattern
-          else
-            @request.path[0, pattern.length] == pattern
-          end
-        end
-      elsif request_path_is_pdf && @conditions[:except]
-        rules = [@conditions[:except]].flatten
-        rules.map do |pattern|
-          if pattern.is_a?(Regexp)
-            return false if @request.path =~ pattern
-          else
-            return false if @request.path[0, pattern.length] == pattern
-          end
-        end
+      return request_path_is_pdf unless request_path_is_pdf
+      return applied_to_conditions_only? if @conditions[:only]
+      return not_applied_to_conditions_except? if @conditions[:except]
 
-        return true
-      else
-        request_path_is_pdf
-      end
+      request_path_is_pdf
     end
 
     def set_request_to_render_as_pdf(env)
@@ -97,6 +79,30 @@ class PDFKit
 
     def concat(accepts, type)
       (accepts || '').split(',').unshift(type).compact.join(',')
+    end
+
+    def applied_to_conditions_only?
+      rules = [@conditions[:only]].flatten
+      rules.any? do |pattern|
+        if pattern.is_a?(Regexp)
+          @request.path =~ pattern
+        else
+          @request.path[0, pattern.length] == pattern
+        end
+      end
+    end
+
+    def not_applied_to_conditions_except?
+      rules = [@conditions[:except]].flatten
+      rules.map do |pattern|
+        if pattern.is_a?(Regexp)
+          return false if @request.path =~ pattern
+        else
+          return false if @request.path[0, pattern.length] == pattern
+        end
+      end
+
+      return true
     end
 
   end
