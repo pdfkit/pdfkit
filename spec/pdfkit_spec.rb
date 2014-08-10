@@ -248,19 +248,19 @@ describe PDFKit do
       file_path = "/my/file/path.pdf"
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
 
-      mockPdf = mock(Object)
-      mockPdf.should_receive(:puts)
-      mockPdf.should_not_receive(:gets) # do no read the contents when given a file path
-      mockPdf.should_receive(:close_write)
+      mock_pdf = double
+      expect(mock_pdf).to receive(:puts)
+      expect(mock_pdf).not_to receive(:gets) # do no read the contents when given a file path
+      expect(mock_pdf).to receive(:close_write)
       
 
-      IO.should_receive(:popen) do |args, mode, &block|
-        block.call(mockPdf)
+      expect(IO).to receive(:popen) do |args, mode, &block|
+        block.call(mock_pdf)
       end
 
-      File.should_receive(:size).with(file_path).and_return(50)
+      expect(::File).to receive(:size).with(file_path).and_return(50)
 
-      file = pdfkit.to_pdf(file_path)
+      pdfkit.to_pdf(file_path)
     end
 
     it "should generate a PDF of the HTML" do
