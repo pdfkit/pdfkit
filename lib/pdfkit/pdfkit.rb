@@ -64,12 +64,14 @@ class PDFKit
     result = IO.popen(invoke, "wb+") do |pdf|
       pdf.puts(@source.to_s) if @source.html?
       pdf.close_write
-      pdf.gets(nil)
+      pdf.gets(nil) if path.nil?
     end
-    result = File.read(path) if path
+    
+    raise "command failed: #{invoke}" if 
 
-    # $? is thread safe per http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if result.to_s.strip.empty? or !successful?($?)
+    # $? is thread safe per
+    # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
+    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if empty_result?(path, result) or !successful?($?)
     return result
   end
 
@@ -165,8 +167,8 @@ class PDFKit
     def normalize_repeatable_value(value)
       case value
       when Hash, Array
-        value.each do |(key, value)|
-          yield [normalize_value(key), normalize_value(value)]
+        value.each do |(key, val)|
+          yield [normalize_value(key), normalize_value(val)]
         end
       else
         [normalize_value(value), '']
@@ -181,6 +183,10 @@ class PDFKit
       return true if status.exitstatus == 2 && error_handling?
 
       false
+    end
+
+    def empty_result?(path, result)
+      (path && File.size(path) == 0) || (path.nil? && result.to_s.strip.empty?)
     end
 
     def error_handling?

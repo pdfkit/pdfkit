@@ -244,6 +244,25 @@ describe PDFKit do
   end
 
   context "#to_pdf" do
+    it "should not read the contents of the pdf when saving it as a file" do
+      file_path = "/my/file/path.pdf"
+      pdfkit = PDFKit.new('html', :page_size => 'Letter')
+
+      mock_pdf = double
+      expect(mock_pdf).to receive(:puts)
+      expect(mock_pdf).not_to receive(:gets) # do no read the contents when given a file path
+      expect(mock_pdf).to receive(:close_write)
+      
+
+      expect(IO).to receive(:popen) do |args, mode, &block|
+        block.call(mock_pdf)
+      end
+
+      expect(::File).to receive(:size).with(file_path).and_return(50)
+
+      pdfkit.to_pdf(file_path)
+    end
+
     it "should generate a PDF of the HTML" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
       pdf = pdfkit.to_pdf
