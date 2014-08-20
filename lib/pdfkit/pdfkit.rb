@@ -16,6 +16,12 @@ class PDFKit
     end
   end
 
+  class ImproperWkhtmltopdfExitStatus < StandardError
+    def initialize(exitstatus, invoke)
+      super("Command failed (exitstatus=#{exitstatus}): #{invoke}")
+    end
+  end
+
   attr_accessor :source, :stylesheets
   attr_reader :options
 
@@ -66,12 +72,10 @@ class PDFKit
       pdf.close_write
       pdf.gets(nil) if path.nil?
     end
-    
-    raise "command failed: #{invoke}" if 
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if empty_result?(path, result) or !successful?($?)
+    raise ImproperWkhtmltopdfExitStatus.new($?.exitstatus, invoke) if empty_result?(path, result) or !successful?($?)
     return result
   end
 
