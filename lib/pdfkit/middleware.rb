@@ -43,12 +43,14 @@ class PDFKit
 
     private
 
-    # Change relative paths to absolute
+    # Change relative paths to absolute, and relative protocols to absolute protocols
     def translate_paths(body, env)
       # Host with protocol
       root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
+      body =  body.gsub(/(href|src)=(['"])\/([^\/]([^\"']*|[^"']*))['"]/, '\1=\2' + root + '\3\2')
 
-      body.gsub(/(href|src)=(['"])\/([^\/]([^\"']*|[^"']*))['"]/, '\1=\2' + root + '\3\2')
+      protocol = "#{env['rack.url_scheme']}://"
+      body.gsub(/(href|src)=(['"])\/\/([^\"']*|[^"']*)['"]/,'\1=\2' + protocol + '\3\2')
     end
 
     def rendering_pdf?
