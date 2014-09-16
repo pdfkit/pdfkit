@@ -1,10 +1,12 @@
 require 'shellwords'
 
 class PDFKit
+  NO_EXPAND_OPTIONS = ["cover" ,  "toc"]
+
   GLOBAL_OPTIONS = ["--collate", "--grayscale", "--page-size", "--page-height",
                     "--orientation", "--lowquality", "--margin-top", "--margin-right",
                     "--margin-bottom", "--margin-left","--title", '--encoding',
-                    "--disable-smart-shrinking"]
+                    "--disable-smart-shrinking", "--print-media-type"]
 
   TOC_OPTIONS = ["--disable-dotted-lines", "--toc-header-text", "--toc-level-indentation",
                  "--disable-toc-links", "--toc-text-size-shrink", "--xsl-style-sheet"]
@@ -40,9 +42,8 @@ class PDFKit
   end
 
   def command(path = nil)
-    args = [executable]
-    args << '--quiet'
-    args += @options.to_a.flatten.compact
+    args = []
+    args << '--quiet' unless PDFKit.configuration.verbose?
 
     temp_options = @options.clone
 
@@ -67,13 +68,13 @@ class PDFKit
       args += toc_options.flatten.compact
     end
 
+    args += temp_options.to_a.flatten.compact
+
     if @source.html?
       args << '-' # Get HTML from stdin
     else
       args << @source.to_s
     end
-
-    args += temp_options.to_a.flatten.compact
 
     args << (path || '-') # Write to file or stdout
 
@@ -164,7 +165,8 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
-        normalized_key = "--#{normalize_arg key}"
+        normalize_arg = normalize_arg key
+        normalized_key = (NO_EXPAND_OPTIONS.include? normalize_arg) ? normalize_arg : "--#{normalize_arg}"
         normalized_options[normalized_key] = normalize_value(value)
       end
 
