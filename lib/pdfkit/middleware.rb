@@ -43,12 +43,22 @@ class PDFKit
 
     private
 
-    # Change relative paths to absolute
+    # Change relative paths to absolute, and relative protocols to absolute protocols
     def translate_paths(body, env)
-      # Host with protocol
-      root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
+      body = translate_relative_paths(body, env)
+      translate_relative_protocols(body, env)
+    end
 
-      body.gsub(/(href|src)=(['"])\/([^\/]([^\"']*|[^"']*))['"]/, '\1=\2' + root + '\3\2')
+    def translate_relative_paths(body, env)
+      root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
+      # Try out this regexp using rubular http://rubular.com/r/vmuGSkheuu
+      body.gsub(/(href|src)=(['"])\/([^\/]([^\"']*|[^"']*))['"]/, "\\1=\\2#{root}\\3\\2")
+    end
+
+    def translate_relative_protocols(body, env)
+      protocol = "#{env['rack.url_scheme']}://"
+      # Try out this regexp using rubular http://rubular.com/r/0Ohk0wFYxV
+      body.gsub(/(href|src)=(['"])\/\/([^\"']*|[^"']*)['"]/, "\\1=\\2#{protocol}\\3\\2")
     end
 
     def rendering_pdf?

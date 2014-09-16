@@ -340,7 +340,7 @@ describe PDFKit::Middleware do
     it "should correctly parse relative url with double quotes" do
       @body = %{<link href='//fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>}
       body = @pdf.send :translate_paths, @body, @env
-      expect(body).to eq("<link href='//fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>")
+      expect(body).to eq("<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>")
     end
 
     it "should return the body even if there are no valid substitutions found" do
