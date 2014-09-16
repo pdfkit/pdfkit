@@ -51,12 +51,14 @@ class PDFKit
 
     def translate_relative_paths(body, env)
       root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
-      body.gsub(/(href|src)=(['"])\/([^\/]([^\"']*|[^"']*))['"]/, '\1=\2' + root + '\3\2')
+      # Try out this regexp using rubular http://rubular.com/r/vmuGSkheuu
+      body.gsub(/(href|src)=(['"])\/([^\/]([^\"']*|[^"']*))['"]/, "\\1=\\2#{root}\\3\\2")
     end
 
     def translate_relative_protocols(body, env)
       protocol = "#{env['rack.url_scheme']}://"
-      body.gsub(/(href|src)=(['"])\/\/([^\"']*|[^"']*)['"]/,'\1=\2' + protocol + '\3\2')
+      # Try out this regexp using rubular http://rubular.com/r/0Ohk0wFYxV
+      body.gsub(/(href|src)=(['"])\/\/([^\"']*|[^"']*)['"]/, "\\1=\\2#{protocol}\\3\\2")
     end
 
     def rendering_pdf?
