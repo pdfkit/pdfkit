@@ -43,7 +43,6 @@ class PDFKit
 
   def command(path = nil)
     args = []
-    args << '--quiet' unless PDFKit.configuration.verbose?
 
     temp_options = @options.clone
 
