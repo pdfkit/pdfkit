@@ -165,13 +165,25 @@ class PDFKit
 
       options.each do |key, value|
         next if !value
+
+        # The actual option for wkhtmltopdf
         normalize_arg = normalize_arg key
         normalized_key = (NO_EXPAND_OPTIONS.include? normalize_arg) ? normalize_arg : "--#{normalize_arg}"
-        normalized_options[normalized_key] = normalize_value(value)
+
+        # If the option is repeatable, attempt to normalize all values
+        if REPEATABLE_OPTIONS.include? normalized_key
+          normalize_repeatable_value(value) do |normalized_key_piece, normalized_value|
+            normalized_options[[normalized_key, normalized_key_piece]] = normalized_value
+          end
+        else # Otherwise, just normalize it like usual
+          normalized_options[normalized_key] = normalize_value(value)
+        end
       end
 
       normalized_options
     end
+
+
 
     def normalize_arg(arg)
       arg.to_s.downcase.gsub(/[^a-z0-9]/,'-')
