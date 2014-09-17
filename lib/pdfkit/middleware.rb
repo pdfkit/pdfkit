@@ -1,3 +1,5 @@
+require 'benchmark'
+
 class PDFKit
 
   class Middleware
@@ -20,7 +22,13 @@ class PDFKit
       if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.respond_to?(:body) ? response.body : response.join
         body = body.join if body.is_a?(Array)
-        body = PDFKit.new(translate_paths(body, env), @options).to_pdf
+
+        benchmark = Benchmark.realtime do
+          body = PDFKit.new(translate_paths(body, env), @options).to_pdf
+        end
+
+        env['rack.errors'].write "Generated PDF for \"#{@request.path_info}\" in #{benchmark} seconds."
+
         response = [body]
 
         if headers['PDFKit-save-pdf']
