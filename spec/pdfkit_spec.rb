@@ -251,8 +251,8 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('"toc"') + 1].should == '"Toc"'
-      pdfkit.command[pdfkit.command.index('"cover"') + 1].should == '"some.html"'
+      pdfkit.command[pdfkit.command.index('toc') - 1].should == ' '
+      pdfkit.command[pdfkit.command.index('cover') - 1].should == ' '
     end
 
     it "should work for meta tags without content" do
