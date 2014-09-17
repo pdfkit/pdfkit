@@ -1,6 +1,15 @@
 require 'shellwords'
 
 class PDFKit
+  NO_EXPAND_OPTIONS = ["cover" ,  "toc"]
+
+  GLOBAL_OPTIONS = ["--collate", "--grayscale", "--page-size", "--page-height",
+                    "--orientation", "--lowquality", "--margin-top", "--margin-right",
+                    "--margin-bottom", "--margin-left","--title", '--encoding',
+                    "--disable-smart-shrinking", "--print-media-type"]
+
+  TOC_OPTIONS = ["--disable-dotted-lines", "--toc-header-text", "--toc-level-indentation",
+                 "--disable-toc-links", "--toc-text-size-shrink", "--xsl-style-sheet"]
 
   class NoExecutableError < StandardError
     def initialize
@@ -33,7 +42,32 @@ class PDFKit
   end
 
   def command(path = nil)
-    args = @options.to_a.flatten.compact
+    args = []
+
+    temp_options = @options.clone
+
+
+    global_options = temp_options.to_a - temp_options.delete_if{|key, value| GLOBAL_OPTIONS.include?(key) }.to_a
+    if global_options
+      args += global_options.flatten.compact
+    end
+
+    if temp_options.has_key?("cover")
+      temp_option = temp_options.delete("cover")
+      args += {"cover" => temp_option}.to_a.flatten.compact
+    end
+
+    if temp_options.has_key?("toc")
+      temp_option = temp_options.delete("toc")
+      args += {"toc" => temp_option}.to_a.flatten.compact
+    end
+
+    toc_options = temp_options.to_a - temp_options.delete_if{|key, value| TOC_OPTIONS.include?(key) }.to_a
+    if toc_options
+      args += toc_options.flatten.compact
+    end
+
+    args += temp_options.to_a.flatten.compact
 
     if @source.html?
       args << '-' # Get HTML from stdin
@@ -86,28 +120,32 @@ class PDFKit
     # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
     REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
 
-    def find_options_in_meta(content)
-      # Read file if content is a File
-      content = content.read if content.is_a?(File)
+  def find_options_in_meta(content)
+    # Read file if content is a File
+    content = content.read if content.is_a?(File)
 
-      found = {}
-      content.scan(/<meta [^>]*>/) do |meta|
-        if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
-          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
+    found = {}
+    content.scan(/<meta [^>]*>/) do |meta|
+      if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
+        name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
+        if meta.include?('content=')
           found[name] = meta.scan(/content=["']([^"'\\]+)["']/)[0][0]
+        else
+          found[name]={}
         end
       end
-
-      tuple_keys = found.keys.select { |k| k.is_a? Array }
-      tuple_keys.each do |key|
-        value = found.delete key
-        new_key = key.shift
-        found[new_key] ||= {}
-        found[new_key][key] = value
-      end
-
-      found
     end
+
+    tuple_keys = found.keys.select { |k| k.is_a? Array }
+    tuple_keys.each do |key|
+      value = found.delete key
+      new_key = key.shift
+      found[new_key] ||= {}
+      found[new_key][key] = value
+    end
+
+    found
+  end
 
     def style_tag_for(stylesheet)
       "<style>#{File.read(stylesheet)}</style>"
@@ -132,7 +170,8 @@ class PDFKit
         next if !value
 
         # The actual option for wkhtmltopdf
-        normalized_key = "--#{normalize_arg key}"
+        normalize_arg = normalize_arg key
+        normalized_key = (NO_EXPAND_OPTIONS.include? normalize_arg) ? normalize_arg : "--#{normalize_arg}"
 
         # If the option is repeatable, attempt to normalize all values
         if REPEATABLE_OPTIONS.include? normalized_key
@@ -146,6 +185,8 @@ class PDFKit
 
       normalized_options
     end
+
+
 
     def normalize_arg(arg)
       arg.to_s.downcase.gsub(/[^a-z0-9]/,'-')
