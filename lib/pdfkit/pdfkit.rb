@@ -120,28 +120,32 @@ class PDFKit
     # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
     REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
 
-    def find_options_in_meta(content)
-      # Read file if content is a File
-      content = content.read if content.is_a?(File)
+  def find_options_in_meta(content)
+    # Read file if content is a File
+    content = content.read if content.is_a?(File)
 
-      found = {}
-      content.scan(/<meta [^>]*>/) do |meta|
-        if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
-          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0]
-          found[name.to_sym] = meta.scan(/content=["']([^"']*)/)[0][0]
+    found = {}
+    content.scan(/<meta [^>]*>/) do |meta|
+      if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
+        name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
+        if meta.include?('content=')
+          found[name] = meta.scan(/content=["']([^"'\\]+)["']/)[0][0]
+        else
+          found[name]={}
         end
       end
-
-      tuple_keys = found.keys.select { |k| k.is_a? Array }
-      tuple_keys.each do |key|
-        value = found.delete key
-        new_key = key.shift
-        found[new_key] ||= {}
-        found[new_key][key] = value
-      end
-
-      found
     end
+
+    tuple_keys = found.keys.select { |k| k.is_a? Array }
+    tuple_keys.each do |key|
+      value = found.delete key
+      new_key = key.shift
+      found[new_key] ||= {}
+      found[new_key][key] = value
+    end
+
+    found
+  end
 
     def style_tag_for(stylesheet)
       "<style>#{File.read(stylesheet)}</style>"

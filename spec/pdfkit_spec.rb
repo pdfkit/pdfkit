@@ -265,7 +265,7 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      pdfkit.command[pdfkit.command.index('"--default-header"') + 1][0..2].should == '"--'
+      expect(pdfkit.command.include?('--default-header')).to be_truthy
     end
 
     it "should put toc option just before the page and page options" do
