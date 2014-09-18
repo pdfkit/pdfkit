@@ -58,6 +58,47 @@ describe PDFKit::Middleware do
       end
     end
 
+    describe "logging" do
+      before { mock_app }
+
+      it "does not log by defalut" do
+        get 'http://www.example.org/public/test.pdf'
+
+        rack_errors = @env["rack.errors"].instance_variable_get("@error").string
+        expect(rack_errors).to eq("")
+      end
+
+      it "log to rack.errors" do
+        PDFKit.configure do |config|
+          config.benchmark_logger = "rack.errors"
+        end
+
+        get 'http://www.example.org/public/test.pdf'
+
+        rack_errors = @env["rack.errors"].instance_variable_get("@error").string
+        expect(rack_errors).to include('Generated PDF for "/public/test" in')
+      end
+
+      it "log to logger object" do
+        require 'logger'
+        log_device = StringIO.new
+
+        PDFKit.configure do |config|
+          config.benchmark_logger = Logger.new log_device
+        end
+
+        # expect(@logger).to receive(:<<) { |arg| expect(arg).to start_with('Generated PDF for "/public/test" in') }
+        get 'http://www.example.org/public/test.pdf'
+        expect(log_device.string).to include('Generated PDF for "/public/test" in')
+      end
+
+      after do
+        PDFKit.configure do |config|
+          config.benchmark_logger = nil
+        end
+      end
+    end
+
     describe "conditions" do
       describe ":only" do
 

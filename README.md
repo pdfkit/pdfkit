@@ -113,6 +113,25 @@ headers['PDFKit-save-pdf'] = 'path/to/saved.pdf'
 
 Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent back to the client.  If the path is not writable/non-existant the write will fail silently.  The `PDFKit-save-pdf` header is never sent back to the client.
 
+**Logging**
+
+The middleware supports logging a benchmark of how long the wkhtmltopdf command took by setting the PDFKit configuration option to a logger object or to `'rack.errors'` string to log to the Rack error output stream.
+
+For example:
+```ruby
+PDFKit.configure do |config|
+  config.benchmark_logger = 'rack.errors'
+end
+```
+
+or
+
+```ruby
+PDFKit.configure do |config|
+  config.benchmark_logger = Logger.new STDOUT
+end
+```
+
 ## Troubleshooting
 
 *  **Single thread issue:** In development environments it is common to run a

@@ -1,11 +1,12 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :default_options, :root_url
+    attr_accessor :meta_tag_prefix, :default_options, :root_url, :benchmark_logger
     attr_writer :wkhtmltopdf, :verbose
 
     def initialize
       @verbose         = false
       @meta_tag_prefix = 'pdfkit-'
+      @benchmark_logger = nil
       @default_options = {
         :disable_smart_shrinking => false,
         :quiet => true,

@@ -27,7 +27,14 @@ class PDFKit
           body = PDFKit.new(translate_paths(body, env), @options).to_pdf
         end
 
-        env['rack.errors'].write "Generated PDF for \"#{@request.path_info}\" in #{benchmark} seconds."
+        logger = PDFKit.configuration.benchmark_logger
+        unless logger.nil?
+          if logger == "rack.errors"
+            env["rack.errors"].write "Generated PDF for \"#{@request.path_info}\" in #{benchmark} seconds."
+          else
+            logger << "Generated PDF for \"#{@request.path_info}\" in #{benchmark} seconds."
+          end
+        end
 
         response = [body]
 
