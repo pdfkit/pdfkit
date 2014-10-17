@@ -243,6 +243,23 @@ describe PDFKit do
 
   end
 
+  context "command on windows" do
+
+    before do
+      allow_any_instance_of(PDFKit).to receive(:is_windows?).and_return(true)
+    end
+
+    it "escapes special windows characters" do
+      pdf = PDFKit.new('html', :title => 'hello(world)')
+      expect(pdf.command).to include 'hello^(world^)'
+    end
+
+    it "quotes spaces in options" do
+      pdf = PDFKit.new('html', :title => 'hello world')
+      expect(pdf.command).to include '--title \'hello world\''
+    end
+  end
+
   context "#to_pdf" do
     it "should not read the contents of the pdf when saving it as a file" do
       file_path = "/my/file/path.pdf"
