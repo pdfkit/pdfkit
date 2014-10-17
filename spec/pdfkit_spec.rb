@@ -333,7 +333,7 @@ describe PDFKit do
     end
 
     it "should generate PDF if there are missing assets" do
-      pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>", ignore_load_errors: true)
+      pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>")
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
     end
