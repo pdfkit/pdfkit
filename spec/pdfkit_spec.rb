@@ -278,7 +278,8 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      expect(pdfkit.command[pdfkit.command.index('"toc"') + 1]).to == '"-"'
+      commands = pdfkit.command.split(' ')
+      expect(commands[commands.index('toc') + 1]).to eql '--javascript-delay'
     end
 
     it "should put a toc-option right after toc" do
@@ -292,7 +293,8 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      expect(pdfkit.command[pdfkit.command.index('"toc"') + 1]).to == '"--xsl-style-sheet"'
+      commands = pdfkit.command.split(' ')
+      expect(commands[commands.index('toc') + 1]).to eql "--xsl-style-sheet"
     end
 
     it "should put cover before page and page options" do
@@ -305,7 +307,8 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      expect(pdfkit.command[pdfkit.command.index('"cover"') + 2]).to == '"-"'
+      commands = pdfkit.command.split(' ')
+      expect(commands[commands.index('cover') + 2]).to eql '--javascript-delay'
     end
 
     it "should work for meta tags without content" do
@@ -318,7 +321,9 @@ describe PDFKit do
         </html>
       }
       pdfkit = PDFKit.new(body)
-      expect(pdfkit.command[pdfkit.command.index('"toc"') + 1][0..2]).to == '"-"'
+      commands = pdfkit.command.split(' ')
+      puts commands.inspect
+      expect(commands[commands.index('toc') + 1][0]).to eql '-'
     end
 
   end

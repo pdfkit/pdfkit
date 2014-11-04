@@ -3,7 +3,7 @@ require 'shellwords'
 class PDFKit
   NO_EXPAND_OPTIONS = ["cover" ,  "toc"]
 
-  GLOBAL_OPTIONS = ["--collate", "--grayscale", "--page-size", "--page-height",
+  GLOBAL_OPTIONS = ["--quiet", "--collate", "--grayscale", "--page-size", "--page-height",
                     "--orientation", "--lowquality", "--margin-top", "--margin-right",
                     "--margin-bottom", "--margin-left","--title", '--encoding',
                     "--disable-smart-shrinking", "--print-media-type"]
@@ -43,6 +43,7 @@ class PDFKit
 
   def command(path = nil)
     args = []
+    args << '--quiet' unless PDFKit.configuration.verbose?
 
     temp_options = @options.clone
 
