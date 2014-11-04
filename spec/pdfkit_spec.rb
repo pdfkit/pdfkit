@@ -218,11 +218,6 @@ describe PDFKit do
       expect(command).to include "--orientation Landscape"
     end
 
-    it "should not use quiet" do
-      pdfkit = PDFKit.new('html', quiet: false)
-      expect(pdfkit.command).not_to include '--quiet'
-    end
-
     it "should use quiet option by defautl" do
       pdfkit = PDFKit.new('html')
       expect(pdfkit.command).to include '--quiet'
