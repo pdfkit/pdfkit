@@ -66,8 +66,8 @@ class PDFKit
       pdf.close_write
       pdf.gets(nil) if path.nil?
     end
-    
-    raise "command failed: #{invoke}" if 
+
+    raise "command failed: #{invoke}" if
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
@@ -110,7 +110,15 @@ class PDFKit
     end
 
     def style_tag_for(stylesheet)
-      "<style>#{File.read(stylesheet)}</style>"
+      "<style>#{read_input(stylesheet)}</style>"
+    end
+
+    def read_input(input)
+      if (klazz = input.class) <= String
+        File.read(input)
+      elsif klazz <= StringIO
+        input.read
+      end
     end
 
     def append_stylesheets

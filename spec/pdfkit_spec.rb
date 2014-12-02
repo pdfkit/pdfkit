@@ -252,7 +252,7 @@ describe PDFKit do
       expect(mock_pdf).to receive(:puts)
       expect(mock_pdf).not_to receive(:gets) # do no read the contents when given a file path
       expect(mock_pdf).to receive(:close_write)
-      
+
 
       expect(IO).to receive(:popen) do |args, mode, &block|
         block.call(mock_pdf)
@@ -318,6 +318,14 @@ describe PDFKit do
       pdfkit.stylesheets << css
       pdfkit.to_pdf
       expect(pdfkit.source.to_s).to include("<style>#{File.read(css)}</style></head>")
+    end
+
+    it "should be able to handle StringIO stylesheets" do
+      pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
+      css_file = File.join(SPEC_ROOT,'fixtures','example_with_hex_symbol.css')
+      pdfkit.stylesheets << StringIO.new(File.read(css_file))
+      pdfkit.to_pdf
+      expect(pdfkit.source.to_s).to include("<style>#{File.read(css_file)}</style></head>")
     end
 
     #NOTICE: This test is failed if use wkhtmltopdf-binary (0.9.9.1)
