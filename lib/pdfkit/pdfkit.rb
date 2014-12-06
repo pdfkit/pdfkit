@@ -114,10 +114,12 @@ class PDFKit
     end
 
     def read_input(input)
-      if (klazz = input.class) <= String
+      if input.is_a? String
         File.read(input)
-      elsif klazz <= StringIO
+      elsif input.is_a? StringIO
         input.read
+      else
+        raise ArgumentError, "not a string"
       end
     end
 
