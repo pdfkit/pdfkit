@@ -12,6 +12,17 @@ describe PDFKit::Configuration do
     end
   end
 
+  describe "#executable" do
+    it "returns wkhtmltopdf by default" do
+      expect(subject.executable).to eql subject.wkhtmltopdf
+    end
+
+    it "uses xvfb-run wrapper when option of using xvfb is configured" do
+      expect(subject).to receive(:using_xvfb?).and_return(true)
+      expect(subject.executable).to include 'xvfb-run'
+    end
+  end
+
   describe "#default_options" do
     it "sets defaults for the command options" do
       expect(subject.default_options[:disable_smart_shrinking]).to eql false
@@ -50,6 +61,22 @@ describe PDFKit::Configuration do
     it "is configurable" do
       subject.meta_tag_prefix = 'aDifferentPrefix-'
       expect(subject.meta_tag_prefix).to eql 'aDifferentPrefix-'
+    end
+  end
+
+  describe "#using_xvfb?" do
+    it "can be configured to true" do
+      subject.use_xvfb = true
+      expect(subject.using_xvfb?).to eql true
+    end
+
+    it "defaults to false" do
+      expect(subject.using_xvfb?).to eql false
+    end
+
+    it "can be configured to false" do
+      subject.use_xvfb = false
+      expect(subject.using_xvfb?).to eql false
     end
   end
 

@@ -384,6 +384,24 @@ describe PDFKit do
       end
     end
 
+    it "does not use xvfb-run wrapper by default" do
+      pdfkit = PDFKit.new('html')
+      expect(pdfkit.command).not_to include 'xvfb-run'
+    end
+
+    it "uses xvfb-run wrapper when option of using xvfb is configured" do
+      PDFKit.configure do |config|
+        config.use_xvfb = true
+      end
+
+      pdfkit = PDFKit.new('html')
+      expect(pdfkit.command).to include 'xvfb-run'
+
+      PDFKit.configure do |config|
+        config.use_xvfb = false
+      end
+    end
+
     context "on windows" do
       before do
         allow(PDFKit::OS).to receive(:host_is_windows?).and_return(true)
