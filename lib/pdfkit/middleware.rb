@@ -7,12 +7,12 @@ class PDFKit
       @options    = options
       @conditions = conditions
       @render_pdf = false
+      @caching    = @conditions.delete(:caching) { false }
     end
 
     def call(env)
       @request    = Rack::Request.new(env)
       @render_pdf = false
-      @caching    = @conditions.delete(:caching) { false }
 
       set_request_to_render_as_pdf(env) if render_as_pdf?
       status, headers, response = @app.call(env)
