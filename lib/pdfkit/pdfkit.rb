@@ -66,8 +66,6 @@ class PDFKit
       pdf.close_write
       pdf.gets(nil) if path.nil?
     end
-    
-    raise "command failed: #{invoke}" if 
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
