@@ -6,6 +6,7 @@
     spaces in paths
   * Improve performance by not storing the PDF in memory if a path is
     provided. Thanks @mikefarah
+  * Middleware now infers HTTP or HTTPS from environment for relative URLs
 
 2014-04-20
 ==================
