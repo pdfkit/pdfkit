@@ -68,7 +68,7 @@ describe PDFKit do
 
     it "should not break Windows paths" do
       pdfkit = PDFKit.new('html')
-      PDFKit.configuration.stub(:wkhtmltopdf) { 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe' }
+      allow(PDFKit.configuration).to receive(:wkhtmltopdf).and_return 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe'
       expect(pdfkit.command).not_to include('Program\ Files')
     end
 
