@@ -1,7 +1,6 @@
 require 'shellwords'
 
 class PDFKit
-
   class NoExecutableError < StandardError
     def initialize
       msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
@@ -82,118 +81,117 @@ class PDFKit
 
   protected
 
-    # Pulled from:
-    # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
-    REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
+  # Pulled from:
+  # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
+  REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
 
-    def find_options_in_meta(content)
-      # Read file if content is a File
-      content = content.read if content.is_a?(File)
+  def find_options_in_meta(content)
+    # Read file if content is a File
+    content = content.read if content.is_a?(File)
 
-      found = {}
-      content.scan(/<meta [^>]*>/) do |meta|
-        if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
-          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
-          found[name] = meta.scan(/content=["']([^"'\\]+)["']/)[0][0]
-        end
-      end
-
-      tuple_keys = found.keys.select { |k| k.is_a? Array }
-      tuple_keys.each do |key|
-        value = found.delete key
-        new_key = key.shift
-        found[new_key] ||= {}
-        found[new_key][key] = value
-      end
-
-      found
-    end
-
-    def style_tag_for(stylesheet)
-      "<style>#{File.read(stylesheet)}</style>"
-    end
-
-    def append_stylesheets
-      raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@source.html?
-
-      stylesheets.each do |stylesheet|
-        if @source.to_s.match(/<\/head>/)
-          @source = Source.new(@source.to_s.gsub(/(<\/head>)/) {|s| style_tag_for(stylesheet) + s })
-        else
-          @source.to_s.insert(0, style_tag_for(stylesheet))
-        end
+    found = {}
+    content.scan(/<meta [^>]*>/) do |meta|
+      if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
+        name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
+        found[name] = meta.scan(/content=["']([^"'\\]+)["']/)[0][0]
       end
     end
 
-    def normalize_options(options)
-      normalized_options = {}
-
-      options.each do |key, value|
-        next if !value
-
-        # The actual option for wkhtmltopdf
-        normalized_key = "--#{normalize_arg key}"
-
-        # If the option is repeatable, attempt to normalize all values
-        if REPEATABLE_OPTIONS.include? normalized_key
-          normalize_repeatable_value(value) do |normalized_key_piece, normalized_value|
-            normalized_options[[normalized_key, normalized_key_piece]] = normalized_value
-          end
-        else # Otherwise, just normalize it like usual
-          normalized_options[normalized_key] = normalize_value(value)
-        end
-      end
-
-      normalized_options
+    tuple_keys = found.keys.select { |k| k.is_a? Array }
+    tuple_keys.each do |key|
+      value = found.delete key
+      new_key = key.shift
+      found[new_key] ||= {}
+      found[new_key][key] = value
     end
 
-    def normalize_arg(arg)
-      arg.to_s.downcase.gsub(/[^a-z0-9]/,'-')
-    end
+    found
+  end
 
-    def normalize_value(value)
-      case value
-      when TrueClass, 'true' #ie, ==true, see http://www.ruby-doc.org/core-1.9.3/TrueClass.html
-        nil
-      when Hash
-        value.to_a.flatten.collect{|x| normalize_value(x)}.compact
-      when Array
-        value.flatten.collect{|x| x.to_s}
+  def style_tag_for(stylesheet)
+    "<style>#{File.read(stylesheet)}</style>"
+  end
+
+  def append_stylesheets
+    raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@source.html?
+
+    stylesheets.each do |stylesheet|
+      if @source.to_s.match(/<\/head>/)
+        @source = Source.new(@source.to_s.gsub(/(<\/head>)/) {|s| style_tag_for(stylesheet) + s })
       else
-        value.to_s
+        @source.to_s.insert(0, style_tag_for(stylesheet))
       end
     end
+  end
 
-    def normalize_repeatable_value(value)
-      case value
-      when Hash, Array
-        value.each do |(key, val)|
-          yield [normalize_value(key), normalize_value(val)]
+  def normalize_options(options)
+    normalized_options = {}
+
+    options.each do |key, value|
+      next if !value
+
+      # The actual option for wkhtmltopdf
+      normalized_key = "--#{normalize_arg key}"
+
+      # If the option is repeatable, attempt to normalize all values
+      if REPEATABLE_OPTIONS.include? normalized_key
+        normalize_repeatable_value(value) do |normalized_key_piece, normalized_value|
+          normalized_options[[normalized_key, normalized_key_piece]] = normalized_value
         end
-      else
-        [normalize_value(value), '']
+      else # Otherwise, just normalize it like usual
+        normalized_options[normalized_key] = normalize_value(value)
       end
     end
 
-    def successful?(status)
-      return true if status.success?
+    normalized_options
+  end
 
-      # Some of the codes: https://code.google.com/p/wkhtmltopdf/issues/detail?id=1088
-      # returned when assets are missing (404): https://code.google.com/p/wkhtmltopdf/issues/detail?id=548
-      return true if status.exitstatus == 2 && error_handling?
+  def normalize_arg(arg)
+    arg.to_s.downcase.gsub(/[^a-z0-9]/,'-')
+  end
 
-      false
+  def normalize_value(value)
+    case value
+    when TrueClass, 'true' #ie, ==true, see http://www.ruby-doc.org/core-1.9.3/TrueClass.html
+      nil
+    when Hash
+      value.to_a.flatten.collect{|x| normalize_value(x)}.compact
+    when Array
+      value.flatten.collect{|x| x.to_s}
+    else
+      value.to_s
     end
+  end
 
-    def empty_result?(path, result)
-      (path && File.size(path) == 0) || (path.nil? && result.to_s.strip.empty?)
+  def normalize_repeatable_value(value)
+    case value
+    when Hash, Array
+      value.each do |(key, val)|
+        yield [normalize_value(key), normalize_value(val)]
+      end
+    else
+      [normalize_value(value), '']
     end
+  end
 
-    def error_handling?
-      @options.key?('--ignore-load-errors') ||
-        # wkhtmltopdf v0.10.0 beta4 replaces ignore-load-errors with load-error-handling
-        # https://code.google.com/p/wkhtmltopdf/issues/detail?id=55
-        %w(skip ignore).include?(@options['--load-error-handling'])
-    end
+  def successful?(status)
+    return true if status.success?
 
+    # Some of the codes: https://code.google.com/p/wkhtmltopdf/issues/detail?id=1088
+    # returned when assets are missing (404): https://code.google.com/p/wkhtmltopdf/issues/detail?id=548
+    return true if status.exitstatus == 2 && error_handling?
+
+    false
+  end
+
+  def empty_result?(path, result)
+    (path && File.size(path) == 0) || (path.nil? && result.to_s.strip.empty?)
+  end
+
+  def error_handling?
+    @options.key?('--ignore-load-errors') ||
+      # wkhtmltopdf v0.10.0 beta4 replaces ignore-load-errors with load-error-handling
+      # https://code.google.com/p/wkhtmltopdf/issues/detail?id=55
+      %w(skip ignore).include?(@options['--load-error-handling'])
+  end
 end
