@@ -1,7 +1,5 @@
 class PDFKit
-
   class Middleware
-
     def initialize(app, options = {}, conditions = {})
       @app        = app
       @options    = options
