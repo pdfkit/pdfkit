@@ -51,7 +51,7 @@ kit = PDFKit.new(url, cookie: {cookie_name: :cookie_value})
 kit = PDFKit.new(url, [:cookie, :cookie_name1] => :cookie_val1, [:cookie, :cookie_name2] => :cookie_val2)
 ```
 ## Configuration
-If you're on Windows or you installed wkhtmltopdf by hand to a location other than `/usr/local/bin` you will need to tell PDFKit where the binary is. You can configure PDFKit like so:
+If you're on Windows or you would like to use a specific wkhtmltopdf you installed, you will need to tell PDFKit where the binary is. PDFKit will try to intelligently guess at the location of wkhtmltopdf by running the command `which wkhtmltopdf`. If you are on Windows, want to point PDFKit to a different binary, or are having trouble with getting PDFKit to find your binary, please manually configure the wkhtmltopdf location. You can configure PDFKit like so:
 ```ruby
 # config/initializers/pdfkit.rb
 PDFKit.configure do |config|
