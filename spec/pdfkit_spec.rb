@@ -48,6 +48,16 @@ describe PDFKit do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
       expect(pdfkit.stylesheets).to be_empty
     end
+
+    it "should not prepend cover with --" do
+      pdfkit = PDFKit.new('html', "cover" => 'http://google.com')
+      expect(pdfkit.options).to have_key('cover')
+    end
+
+    it "should not prepend toc with --" do
+      pdfkit = PDFKit.new('html', 'toc' => '')
+      expect(pdfkit.options).to have_key('toc')
+    end
   end
 
   context "command" do
@@ -252,7 +262,7 @@ describe PDFKit do
       expect(mock_pdf).to receive(:puts)
       expect(mock_pdf).not_to receive(:gets) # do no read the contents when given a file path
       expect(mock_pdf).to receive(:close_write)
-      
+
 
       expect(IO).to receive(:popen) do |args, mode, &block|
         block.call(mock_pdf)

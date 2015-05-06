@@ -82,6 +82,7 @@ class PDFKit
   # Pulled from:
   # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
   REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
+  SPECIAL_OPTIONS = %w[cover toc]
 
   def find_options_in_meta(content)
     # Read file if content is a File
@@ -129,7 +130,8 @@ class PDFKit
       next if !value
 
       # The actual option for wkhtmltopdf
-      normalized_key = "--#{normalize_arg key}"
+      normalized_key = "#{normalize_arg key}"
+      normalized_key = "--#{normalized_key}" unless SPECIAL_OPTIONS.include?(key)
 
       # If the option is repeatable, attempt to normalize all values
       if REPEATABLE_OPTIONS.include? normalized_key
