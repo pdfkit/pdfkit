@@ -1,4 +1,4 @@
-2014-08-xx
+2015-05-06
 =================
   * Bump to 0.7.0
   * Fix issue #230 where PDFKit called `bundle exec` without a Gemfile
