@@ -45,8 +45,6 @@ describe PDFKit do
       expect(pdfkit.options).not_to have_key('--disable-smart-shrinking')
     end
 
-    it "handles repeatable keys"
-
     ## options values
     it "parses string option values into strings" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
@@ -88,7 +86,22 @@ describe PDFKit do
       expect(pdfkit.options[['--cookie', 'cookie_name2']]).to eql 'cookie_val2'
     end
 
-    it "handles repeatable values"
+    it "handles repeatable values which are strings" do
+      pdfkit = PDFKit.new('html', allow: 'http://myapp.com')
+      expect(pdfkit.options).to have_key ['--allow', 'http://myapp.com']
+    end
+
+    it "handles repeatable values which are hashes" do
+      pdfkit = PDFKit.new('html', allow: { 'http://myapp.com' => nil, 'http://google.com' => nil })
+      expect(pdfkit.options).to have_key ['--allow', 'http://myapp.com']
+      expect(pdfkit.options).to have_key ['--allow', 'http://google.com']
+    end
+
+    it "handles repeatable values which are arrays" do
+      pdfkit = PDFKit.new('html', allow: ['http://myapp.com', 'http://google.com'])
+      expect(pdfkit.options).to have_key ['--allow', 'http://myapp.com']
+      expect(pdfkit.options).to have_key ['--allow', 'http://google.com']
+    end
 
     ## default options
     it "provides default options" do
