@@ -19,7 +19,7 @@ class PDFKit
     end
 
     def wkhtmltopdf
-      @wkhtmltopdf ||= (defined?(Bundler::GemfileError) && File.exists?('Gemfile') ? `bundle exec which wkhtmltopdf` : `which wkhtmltopdf`).chomp
+      @wkhtmltopdf ||= (defined?(Bundler::GemfileError) && File.exists?('Gemfile') ? `bundle exec which wkhtmltopdf` : `which wkhtmltopdf`).strip
     end
 
     def quiet?
