@@ -130,8 +130,8 @@ class PDFKit
       next if !value
 
       # The actual option for wkhtmltopdf
-      normalized_key = "#{normalize_arg key}"
-      normalized_key = "--#{normalized_key}" unless SPECIAL_OPTIONS.include?(key)
+      normalized_key = normalize_arg key
+      normalized_key = "--#{normalized_key}" unless SPECIAL_OPTIONS.include?(normalized_key)
 
       # If the option is repeatable, attempt to normalize all values
       if REPEATABLE_OPTIONS.include? normalized_key

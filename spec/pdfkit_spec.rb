@@ -58,6 +58,11 @@ describe PDFKit do
       pdfkit = PDFKit.new('html', 'toc' => '')
       expect(pdfkit.options).to have_key('toc')
     end
+
+    it "should handle special params passed as symbols" do
+      pdfkit = PDFKit.new('html', {toc: true})
+      expect(pdfkit.options).to have_key('toc')
+    end
   end
 
   context "command" do
