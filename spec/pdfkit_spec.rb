@@ -2,7 +2,8 @@
 require 'spec_helper'
 
 describe PDFKit do
-  context "initialization" do
+  describe "initialization" do
+    # Source
     it "should accept HTML as the source" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
       expect(pdfkit.source).to be_html
@@ -22,29 +23,93 @@ describe PDFKit do
       expect(pdfkit.source.to_s).to eq(file_path)
     end
 
-    it "should parse the options into a cmd line friedly format" do
+    # Options
+    ## options keys
+    it "drops options without values" do
+      pdfkit = PDFKit.new('html', :page_size => nil)
+      expect(pdfkit.options).not_to have_key('--page-size')
+    end
+
+    it "transforms keys into command-line arguments" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
       expect(pdfkit.options).to have_key('--page-size')
     end
 
-    it "should parse complex options into a cmd line friedly format" do
+    it "transforms complex keys into command-line arguments" do
       pdfkit = PDFKit.new('html', :replace => {'value' => 'something else'} )
       expect(pdfkit.options).to have_key('--replace')
     end
 
-    it "should provide default options" do
+    it "drops options with false or falsey values" do
+      pdfkit = PDFKit.new('html', disable_smart_shrinking: false)
+      expect(pdfkit.options).not_to have_key('--disable-smart-shrinking')
+    end
+
+    it "handles repeatable keys"
+
+    ## options values
+    it "parses string option values into strings" do
+      pdfkit = PDFKit.new('html', :page_size => 'Letter')
+      expect(pdfkit.options['--page-size']).to eql 'Letter'
+    end
+
+    it "drops option values of 'true'" do
+      pdfkit = PDFKit.new('html', disable_smart_shrinking: true)
+      expect(pdfkit.options).to have_key('--disable-smart-shrinking')
+      expect(pdfkit.options['--disable-smart-shrinking']).to be_nil
+    end
+
+    it "parses unknown value formats by transforming them into strings" do
+      pdfkit = PDFKit.new('html', image_dpi: 300)
+      expect(pdfkit.options['--image-dpi']).to eql '300'
+    end
+
+    it "parses hash option values into an array" do
+      pdfkit = PDFKit.new('html', :replace => {'value' => 'something else'} )
+      expect(pdfkit.options['--replace']).to eql ['value', 'something else']
+    end
+
+    it "flattens hash options into the key" do
+      pdfkit = PDFKit.new('html', :cookie => {:cookie_name1 => :cookie_val1, :cookie_name2 => :cookie_val2})
+      expect(pdfkit.options).not_to have_key('--cookie')
+      expect(pdfkit.options[['--cookie', 'cookie_name1']]).to eql 'cookie_val1'
+      expect(pdfkit.options[['--cookie', 'cookie_name2']]).to eql 'cookie_val2'
+    end
+
+    it "parses array option values into a string" do
+      pdfkit = PDFKit.new('html', :replace => ['value', 'something else'] )
+      expect(pdfkit.options['--replace']).to eql ['value', 'something else']
+    end
+
+    it "flattens array options" do
+      pdfkit = PDFKit.new('html', :cookie => [[:cookie_name1, :cookie_val1], [:cookie_name2, :cookie_val2]])
+      expect(pdfkit.options).not_to have_key('--cookie')
+      expect(pdfkit.options[['--cookie', 'cookie_name1']]).to eql 'cookie_val1'
+      expect(pdfkit.options[['--cookie', 'cookie_name2']]).to eql 'cookie_val2'
+    end
+
+    it "handles repeatable values"
+
+    ## default options
+    it "provides default options" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
       ['--margin-top', '--margin-right', '--margin-bottom', '--margin-left'].each do |option|
         expect(pdfkit.options).to have_key(option)
       end
     end
 
-    it "should default to 'UTF-8' encoding" do
+    it "allows overriding default options" do
+      pdfkit = PDFKit.new('html', :page_size => 'A4')
+      expect(pdfkit.options['--page-size']).to eql 'A4'
+    end
+
+    it "defaults to 'UTF-8' encoding" do
       pdfkit = PDFKit.new('Captación')
       expect(pdfkit.options['--encoding']).to eq('UTF-8')
     end
 
-    it "should not have any stylesheedt by default" do
+    # Stylesheets
+    it "has no stylesheet by default" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
       expect(pdfkit.stylesheets).to be_empty
     end
@@ -65,8 +130,22 @@ describe PDFKit do
     end
   end
 
-  context "command" do
-    it "should contstruct the correct command" do
+  describe "#options" do
+    # #options is an attr_reader, but it doesn't really matter. See these two examples:
+    it "cannot be externally overwritten entirely" do
+      pdfkit = PDFKit.new('html', :page_size => 'A4')
+      expect{ pdfkit.options = {} }.to raise_error(NoMethodError)
+    end
+
+    it "has attributes that are externally mutable" do
+      pdfkit = PDFKit.new('html', :page_size => 'A4')
+      pdfkit.options['--page-size'] = 'Letter'
+      expect(pdfkit.options['--page-size']).to eql 'Letter'
+    end
+  end
+
+  describe "#command" do
+    it "should construct the correct command" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12, :replace => {'foo' => 'bar'})
       command = pdfkit.command
       expect(command).to include "wkhtmltopdf"
@@ -138,7 +217,7 @@ describe PDFKit do
       expect(pdfkit.command).to match /#{file_path} -$/
     end
 
-    it "should specify the path for the ouput if a apth is given" do
+    it "should specify the path for the ouput if a path is given" do
       file_path = "/path/to/output.pdf"
       pdfkit = PDFKit.new("html")
       expect(pdfkit.command(file_path)).to match /#{file_path}$/
@@ -238,7 +317,7 @@ describe PDFKit do
       expect(pdfkit.command).not_to include '--quiet'
     end
 
-    it "should use quiet option by defautl" do
+    it "should use quiet option by default" do
       pdfkit = PDFKit.new('html')
       expect(pdfkit.command).to include '--quiet'
     end
@@ -256,9 +335,22 @@ describe PDFKit do
       end
     end
 
+    it "should not use quiet option in verbose mode when option of quiet is configured" do
+      PDFKit.configure do |config|
+        config.verbose = true
+        config.default_options[:quiet] = true
+      end
+
+      pdfkit = PDFKit.new('html')
+      expect(pdfkit.command).not_to include '--quiet'
+
+      PDFKit.configure do |config|
+        config.verbose = false
+      end
+    end
   end
 
-  context "#to_pdf" do
+  describe "#to_pdf" do
     it "should not read the contents of the pdf when saving it as a file" do
       file_path = "/my/file/path.pdf"
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
@@ -354,7 +446,7 @@ describe PDFKit do
     end
   end
 
-  context "#to_file" do
+  describe "#to_file" do
     before do
       @file_path = File.join(SPEC_ROOT,'fixtures','test.pdf')
       File.delete(@file_path) if File.exist?(@file_path)
@@ -375,7 +467,7 @@ describe PDFKit do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
       pdf_data = pdfkit.to_pdf
-      file = pdfkit.to_file(@file_path)
+      pdfkit.to_file(@file_path)
       file_data = open(@file_path, 'rb') {|io| io.read }
       expect(pdf_data.size).to eq(file_data.size)
     end
