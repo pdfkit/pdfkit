@@ -49,7 +49,7 @@ class PDFKit
 
     def translate_relative_paths(body, env)
       root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
-      # Try out this regexp using rubular http://rubular.com/r/vmuGSkheuu
+      # Try out this regexp using rubular http://rubular.com/r/hiAxBNX7KE
       body.gsub(/(href|src)=(['"])\/([^\/"']([^\"']*|[^"']*))?['"]/, "\\1=\\2#{root}\\3\\2")
     end
 
