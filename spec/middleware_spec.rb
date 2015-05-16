@@ -343,6 +343,12 @@ describe PDFKit::Middleware do
       expect(body).to eq("<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>")
     end
 
+    it "should correctly parse multiple tags where first one is root url" do
+      @body = %{<a href='/'><img src='/logo.jpg' ></a>}
+      body = @pdf.send :translate_paths, @body, @env
+      body.should == "<a href='http://example.com/'><img src='http://example.com/logo.jpg' ></a>"
+    end
+
     it "should return the body even if there are no valid substitutions found" do
       @body = "NO MATCH"
       body = @pdf.send :translate_paths, @body, @env
