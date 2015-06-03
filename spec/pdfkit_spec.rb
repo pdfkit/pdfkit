@@ -107,18 +107,23 @@ describe PDFKit do
     it "handles repeatable values which are strings" do
       pdfkit = PDFKit.new('html', allow: 'http://myapp.com')
       expect(pdfkit.options).to have_key ['--allow', 'http://myapp.com']
+      expect(pdfkit.options[['--allow', 'http://myapp.com']]).to eql nil
     end
 
     it "handles repeatable values which are hashes" do
       pdfkit = PDFKit.new('html', allow: { 'http://myapp.com' => nil, 'http://google.com' => nil })
       expect(pdfkit.options).to have_key ['--allow', 'http://myapp.com']
       expect(pdfkit.options).to have_key ['--allow', 'http://google.com']
+      expect(pdfkit.options[['--allow', 'http://myapp.com']]).to eql nil
+      expect(pdfkit.options[['--allow', 'http://google.com']]).to eql nil
     end
 
     it "handles repeatable values which are arrays" do
       pdfkit = PDFKit.new('html', allow: ['http://myapp.com', 'http://google.com'])
       expect(pdfkit.options).to have_key ['--allow', 'http://myapp.com']
       expect(pdfkit.options).to have_key ['--allow', 'http://google.com']
+      expect(pdfkit.options[['--allow', 'http://myapp.com']]).to eql nil
+      expect(pdfkit.options[['--allow', 'http://google.com']]).to eql nil
     end
 
     # Stylesheets
