@@ -152,6 +152,8 @@ class PDFKit
 
   def normalize_value(value)
     case value
+    when nil
+      nil
     when TrueClass, 'true' #ie, ==true, see http://www.ruby-doc.org/core-1.9.3/TrueClass.html
       nil
     when Hash
@@ -170,7 +172,7 @@ class PDFKit
         yield [[option_name, normalize_value(key)], normalize_value(val)]
       end
     else
-      yield [[option_name, normalize_value(value)], '']
+      yield [[option_name, normalize_value(value)], nil]
     end
   end
 
