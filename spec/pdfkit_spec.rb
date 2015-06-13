@@ -448,7 +448,7 @@ describe PDFKit do
     #NOTICE: This test is failed if use wkhtmltopdf-binary (0.9.9.1)
     it "should throw an error if it is unable to connect" do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
-      expect { pdfkit.to_pdf }.to raise_error /exitstatus=2/
+      expect { pdfkit.to_pdf }.to raise_error /exitstatus=1/
     end
 
     it "should not throw an error if it is unable to connect", pending: 'this test works for wkhtmltopdf-binary (0.9.9.1)' do
@@ -458,7 +458,7 @@ describe PDFKit do
     end
 
     it "should generate PDF if there are missing assets" do
-      pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>", ignore_load_errors: true)
+      pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>")
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
     end
