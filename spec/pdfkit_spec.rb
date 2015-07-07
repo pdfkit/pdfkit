@@ -178,6 +178,18 @@ describe PDFKit do
       expect(command).to include "--cookie cookie_name cookie_value"
     end
 
+    it "does not break Windows paths" do
+      pdfkit = PDFKit.new('html')
+      allow(PDFKit.configuration).to receive(:wkhtmltopdf).and_return 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe'
+      expect(pdfkit.command).not_to include('Program\ Files')
+    end
+
+    it "does not shell escape source URLs" do
+      pdfkit = PDFKit.new('https://www.google.com/search?q=pdfkit')
+      # Shelljoin results in https://www.google.com/search\\?q\\=pdfkit
+      expect(pdfkit.command).to include "https://www.google.com/search?q=pdfkit"
+    end
+
     it "sets up multiple cookies when passed multiple cookies" do
       pdfkit = PDFKit.new('html', :cookie => {:cookie_name1 => :cookie_val1, :cookie_name2 => :cookie_val2})
       command = pdfkit.command
