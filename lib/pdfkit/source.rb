@@ -1,8 +1,9 @@
 class PDFKit
   class Source
+    SOURCE_FROM_STDIN = '-'
+
     def initialize(url_file_or_html)
       @source = url_file_or_html
-      URI(url_file_or_html) if url? # Raise if invalid URL to prevent bash shell attacks
     end
 
     def url?
@@ -15,6 +16,16 @@ class PDFKit
 
     def html?
       !(url? || file?)
+    end
+
+    def to_input_for_command
+      if file?
+        @source.path
+      elsif url?
+        URI::escape(@source)
+      else
+        SOURCE_FROM_STDIN
+      end
     end
 
     def to_s
