@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe PDFKit::Source do
+  describe "#new" do
+    it "protects against shell attacks in URLs" do
+      expect{ PDFKit::Source.new('https://google.com/search?q=pdfkit; do_something # --args') }.to raise_error URI::InvalidURIError
+    end
+  end
+
   describe "#url?" do
     it "returns true if passed a url like string" do
       source = PDFKit::Source.new('http://google.com')
