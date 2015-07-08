@@ -366,6 +366,22 @@ describe PDFKit do
         config.verbose = false
       end
     end
+
+    context "on windows" do
+      before do
+        allow_any_instance_of(PDFKit).to receive(:is_windows?).and_return(true)
+      end
+
+      it "escapes special windows characters" do
+        pdf = PDFKit.new('html', :title => 'hello(world)')
+        expect(pdf.command).to include 'hello^(world^)'
+      end
+
+      it "quotes spaces in options" do
+        pdf = PDFKit.new('html', :title => 'hello world')
+        expect(pdf.command).to include '--title \'hello world\''
+      end
+    end
   end
 
   describe "#to_pdf" do
