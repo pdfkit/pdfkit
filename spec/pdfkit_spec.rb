@@ -4,19 +4,19 @@ require 'spec_helper'
 describe PDFKit do
   describe "initialization" do
     # Source
-    it "should accept HTML as the source" do
+    it "accepts HTML as the source" do
       pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
       expect(pdfkit.source).to be_html
       expect(pdfkit.source.to_s).to eq('<h1>Oh Hai</h1>')
     end
 
-    it "should accept a URL as the source" do
+    it "accepts a URL as the source" do
       pdfkit = PDFKit.new('http://google.com')
       expect(pdfkit.source).to be_url
       expect(pdfkit.source.to_s).to eq('http://google.com')
     end
 
-    it "should accept a File as the source" do
+    it "accepts a File as the source" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
       expect(pdfkit.source).to be_file
@@ -126,25 +126,25 @@ describe PDFKit do
       expect(pdfkit.options[['--allow', 'http://google.com']]).to eql nil
     end
 
-    # Stylesheets
-    it "has no stylesheet by default" do
-      pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
-      expect(pdfkit.stylesheets).to be_empty
-    end
-
-    it "should not prepend cover with --" do
+    it "does not prepend cover option with --" do
       pdfkit = PDFKit.new('html', "cover" => 'http://google.com')
       expect(pdfkit.options).to have_key('cover')
     end
 
-    it "should not prepend toc with --" do
+    it "does not prepend the toc option with --" do
       pdfkit = PDFKit.new('html', 'toc' => '')
       expect(pdfkit.options).to have_key('toc')
     end
 
-    it "should handle special params passed as symbols" do
+    it "handles cover and toc  params passed as symbols" do
       pdfkit = PDFKit.new('html', {toc: true})
       expect(pdfkit.options).to have_key('toc')
+    end
+
+    # Stylesheets
+    it "has no stylesheet by default" do
+      pdfkit = PDFKit.new('<h1>Oh Hai</h1>')
+      expect(pdfkit.stylesheets).to be_empty
     end
   end
 
@@ -163,7 +163,7 @@ describe PDFKit do
   end
 
   describe "#command" do
-    it "should construct the correct command" do
+    it "constructs the correct command" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12, :replace => {'foo' => 'bar'})
       command = pdfkit.command
       expect(command).to include "wkhtmltopdf"
@@ -172,26 +172,20 @@ describe PDFKit do
       expect(command).to include "--replace foo bar"
     end
 
-    it "should setup one cookie only" do
+    it "sets up one cookie when hash has only one cookie" do
       pdfkit = PDFKit.new('html', cookie: {cookie_name: :cookie_value})
       command = pdfkit.command
       expect(command).to include "--cookie cookie_name cookie_value"
     end
 
-    it "should not break Windows paths" do
-      pdfkit = PDFKit.new('html')
-      allow(PDFKit.configuration).to receive(:wkhtmltopdf).and_return 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe'
-      expect(pdfkit.command).not_to include('Program\ Files')
-    end
-
-    it "should setup multiple cookies when passed a hash" do
+    it "sets up multiple cookies when passed multiple cookies" do
       pdfkit = PDFKit.new('html', :cookie => {:cookie_name1 => :cookie_val1, :cookie_name2 => :cookie_val2})
       command = pdfkit.command
       expect(command).to include "--cookie cookie_name1 cookie_val1"
       expect(command).to include "--cookie cookie_name2 cookie_val2"
     end
 
-    it "should setup multiple cookies when passed an array of tuples" do
+    it "sets up multiple cookies when passed an array of tuples" do
       pdfkit = PDFKit.new('html', :cookie => [[:cookie_name1, :cookie_val1], [:cookie_name2, :cookie_val2]])
       command = pdfkit.command
       expect(command).to include "--cookie cookie_name1 cookie_val1"
@@ -209,12 +203,12 @@ describe PDFKit do
       expect(pdfkit.command).not_to include('--disable-smart-shrinking')
     end
 
-    it "should encapsulate string arguments in quotes" do
+    it "encapsulates string arguments in quotes" do
       pdfkit = PDFKit.new('html', :header_center => "foo [page]")
       expect(pdfkit.command).to include "--header-center foo\\ \\[page\\]"
     end
 
-    it "should sanitize string arguments" do
+    it "sanitizes string arguments" do
       pdfkit = PDFKit.new('html', :header_center => "$(ls)")
       expect(pdfkit.command).to include "--header-center \\$\\(ls\\)"
     end
@@ -224,24 +218,30 @@ describe PDFKit do
       expect(pdfkit.command).to match /- -$/
     end
 
-    it "specify the URL to the source if it is a url" do
+    it "specifies the URL to the source if it is a url" do
       pdfkit = PDFKit.new('http://google.com')
       expect(pdfkit.command).to match /http:\/\/google.com -$/
     end
 
-    it "should specify the path to the source if it is a file" do
+    it "does not break Windows paths" do
+      pdfkit = PDFKit.new('html')
+      allow(PDFKit.configuration).to receive(:wkhtmltopdf).and_return 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe'
+      expect(pdfkit.command).not_to include('Program\ Files')
+    end
+
+    it "specifies the path to the source if it is a file" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
       expect(pdfkit.command).to match /#{file_path} -$/
     end
 
-    it "should specify the path for the ouput if a path is given" do
+    it "specifies the path for the ouput if a path is given" do
       file_path = "/path/to/output.pdf"
       pdfkit = PDFKit.new("html")
       expect(pdfkit.command(file_path)).to match /#{file_path}$/
     end
 
-    it "should detect special pdfkit meta tags" do
+    it "detects special pdfkit meta tags" do
       body = %{
         <html>
           <head>
@@ -256,7 +256,7 @@ describe PDFKit do
       expect(command).to include "--orientation Landscape"
     end
 
-    it "should detect cookies meta tag" do
+    it "detects cookies meta tag" do
       body = %{
         <html>
           <head>
@@ -270,7 +270,7 @@ describe PDFKit do
       expect(command).to include "--cookie rails_session rails_session_value --cookie cookie_variable cookie_variable_value"
     end
 
-    it "should detect disable_smart_shrinking meta tag" do
+    it "detects disable_smart_shrinking meta tag" do
       body = %{
         <html>
           <head>
@@ -284,7 +284,7 @@ describe PDFKit do
       expect(command).not_to include "--disable-smart-shrinking true"
     end
 
-    it "should detect names with hyphens instead of underscores" do
+    it "detects names with hyphens instead of underscores" do
       body = %{
         <html>
           <head>
@@ -298,7 +298,7 @@ describe PDFKit do
       expect(pdfkit.command).not_to include 'name\='
     end
 
-    it "should detect special pdfkit meta tags despite bad markup" do
+    it "detects special pdfkit meta tags despite bad markup" do
       body = %{
         <html>
           <head>
@@ -314,7 +314,7 @@ describe PDFKit do
       expect(command).to include "--orientation Landscape"
     end
 
-    it "should skip non-pdfkit meta tags" do
+    it "skips non-pdfkit meta tags" do
       body = %{
         <html>
           <head>
@@ -330,17 +330,17 @@ describe PDFKit do
       expect(command).to include "--orientation Landscape"
     end
 
-    it "should not use quiet" do
+    it "does not use quiet when told to" do
       pdfkit = PDFKit.new('html', quiet: false)
       expect(pdfkit.command).not_to include '--quiet'
     end
 
-    it "should use quiet option by default" do
+    it "uses quiet option by default" do
       pdfkit = PDFKit.new('html')
       expect(pdfkit.command).to include '--quiet'
     end
 
-    it "should not use quiet option in verbose mode" do
+    it "does not use quiet option in verbose mode" do
       PDFKit.configure do |config|
         config.verbose = true
       end
@@ -353,7 +353,7 @@ describe PDFKit do
       end
     end
 
-    it "should not use quiet option in verbose mode when option of quiet is configured" do
+    it "does not use quiet option in verbose mode when option of quiet is configured" do
       PDFKit.configure do |config|
         config.verbose = true
         config.default_options[:quiet] = true
@@ -385,7 +385,7 @@ describe PDFKit do
   end
 
   describe "#to_pdf" do
-    it "should not read the contents of the pdf when saving it as a file" do
+    it "does not read the contents of the pdf when saving it as a file" do
       file_path = "/my/file/path.pdf"
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
 
@@ -404,25 +404,25 @@ describe PDFKit do
       pdfkit.to_pdf(file_path)
     end
 
-    it "should generate a PDF of the HTML" do
+    it "generates a PDF of the HTML" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at beginning of file
     end
 
-    it "should generate a PDF with a numerical parameter" do
+    it "generates a PDF with a numerical parameter" do
       pdfkit = PDFKit.new('html', :header_spacing => 1)
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at beginning of file
     end
 
-    it "should generate a PDF with a symbol parameter" do
+    it "generates a PDF with a symbol parameter" do
       pdfkit = PDFKit.new('html', :page_size => :Letter)
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at beginning of file
     end
 
-    it "should have the stylesheet added to the head if it has one" do
+    it "adds the stylesheet to the head tag if it has a head tag" do
       pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
       css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
@@ -430,7 +430,7 @@ describe PDFKit do
       expect(pdfkit.source.to_s).to include("<style>#{File.read(css)}</style>")
     end
 
-    it "should prepend style tags if the HTML doesn't have a head tag" do
+    it "prepends style tags if the HTML doesn't have a head tag" do
       pdfkit = PDFKit.new("<html><body>Hai!</body></html>")
       css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
@@ -438,14 +438,14 @@ describe PDFKit do
       expect(pdfkit.source.to_s).to include("<style>#{File.read(css)}</style><html>")
     end
 
-    it "should throw an error if the source is not html and stylesheets have been added" do
+    it "throws an error if the source is not html and stylesheets have been added" do
       pdfkit = PDFKit.new('http://google.com')
       css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
       expect { pdfkit.to_pdf }.to raise_error(PDFKit::ImproperSourceError)
     end
 
-    it "should be able to deal with ActiveSupport::SafeBuffer" do
+    it "can deal with ActiveSupport::SafeBuffer" do
       pdfkit = PDFKit.new(ActiveSupport::SafeBuffer.new "<html><head></head><body>Hai!</body></html>")
       css = File.join(SPEC_ROOT,'fixtures','example.css')
       pdfkit.stylesheets << css
@@ -453,7 +453,7 @@ describe PDFKit do
       expect(pdfkit.source.to_s).to include("<style>#{File.read(css)}</style></head>")
     end
 
-    it "should escape \\X in stylesheets" do
+    it "escapes \\X in stylesheets" do
       pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
       css = File.join(SPEC_ROOT,'fixtures','example_with_hex_symbol.css')
       pdfkit.stylesheets << css
@@ -462,18 +462,18 @@ describe PDFKit do
     end
 
     #NOTICE: This test is failed if use wkhtmltopdf-binary (0.9.9.1)
-    it "should throw an error if it is unable to connect" do
+    it "throws an error if it is unable to connect" do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
       expect { pdfkit.to_pdf }.to raise_error /exitstatus=1/
     end
 
-    it "should not throw an error if it is unable to connect", pending: 'this test works for wkhtmltopdf-binary (0.9.9.1)' do
+    it "does not throw an error if it is unable to connect", pending: 'this test works for wkhtmltopdf-binary (0.9.9.1)' do
       pdfkit = PDFKit.new("http://localhost/this-should-not-be-found/404.html")
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
     end
 
-    it "should generate PDF if there are missing assets" do
+    it "generates a PDF if there are missing assets" do
       pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>")
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
@@ -490,14 +490,14 @@ describe PDFKit do
       File.delete(@file_path)
     end
 
-    it "should create a file with the PDF as content" do
+    it "creates a file with the PDF as content" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter')
       file = pdfkit.to_file(@file_path)
       expect(file).to be_instance_of(File)
       expect(File.read(file.path)[0...4]).to eq("%PDF") # PDF Signature at beginning of file
     end
 
-    it "should not truncate data (in Ruby 1.8.6)" do
+    it "does not truncate data (in Ruby 1.8.6)" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
       pdf_data = pdfkit.to_pdf
@@ -517,7 +517,7 @@ describe PDFKit do
       File.delete(@test_path) if File.exist?(@test_path)
     end
 
-    it "should not allow shell injection in options" do
+    it "does not allow shell injection in options" do
       pdfkit = PDFKit.new('html', :header_center => "a title\"; touch #{@test_path} #")
       pdfkit.to_pdf
       expect(File.exist?(@test_path)).to eq(false)
