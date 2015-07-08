@@ -22,7 +22,7 @@ class PDFKit
       if file?
         @source.path
       elsif url?
-        shell_safe_url
+        %{"#{shell_safe_url}"}
       else
         SOURCE_FROM_STDIN
       end

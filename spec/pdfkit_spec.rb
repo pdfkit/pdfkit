@@ -237,7 +237,7 @@ describe PDFKit do
 
     it "specifies the URL to the source if it is a url" do
       pdfkit = PDFKit.new('http://google.com')
-      expect(pdfkit.command).to match /http:\/\/google.com -$/
+      expect(pdfkit.command).to match /"http:\/\/google.com" -$/
     end
 
     it "does not break Windows paths" do
@@ -492,6 +492,12 @@ describe PDFKit do
 
     it "generates a PDF if there are missing assets" do
       pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>")
+      pdf = pdfkit.to_pdf
+      expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
+    end
+
+    it "can handle ampersands in URLs" do
+      pdfkit = PDFKit.new('https://www.google.com/search?q=pdfkit&sort=ASC')
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
     end
