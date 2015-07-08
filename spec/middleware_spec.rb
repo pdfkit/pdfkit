@@ -346,7 +346,7 @@ describe PDFKit::Middleware do
     it "should correctly parse multiple tags where first one is root url" do
       @body = %{<a href='/'><img src='/logo.jpg' ></a>}
       body = @pdf.send :translate_paths, @body, @env
-      body.should == "<a href='http://example.com/'><img src='http://example.com/logo.jpg' ></a>"
+      expect(body).to eq "<a href='http://example.com/'><img src='http://example.com/logo.jpg' ></a>"
     end
 
     it "should return the body even if there are no valid substitutions found" do
