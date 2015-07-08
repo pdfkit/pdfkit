@@ -1,3 +1,12 @@
+2015-07-08
+=================
+  * Bump to 0.7.1
+  * Support Cover and Table Of Contents options (thanks @nicpillinger)
+  * Fix repeatings keys with string values
+  * Fix caching bug (thanks @jocranford)
+  * Fix munging of relative paths (thanks @jocranford)
+  * Fix bug where nil values did not stay nil (thanks @tylerITP)
+
 2015-05-06
 =================
   * Bump to 0.7.0
