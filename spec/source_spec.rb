@@ -63,6 +63,11 @@ describe PDFKit::Source do
       expect(source.to_input_for_command).to eq "https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'"
     end
 
+    it "does not URI escape previously escaped source URLs" do
+      source = PDFKit::Source.new("https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'")
+      expect(source.to_input_for_command).to eq "https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'"
+    end
+
     it "returns a '-' for HTML strings to indicate that we send that content through STDIN" do
       source = PDFKit::Source.new('<blink>Oh Hai!</blink>')
       expect(source.to_input_for_command).to eq '-'

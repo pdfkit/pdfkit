@@ -7,22 +7,22 @@ class PDFKit
     end
 
     def url?
-      @source.is_a?(String) && @source.match(/\Ahttp/)
+      @is_url ||= @source.is_a?(String) && @source.match(/\Ahttp/)
     end
 
     def file?
-      @source.kind_of?(File)
+      @is_file ||= @source.kind_of?(File)
     end
 
     def html?
-      !(url? || file?)
+      @is_html ||= !(url? || file?)
     end
 
     def to_input_for_command
       if file?
         @source.path
       elsif url?
-        URI::escape(@source)
+        shell_safe_url
       else
         SOURCE_FROM_STDIN
       end
@@ -30,6 +30,18 @@ class PDFKit
 
     def to_s
       file? ? @source.path : @source
+    end
+
+    private
+
+    def shell_safe_url
+      return unless url?
+      url_needs_escaping? ? URI::escape(@source) : @source
+    end
+
+    def url_needs_escaping?
+      return unless url?
+      URI::decode(@source) == @source
     end
   end
 end
