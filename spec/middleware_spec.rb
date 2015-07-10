@@ -243,14 +243,14 @@ describe PDFKit::Middleware do
 	end
 
         context "when header PDFKit-save-pdf is present" do
-          it "should saved the .pdf to disk" do
+          it "saves the .pdf to disk" do
 	    headers = { 'PDFKit-save-pdf' => 'spec/test_save.pdf' }
             mock_app({}, {only: '/public'}, headers)
 	    get 'http://www.example.org/public/test_save.pdf'
             expect(File.exists?('spec/test_save.pdf')).to eq(true)
 	  end
 
-          it "should not raise when target directory does not exist" do
+          it "does not raise when target directory does not exist" do
 	    headers = { 'PDFKit-save-pdf' => '/this/dir/does/not/exist/spec/test_save.pdf' }
             mock_app({}, {only: '/public'}, headers)
             expect {
@@ -260,7 +260,7 @@ describe PDFKit::Middleware do
         end
 
         context "when header PDFKit-save-pdf is not present" do
-          it "should not saved the .pdf to disk" do
+          it "does not saved the .pdf to disk" do
             mock_app({}, {only: '/public'}, {} )
 	    get 'http://www.example.org/public/test_save.pdf'
             expect(File.exists?('spec/test_save.pdf')).to eq(false)
@@ -325,31 +325,31 @@ describe PDFKit::Middleware do
       @env = { 'REQUEST_URI' => 'http://example.com/document.pdf', 'rack.url_scheme' => 'http', 'HTTP_HOST' => 'example.com' }
     end
 
-    it "should correctly parse relative url with single quotes" do
+    it "correctly parses relative url with single quotes" do
       @body = %{<html><head><link href='/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src="/test.png" /></body></html>}
       body = @pdf.send :translate_paths, @body, @env
       expect(body).to eq("<html><head><link href='http://example.com/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.com/test.png\" /></body></html>")
     end
 
-    it "should correctly parse relative url with double quotes" do
+    it "correctly parses relative url with double quotes" do
       @body = %{<link href="/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />}
       body = @pdf.send :translate_paths, @body, @env
       expect(body).to eq("<link href=\"http://example.com/stylesheets/application.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" />")
     end
 
-    it "should correctly parse relative url with double quotes" do
+    it "correctly parses relative url with double quotes" do
       @body = %{<link href='//fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>}
       body = @pdf.send :translate_paths, @body, @env
       expect(body).to eq("<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>")
     end
 
-    it "should correctly parse multiple tags where first one is root url" do
+    it "correctly parses multiple tags where first one is root url" do
       @body = %{<a href='/'><img src='/logo.jpg' ></a>}
       body = @pdf.send :translate_paths, @body, @env
-      body.should == "<a href='http://example.com/'><img src='http://example.com/logo.jpg' ></a>"
+      expect(body).to eq "<a href='http://example.com/'><img src='http://example.com/logo.jpg' ></a>"
     end
 
-    it "should return the body even if there are no valid substitutions found" do
+    it "returns the body even if there are no valid substitutions found" do
       @body = "NO MATCH"
       body = @pdf.send :translate_paths, @body, @env
       expect(body).to eq("NO MATCH")
@@ -365,7 +365,7 @@ describe PDFKit::Middleware do
       end
     end
 
-    it "should add the root_url" do
+    it "adds the root_url" do
       @body = %{<html><head><link href='/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src="/test.png" /></body></html>}
       body = @pdf.send :translate_paths, @body, @env
       expect(body).to eq("<html><head><link href='http://example.net/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.net/test.png\" /></body></html>")
@@ -378,7 +378,7 @@ describe PDFKit::Middleware do
     end
   end
 
-  it "should not get stuck rendering each request as pdf" do
+  it "does not get stuck rendering each request as pdf" do
     mock_app
     # false by default. No requests.
     expect(@app.send(:rendering_pdf?)).to eq(false)
