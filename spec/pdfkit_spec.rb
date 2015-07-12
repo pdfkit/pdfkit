@@ -379,7 +379,7 @@ describe PDFKit do
 
       it "quotes spaces in options" do
         pdf = PDFKit.new('html', :title => 'hello world')
-        expect(pdf.command).to include '--title \'hello world\''
+        expect(pdf.command).to include "--title 'hello world'"
       end
     end
   end
