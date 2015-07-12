@@ -1,4 +1,5 @@
 require 'shellwords'
+require 'rbconfig'
 
 class PDFKit
   class NoExecutableError < StandardError
@@ -42,15 +43,8 @@ class PDFKit
 
     args << (path || '-') # Write to file or stdout
 
-    args = if (is_windows?)
-      # Windows reserved shell characters are: & | ( ) < > ^
-      # See http://technet.microsoft.com/en-us/library/cc723564.aspx#XSLTsection123121120120
-      args.map { |arg| arg.gsub(/([&|()<>^])/,'^\1') }.join(" ")
-    else
-      args.shelljoin
-    end
 
-    [executable, args].join ' '
+    [executable, shell_escape_for_os(args)].join ' '
   end
 
   def executable
@@ -83,11 +77,6 @@ class PDFKit
   def to_file(path)
     self.to_pdf(path)
     File.new(path)
-  end
-
-  def is_windows?
-    require 'rbconfig'
-    !(RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/).nil?
   end
 
   protected
@@ -174,8 +163,7 @@ class PDFKit
     when Array
       value.flatten.collect{|x| x.to_s}
     else
-      return '\'' + value.to_s + '\'' if (is_windows? && value.to_s.index(' '))
-      value.to_s
+      (host_is_windows? && value.to_s.index(' ')) ? "'#{ value.to_s }'" : value.to_s
     end
   end
 
@@ -209,5 +197,19 @@ class PDFKit
       # wkhtmltopdf v0.10.0 beta4 replaces ignore-load-errors with load-error-handling
       # https://code.google.com/p/wkhtmltopdf/issues/detail?id=55
       %w(skip ignore).include?(@options['--load-error-handling'])
+  end
+
+  def host_is_windows?
+    @host_is_windows ||= !(RbConfig::CONFIG['host_os'] =~ /mswin|msys|mingw|cygwin|bccwin|wince/).nil?
+  end
+
+  def shell_escape_for_os(args)
+    if (host_is_windows?)
+      # Windows reserved shell characters are: & | ( ) < > ^
+      # See http://technet.microsoft.com/en-us/library/cc723564.aspx#XSLTsection123121120120
+      args.map { |arg| arg.gsub(/([&|()<>^])/,'^\1') }.join(" ")
+    else
+      args.shelljoin
+    end
   end
 end

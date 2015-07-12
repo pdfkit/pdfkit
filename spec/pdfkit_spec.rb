@@ -369,7 +369,7 @@ describe PDFKit do
 
     context "on windows" do
       before do
-        allow_any_instance_of(PDFKit).to receive(:is_windows?).and_return(true)
+        allow_any_instance_of(PDFKit).to receive(:host_is_windows?).and_return(true)
       end
 
       it "escapes special windows characters" do
@@ -379,7 +379,7 @@ describe PDFKit do
 
       it "quotes spaces in options" do
         pdf = PDFKit.new('html', :title => 'hello world')
-        expect(pdf.command).to include '--title \'hello world\''
+        expect(pdf.command).to include "--title 'hello world'"
       end
     end
   end
