@@ -57,6 +57,28 @@ describe PDFKit::Source do
     end
   end
 
+  describe "#to_input_for_command" do
+    it "URI escapes source URLs and encloses them in quotes to accomodate ampersands" do
+      source = PDFKit::Source.new("https://www.google.com/search?q='cat<dev/zero>/dev/null'")
+      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
+    end
+
+    it "does not URI escape previously escaped source URLs" do
+      source = PDFKit::Source.new("https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'")
+      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
+    end
+
+    it "returns a '-' for HTML strings to indicate that we send that content through STDIN" do
+      source = PDFKit::Source.new('<blink>Oh Hai!</blink>')
+      expect(source.to_input_for_command).to eq '-'
+    end
+
+    it "returns the file path for file sources" do
+      source = PDFKit::Source.new(::File.new(__FILE__))
+      expect(source.to_input_for_command).to match 'spec/source_spec.rb'
+    end
+  end
+
   describe "#to_s" do
     it "returns the HTML if passed HTML" do
       source = PDFKit::Source.new('<blink>Oh Hai!</blink>')

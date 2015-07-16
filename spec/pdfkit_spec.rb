@@ -178,6 +178,23 @@ describe PDFKit do
       expect(command).to include "--cookie cookie_name cookie_value"
     end
 
+    it "does not break Windows paths" do
+      pdfkit = PDFKit.new('html')
+      allow(PDFKit.configuration).to receive(:wkhtmltopdf).and_return 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe'
+      expect(pdfkit.command).not_to include('Program\ Files')
+    end
+
+    it "does not shell escape source URLs" do
+      pdfkit = PDFKit.new('https://www.google.com/search?q=pdfkit')
+      expect(pdfkit.command).to include "https://www.google.com/search?q=pdfkit"
+    end
+
+    it "formats source for the command" do
+      pdfkit = PDFKit.new('https://www.google.com/search?q=pdfkit')
+      expect(pdfkit.source).to receive(:to_input_for_command)
+      pdfkit.command
+    end
+
     it "sets up multiple cookies when passed multiple cookies" do
       pdfkit = PDFKit.new('html', :cookie => {:cookie_name1 => :cookie_val1, :cookie_name2 => :cookie_val2})
       command = pdfkit.command
@@ -220,7 +237,7 @@ describe PDFKit do
 
     it "specifies the URL to the source if it is a url" do
       pdfkit = PDFKit.new('http://google.com')
-      expect(pdfkit.command).to match /http:\/\/google.com -$/
+      expect(pdfkit.command).to match /"http:\/\/google.com" -$/
     end
 
     it "does not break Windows paths" do
@@ -475,6 +492,12 @@ describe PDFKit do
 
     it "generates a PDF if there are missing assets" do
       pdfkit = PDFKit.new("<html><body><img alt='' src='http://example.com/surely-it-doesnt-exist.gif' /></body></html>")
+      pdf = pdfkit.to_pdf
+      expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
+    end
+
+    it "can handle ampersands in URLs" do
+      pdfkit = PDFKit.new('https://www.google.com/search?q=pdfkit&sort=ASC')
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
     end
