@@ -1,5 +1,6 @@
 require 'shellwords'
 require 'rbconfig'
+require 'open-uri'
 
 class PDFKit
   class NoExecutableError < StandardError
@@ -108,7 +109,7 @@ class PDFKit
   end
 
   def style_tag_for(stylesheet)
-    "<style>#{File.read(stylesheet)}</style>"
+    "<style>#{open(stylesheet).read}</style>"
   end
 
   def append_stylesheets
