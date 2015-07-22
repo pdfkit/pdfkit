@@ -1,6 +1,6 @@
 require 'shellwords'
 require 'rbconfig'
-require 'open-uri'
+require 'net/http'
 
 class PDFKit
   class NoExecutableError < StandardError
@@ -17,13 +17,14 @@ class PDFKit
     end
   end
 
-  attr_accessor :source, :stylesheets
+  attr_accessor :source, :stylesheets, :stylesheets_uri
   attr_reader :options
 
   def initialize(url_file_or_html, options = {})
     @source = Source.new(url_file_or_html)
 
     @stylesheets = []
+    @stylesheets_uri = []
 
     @options = PDFKit.configuration.default_options.merge(options)
     @options.delete(:quiet) if PDFKit.configuration.verbose?
@@ -108,19 +109,32 @@ class PDFKit
     found
   end
 
-  def style_tag_for(stylesheet)
-    "<style>#{open(stylesheet).read}</style>"
+  def style_tag_for(stylesheet, uri)
+    if uri
+      u = URI(stylesheet)
+      return "<style>#{Net::HTTP.get(u)}</style>"
+    else
+      return "<style>#{File.read(stylesheet)}</style>"
+    end
+  end
+
+  def append_stylesheet(stylesheet, uri=false)
+    if @source.to_s.match(/<\/head>/)
+      @source = Source.new(@source.to_s.gsub(/(<\/head>)/) {|s| style_tag_for(stylesheet, uri) + s })
+    else
+      @source.to_s.insert(0, style_tag_for(stylesheet, uri))
+    end
   end
 
   def append_stylesheets
-    raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@source.html?
+    raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if ( stylesheets.any? || stylesheets_uri.any?) && !@source.html?
 
     stylesheets.each do |stylesheet|
-      if @source.to_s.match(/<\/head>/)
-        @source = Source.new(@source.to_s.gsub(/(<\/head>)/) {|s| style_tag_for(stylesheet) + s })
-      else
-        @source.to_s.insert(0, style_tag_for(stylesheet))
-      end
+      append_stylesheet(stylesheet)
+    end
+
+    stylesheets_uri.each do |stylesheet|
+      append_stylesheet(stylesheet, true)
     end
   end
 
