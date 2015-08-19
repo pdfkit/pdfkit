@@ -1,6 +1,6 @@
 2015-07-08
 =================
-  * Bump to 0.7.1
+  * Bump to 0.8.0
   * Support Cover and Table Of Contents options (thanks @nicpillinger)
   * Fix repeatings keys with string values
   * Fix caching bug (thanks @jocranford)
