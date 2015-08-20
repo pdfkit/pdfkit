@@ -1,6 +1,12 @@
+2015-08-20
+=================
+  * Bump to 0.8.1
+  * Fix shell escaping issues for Windows (thanks muness)
+  * Fix shell escaping issues for URLs, introduced in 0.5.3 release
+
 2015-07-08
 =================
-  * Bump to 0.7.1
+  * Bump to 0.8.0
   * Support Cover and Table Of Contents options (thanks @nicpillinger)
   * Fix repeatings keys with string values
   * Fix caching bug (thanks @jocranford)
