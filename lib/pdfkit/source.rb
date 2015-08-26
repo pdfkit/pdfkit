@@ -1,3 +1,5 @@
+require 'uri'
+
 class PDFKit
   class Source
     SOURCE_FROM_STDIN = '-'
