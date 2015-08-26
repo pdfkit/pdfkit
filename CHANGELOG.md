@@ -1,3 +1,9 @@
+2015-08-26
+=================
+  * Bump to 0.8.2
+  * Fix URI errors for users using PDFKit in contexts with 'uri' not
+    already required (thanks christhekeele)
+
 2015-08-20
 =================
   * Bump to 0.8.1
