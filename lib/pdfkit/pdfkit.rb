@@ -25,6 +25,7 @@ class PDFKit
     @stylesheets = []
 
     @options = PDFKit.configuration.default_options.merge(options)
+    @dump_source = @options.delete(:dump_source)
     @options.delete(:quiet) if PDFKit.configuration.verbose?
     @options.merge! find_options_in_meta(url_file_or_html) unless source.url?
     @options = normalize_options(@options)
@@ -57,6 +58,10 @@ class PDFKit
 
   def to_pdf(path=nil)
     append_stylesheets
+
+    if @dump_source
+      File.open(@dump_source, 'w') { |fd| fd.write(@source.to_s) }
+    end
 
     invoke = command(path)
 
