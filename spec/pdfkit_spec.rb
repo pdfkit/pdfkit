@@ -386,7 +386,7 @@ describe PDFKit do
 
     context "on windows" do
       before do
-        allow_any_instance_of(PDFKit).to receive(:host_is_windows?).and_return(true)
+        allow(PDFKit::OS).to receive(:host_is_windows?).and_return(true)
       end
 
       it "escapes special windows characters" do
