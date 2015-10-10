@@ -3,17 +3,6 @@ require 'spec_helper'
 describe PDFKit::Configuration do
   subject { PDFKit::Configuration.new }
   describe "#wkhtmltopdf" do
-    it "can be configured" do
-      subject.wkhtmltopdf = '/my/bin/wkhtmltopdf'
-      expect(subject.wkhtmltopdf).to eql '/my/bin/wkhtmltopdf'
-    end
-
-    # This test documents existing functionality. Feel free to fix.
-    it "can be poorly configured" do
-      subject.wkhtmltopdf = 1234
-      expect(subject.wkhtmltopdf).to eql 1234
-    end
-
     context "when not explicitly configured" do
       it "detects the existance of bundler" do
         # Test assumes bundler is installed in your test environment
