@@ -18,7 +18,7 @@ class PDFKit
       if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.respond_to?(:body) ? response.body : response.join
         body = body.join if body.is_a?(Array)
-        body = PDFKit.new(translate_paths(body, env), @options).to_pdf
+        body = PDFKit.new(translate_paths(body, env), wkhtmltopdf_options(headers)).to_pdf
         response = [body]
 
         if headers['PDFKit-save-pdf']
@@ -101,6 +101,22 @@ class PDFKit
     def conditions_as_regexp(conditions)
       [conditions].flatten.map do |pattern|
         pattern.is_a?(Regexp) ? pattern : Regexp.new('^' + pattern)
+      end
+    end
+
+    def wkhtmltopdf_options(headers)
+      @options.merge(extract_response_options(headers))
+    end
+
+    def extract_response_options(headers)
+      if headers.has_key?('wkhtmltopdf')
+        begin
+          JSON.parse(headers.delete('wkhtmltopdf'))
+        rescue JSON::ParserError
+          {}
+        end
+      else
+        {}
       end
     end
   end
