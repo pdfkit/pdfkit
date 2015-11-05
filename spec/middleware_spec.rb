@@ -317,6 +317,78 @@ describe PDFKit::Middleware do
       end
 
     end
+
+    describe "passing wkhtmltopdf options in a response header" do
+      before do
+        mock_app(basic_options, {}, options_from_rack_endpoint)
+      end
+
+      let(:basic_options) {
+        {
+          'page_size' => 'Letter',
+          'margin_top' => '1in'
+        }
+      }
+
+      let(:stub_pdf_kit) {
+        # Give it something so the rest of the method can run:
+        double('stub_pdf_kit', to_pdf: 'stub_body')
+      }
+
+      context "when the Rack endpoint returns a header named 'wkhtmltopdf'" do
+        let(:options_from_rack_endpoint) {
+          {
+            'wkhtmltopdf' => {
+              'header-left' => 'CONFIDENTIAL REPORT! [page] of [topage]',
+              'margin_top' => '3in'
+            }.to_json
+          }
+        }
+
+        it "deletes them, and passes them to PDFKit's options" do
+          expect(PDFKit).to receive(:new)
+            .with(anything, {
+              'page_size' => 'Letter',
+              'margin_top' => '3in',
+              'header-left' => 'CONFIDENTIAL REPORT! [page] of [topage]'
+            })
+            .and_return(stub_pdf_kit)
+
+          get 'http://example.org/some/report.pdf'
+          expect(last_response.headers['wkhtmltopdf']).to be_nil
+        end
+      end
+
+      context "when the Rack endpoint doesn't return a 'wkhtmltopdf' header" do
+        let(:options_from_rack_endpoint) {
+          { }  # No extra options
+        }
+
+        it "passes only the basic options to PDFKit's options" do
+          expect(PDFKit).to receive(:new)
+            .with(anything, basic_options)
+            .and_return(stub_pdf_kit)
+
+          get 'http://example.org/some/report.pdf'
+          expect(last_response.headers['wkhtmltopdf']).to be_nil
+        end
+      end
+
+      context "when the Rack endpoint returns a non-JSON value in a 'wkhtmltopdf' header" do
+        let(:options_from_rack_endpoint) {
+          { 'wkhtmltopdf' => 'Not a JSON object' }
+        }
+
+        it "ignores it, and deletes it" do
+          expect(PDFKit).to receive(:new)
+            .with(anything, basic_options)
+            .and_return(stub_pdf_kit)
+
+          get 'http://example.org/some/report.pdf'
+          expect(last_response.headers['wkhtmltopdf']).to be_nil
+        end
+      end
+    end
   end
 
   describe "#translate_paths" do
