@@ -32,8 +32,8 @@ class PDFKit
           headers.delete('Cache-Control')
         end
 
-        headers['Content-Length']         = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
-        headers['Content-Type']           = 'application/pdf'
+        headers['Content-Length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
+        headers['Content-Type']   = 'application/pdf'
       end
 
       [status, headers, response]
@@ -72,11 +72,9 @@ class PDFKit
           request_path =~ pattern
         end
       elsif request_path_is_pdf && @conditions[:except]
-        conditions_as_regexp(@conditions[:except]).each do |pattern|
-          return false if request_path =~ pattern
+        conditions_as_regexp(@conditions[:except]).none? do |pattern|
+          request_path =~ pattern
         end
-
-        return true
       else
         request_path_is_pdf
       end
