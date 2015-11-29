@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/pdfkit/pdfkit"
   s.summary     = "HTML+CSS -> PDF"
   s.description = "Uses wkhtmltopdf to create PDFs using HTML"
+  s.license     = "MIT"
 
   s.rubyforge_project = "pdfkit"
 
