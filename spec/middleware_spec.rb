@@ -319,61 +319,36 @@ describe PDFKit::Middleware do
     end
   end
 
-  describe "#translate_paths" do
+  describe "#root_url and #protocol" do
     before do
       @pdf = PDFKit::Middleware.new({})
       @env = { 'REQUEST_URI' => 'http://example.com/document.pdf', 'rack.url_scheme' => 'http', 'HTTP_HOST' => 'example.com' }
     end
 
-    it "correctly parses relative url with single quotes" do
-      @body = %{<html><head><link href='/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src="/test.png" /></body></html>}
-      body = @pdf.send :translate_paths, @body, @env
-      expect(body).to eq("<html><head><link href='http://example.com/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.com/test.png\" /></body></html>")
-    end
+    context 'when root_url is not configured' do
+      it "infers the root_url and protocol from the environment" do
+        root_url = @pdf.send(:root_url, @env)
+        protocol = @pdf.send(:protocol, @env)
 
-    it "correctly parses relative url with double quotes" do
-      @body = %{<link href="/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />}
-      body = @pdf.send :translate_paths, @body, @env
-      expect(body).to eq("<link href=\"http://example.com/stylesheets/application.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" />")
-    end
-
-    it "correctly parses relative url with double quotes" do
-      @body = %{<link href='//fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>}
-      body = @pdf.send :translate_paths, @body, @env
-      expect(body).to eq("<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>")
-    end
-
-    it "correctly parses multiple tags where first one is root url" do
-      @body = %{<a href='/'><img src='/logo.jpg' ></a>}
-      body = @pdf.send :translate_paths, @body, @env
-      expect(body).to eq "<a href='http://example.com/'><img src='http://example.com/logo.jpg' ></a>"
-    end
-
-    it "returns the body even if there are no valid substitutions found" do
-      @body = "NO MATCH"
-      body = @pdf.send :translate_paths, @body, @env
-      expect(body).to eq("NO MATCH")
-    end
-  end
-
-  describe "#translate_paths with root_url configuration" do
-    before do
-      @pdf = PDFKit::Middleware.new({})
-      @env = { 'REQUEST_URI' => 'http://example.com/document.pdf', 'rack.url_scheme' => 'http', 'HTTP_HOST' => 'example.com' }
-      PDFKit.configure do |config|
-        config.root_url = "http://example.net/"
+        expect(root_url).to eq('http://example.com/')
+        expect(protocol).to eq('http')
       end
     end
 
-    it "adds the root_url" do
-      @body = %{<html><head><link href='/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src="/test.png" /></body></html>}
-      body = @pdf.send :translate_paths, @body, @env
-      expect(body).to eq("<html><head><link href='http://example.net/stylesheets/application.css' media='screen' rel='stylesheet' type='text/css' /></head><body><img alt='test' src=\"http://example.net/test.png\" /></body></html>")
-    end
+    context 'when root_url is configured' do
+      before do
+        PDFKit.configuration.root_url = 'http://example.net/'
+      end
+      after do
+        PDFKit.configuration.root_url = nil
+      end
 
-    after do
-      PDFKit.configure do |config|
-        config.root_url = nil
+      it "takes the root_url from the configuration, and infers the protocol from the environment" do
+        root_url = @pdf.send(:root_url, @env)
+        protocol = @pdf.send(:protocol, @env)
+
+        expect(root_url).to eq('http://example.net/')
+        expect(protocol).to eq('http')
       end
     end
   end
