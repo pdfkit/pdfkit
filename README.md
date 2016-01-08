@@ -43,8 +43,22 @@ PDFKit.new('<html><head><meta name="pdfkit-page_size" content="Letter"')
 PDFKit.new('<html><head><meta name="pdfkit-cookie cookie_name1" content="cookie_value1"')
 PDFKit.new('<html><head><meta name="pdfkit-cookie cookie_name2" content="cookie_value2"')
 ```
+
+### Resolving relative URLs and protocols
+
+If the source HTML has relative URLs (`/images/cat.png`) or
+[protocols](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#prurl)
+(`//example.com/site.css`) that need to be resolved, you can pass `:root_url`
+and `:protocol` options to PDFKit:
+
+```ruby
+PDFKit.new(html, root_url: 'http://mysite.com/').to_file
+# or:
+PDFKit.new(html, protocol: 'https').to_file
+```
+
 ### Using cookies in scraping
-If you want to pass a cookie to cookie to pdfkit to scrape a website, you can 
+If you want to pass a cookie to cookie to pdfkit to scrape a website, you can
 pass it in a hash:
 ```ruby
 kit = PDFKit.new(url, cookie: {cookie_name: :cookie_value})
@@ -62,6 +76,7 @@ PDFKit.configure do |config|
   }
   # Use only if your external hostname is unavailable on the server.
   config.root_url = "http://localhost"
+  config.protocol = 'http'
   config.verbose = false
 end
 ```
@@ -127,8 +142,8 @@ Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent
    like Passenger or try to embed your resources within your HTML to
    avoid extra HTTP requests.
    
-   Example solution (rails / bundler), add unicorn to the development 
-   group in your Gemfile `gem 'unicorn'` then run `bundle`. Next, add a 
+   Example solution (rails / bundler), add unicorn to the development
+   group in your Gemfile `gem 'unicorn'` then run `bundle`. Next, add a
    file `config/unicorn.conf` with
    
         worker_processes 3
@@ -146,7 +161,7 @@ Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent
    asset host.
 
 *  **Mangled output in the browser:** Be sure that your HTTP response
-   headers specify "Content-Type: application/pdf" 
+   headers specify "Content-Type: application/pdf"
 
 ## Note on Patches/Pull Requests
 
