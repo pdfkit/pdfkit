@@ -26,6 +26,8 @@ class PDFKit
     options = PDFKit.configuration.default_options.merge(options)
     options.delete(:quiet) if PDFKit.configuration.verbose?
     options.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    @root_url = options.delete(:root_url)
+    @protocol = options.delete(:protocol)
     @renderer = WkHTMLtoPDF.new options
     @renderer.normalize_options
 
@@ -55,6 +57,7 @@ class PDFKit
   end
 
   def to_pdf(path=nil)
+    preprocess_html
     append_stylesheets
 
     invoke = command(path)
@@ -103,6 +106,13 @@ class PDFKit
 
   def style_tag_for(stylesheet)
     "<style>#{File.read(stylesheet)}</style>"
+  end
+
+  def preprocess_html
+    if @source.html?
+      processed_html = PDFKit::HTMLPreprocessor.process(@source.to_s, @root_url, @protocol)
+      @source = Source.new(processed_html)
+    end
   end
 
   def append_stylesheets

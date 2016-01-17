@@ -18,7 +18,11 @@ class PDFKit
       if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.respond_to?(:body) ? response.body : response.join
         body = body.join if body.is_a?(Array)
-        body = PDFKit.new(translate_paths(body, env), @options).to_pdf
+
+        root_url = root_url(env)
+        protocol = protocol(env)
+        options = @options.merge(root_url: root_url, protocol: protocol)
+        body = PDFKit.new(body, options).to_pdf
         response = [body]
 
         if headers['PDFKit-save-pdf']
@@ -41,22 +45,12 @@ class PDFKit
 
     private
 
-    # Change relative paths to absolute, and relative protocols to absolute protocols
-    def translate_paths(body, env)
-      body = translate_relative_paths(body, env)
-      translate_relative_protocols(body, env)
+    def root_url(env)
+      PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
     end
 
-    def translate_relative_paths(body, env)
-      root = PDFKit.configuration.root_url || "#{env['rack.url_scheme']}://#{env['HTTP_HOST']}/"
-      # Try out this regexp using rubular http://rubular.com/r/hiAxBNX7KE
-      body.gsub(/(href|src)=(['"])\/([^\/"']([^\"']*|[^"']*))?['"]/, "\\1=\\2#{root}\\3\\2")
-    end
-
-    def translate_relative_protocols(body, env)
-      protocol = "#{env['rack.url_scheme']}://"
-      # Try out this regexp using rubular http://rubular.com/r/0Ohk0wFYxV
-      body.gsub(/(href|src)=(['"])\/\/([^\"']*|[^"']*)['"]/, "\\1=\\2#{protocol}\\3\\2")
+    def protocol(env)
+      env['rack.url_scheme']
     end
 
     def rendering_pdf?
