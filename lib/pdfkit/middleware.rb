@@ -91,7 +91,7 @@ class PDFKit
     end
 
     def conditions_as_regexp(conditions)
-      [conditions].flatten.map do |pattern|
+      Array(conditions).map do |pattern|
         pattern.is_a?(Regexp) ? pattern : Regexp.new("^#{pattern}")
       end
     end
