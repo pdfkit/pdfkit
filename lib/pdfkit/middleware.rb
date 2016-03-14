@@ -63,11 +63,11 @@ class PDFKit
 
       if @conditions[:only]
         conditions_as_regexp(@conditions[:only]).any? do |pattern|
-          request_path =~ pattern
+          pattern === request_path
         end
       elsif @conditions[:except]
         conditions_as_regexp(@conditions[:except]).none? do |pattern|
-          request_path =~ pattern
+          pattern === request_path
         end
       else
         true
