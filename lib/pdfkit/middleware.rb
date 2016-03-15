@@ -59,18 +59,18 @@ class PDFKit
 
     def render_as_pdf?
       request_path = @request.path
-      request_path_is_pdf = request_path.match(%r{\.pdf$})
+      return false unless request_path.end_with?('.pdf')
 
-      if request_path_is_pdf && @conditions[:only]
+      if @conditions[:only]
         conditions_as_regexp(@conditions[:only]).any? do |pattern|
-          request_path =~ pattern
+          pattern === request_path
         end
-      elsif request_path_is_pdf && @conditions[:except]
+      elsif @conditions[:except]
         conditions_as_regexp(@conditions[:except]).none? do |pattern|
-          request_path =~ pattern
+          pattern === request_path
         end
       else
-        request_path_is_pdf
+        true
       end
     end
 
@@ -91,8 +91,8 @@ class PDFKit
     end
 
     def conditions_as_regexp(conditions)
-      [conditions].flatten.map do |pattern|
-        pattern.is_a?(Regexp) ? pattern : Regexp.new('^' + pattern)
+      Array(conditions).map do |pattern|
+        pattern.is_a?(Regexp) ? pattern : Regexp.new("^#{pattern}")
       end
     end
   end
