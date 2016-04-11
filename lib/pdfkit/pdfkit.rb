@@ -1,4 +1,5 @@
 require 'shellwords'
+require 'pry'
 
 class PDFKit
   class NoExecutableError < StandardError
@@ -15,17 +16,20 @@ class PDFKit
     end
   end
 
-  attr_accessor :source, :stylesheets
+  attr_accessor :sources, :stylesheets
   attr_reader :renderer
 
   def initialize(url_file_or_html, options = {})
-    @source = Source.new(url_file_or_html)
+    @sources = []
+
+    url_file_or_html = [url_file_or_html] unless url_file_or_html.is_a? Array
+    url_file_or_html.each { |source| @sources << Source.new(source) }
 
     @stylesheets = []
 
     options = PDFKit.configuration.default_options.merge(options)
     options.delete(:quiet) if PDFKit.configuration.verbose?
-    options.merge! find_options_in_meta(url_file_or_html) unless source.url?
+    options.merge! find_options_in_meta(url_file_or_html) unless sources.any?(&:url?)
     @root_url = options.delete(:root_url)
     @protocol = options.delete(:protocol)
     @renderer = WkHTMLtoPDF.new options
@@ -41,7 +45,7 @@ class PDFKit
     # In order to allow for URL parameters (e.g. https://www.google.com/search?q=pdfkit) we do
     # not escape the source. The user is responsible for ensuring that no vulnerabilities exist
     # in the source. Please see https://github.com/pdfkit/pdfkit/issues/164.
-    input_for_command = @source.to_input_for_command
+    input_for_command = @sources.reduce(''){ |memo, source| memo += ' ' + source.to_input_for_command }
     output_for_command = path ? Shellwords.shellescape(path) : '-'
 
     "#{shell_escaped_command} #{input_for_command} #{output_for_command}"
@@ -63,7 +67,7 @@ class PDFKit
     invoke = command(path)
 
     result = IO.popen(invoke, "wb+") do |pdf|
-      pdf.puts(@source.to_s) if @source.html?
+      @sources.each{ |source| pdf.puts(source.to_s) if source.html? }
       pdf.close_write
       pdf.gets(nil) if path.nil?
     end
@@ -79,26 +83,32 @@ class PDFKit
     File.new(path)
   end
 
+  def source
+    return sources.first if sources.length == 1
+    sources
+  end
+
   protected
 
-  def find_options_in_meta(content)
+  def find_options_in_meta(contents)
     # Read file if content is a File
-    content = content.read if content.is_a?(File)
-
     found = {}
-    content.scan(/<meta [^>]*>/) do |meta|
-      if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
-        name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
-        found[name] = meta.scan(/content=["']([^"'\\]+)["']/)[0][0]
+    contents.each do |content|
+      content = content.read if content.is_a?(File)
+      content.scan(/<meta [^>]*>/) do |meta|
+        if meta.match(/name=["']#{PDFKit.configuration.meta_tag_prefix}/)
+          name = meta.scan(/name=["']#{PDFKit.configuration.meta_tag_prefix}([^"']*)/)[0][0].split
+          found[name] = meta.scan(/content=["']([^"'\\]+)["']/)[0][0]
+        end
       end
-    end
 
-    tuple_keys = found.keys.select { |k| k.is_a? Array }
-    tuple_keys.each do |key|
-      value = found.delete key
-      new_key = key.shift
-      found[new_key] ||= {}
-      found[new_key][key] = value
+      tuple_keys = found.keys.select { |k| k.is_a? Array }
+      tuple_keys.each do |key|
+        value = found.delete key
+        new_key = key.shift
+        found[new_key] ||= {}
+        found[new_key][key] = value
+      end
     end
 
     found
@@ -109,20 +119,26 @@ class PDFKit
   end
 
   def preprocess_html
-    if @source.html?
-      processed_html = PDFKit::HTMLPreprocessor.process(@source.to_s, @root_url, @protocol)
-      @source = Source.new(processed_html)
+    @sources.map! do |source|
+      if source.html?
+        processed_html = PDFKit::HTMLPreprocessor.process(source.to_s, @root_url, @protocol)
+        Source.new(processed_html)
+      else
+        source
+      end
     end
   end
 
   def append_stylesheets
-    raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@source.html?
+    raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@sources.any?(&:html?)
 
     stylesheets.each do |stylesheet|
-      if @source.to_s.match(/<\/head>/)
-        @source = Source.new(@source.to_s.gsub(/(<\/head>)/) {|s| style_tag_for(stylesheet) + s })
-      else
-        @source.to_s.insert(0, style_tag_for(stylesheet))
+      @sources.map! do |source|
+        if source.to_s.match(/<\/head>/)
+          Source.new(source.to_s.gsub(/(<\/head>)/) {|s| style_tag_for(stylesheet) + s })
+        else
+          Source.new(source.to_s.insert(0, style_tag_for(stylesheet)))
+        end
       end
     end
   end

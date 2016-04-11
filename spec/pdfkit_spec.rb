@@ -1,5 +1,6 @@
 #encoding: UTF-8
 require 'spec_helper'
+require 'pry'
 
 describe PDFKit do
   describe "initialization" do
@@ -191,7 +192,7 @@ describe PDFKit do
 
     it "formats source for the command" do
       pdfkit = PDFKit.new('https://www.google.com/search?q=pdfkit')
-      expect(pdfkit.source).to receive(:to_input_for_command)
+      expect(pdfkit.source).to receive(:to_input_for_command){ '\"https://www.google.com/search?q=pdfkit\"' }
       pdfkit.command
     end
 
@@ -445,6 +446,12 @@ describe PDFKit do
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at beginning of file
     end
 
+    it "generates a PDF of the HTML with multiple sources" do
+      pdfkit = PDFKit.new(['html', 'wkhtmltopdf'], :page_size => 'Letter')
+      pdf = pdfkit.to_pdf
+      expect(pdf[0...4]).to eq("%PDF") # PDF Signature at beginning of file
+    end
+
     it "generates a PDF with a numerical parameter" do
       pdfkit = PDFKit.new('html', :header_spacing => 1)
       pdf = pdfkit.to_pdf
@@ -562,6 +569,18 @@ describe PDFKit do
       pdfkit = PDFKit.new('html', :header_center => "a title\"; touch #{@test_path} #")
       pdfkit.to_pdf
       expect(File.exist?(@test_path)).to eq(false)
+    end
+  end
+
+  describe "#source" do
+    it 'returns all the sources as an Array' do
+      pdfkit = PDFKit.new(['html', 'wkhtmltopdf'], :page_size => 'Letter')
+      expect(pdfkit.source.class).to eq(Array)
+    end
+
+    it 'returns the first source when there is a single source' do
+      pdfkit = PDFKit.new('html', :page_size => 'Letter')
+      expect(pdfkit.source).to eq(pdfkit.sources.first)
     end
   end
 end
