@@ -1,6 +1,5 @@
 #encoding: UTF-8
 require 'spec_helper'
-require 'pry'
 
 describe PDFKit do
   describe "initialization" do
@@ -447,7 +446,7 @@ describe PDFKit do
     end
 
     it "generates a PDF of the HTML with multiple sources" do
-      pdfkit = PDFKit.new(['html', 'wkhtmltopdf'], :page_size => 'Letter')
+      pdfkit = PDFKit.new(['http://google.com', 'https://www.google.com/search?q=pdfkit&sort=DESC'], :page_size => 'Letter')
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at beginning of file
     end

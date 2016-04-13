@@ -1,5 +1,4 @@
 require 'shellwords'
-require 'pry'
 
 class PDFKit
   class NoExecutableError < StandardError
