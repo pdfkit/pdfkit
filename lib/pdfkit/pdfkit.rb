@@ -1,5 +1,6 @@
 require 'shellwords'
 require 'tempfile'
+require 'open3'
 
 class PDFKit
   class Error < StandardError; end
@@ -19,8 +20,8 @@ class PDFKit
   end
 
   class ImproperWkhtmltopdfExitStatus < Error
-    def initialize(invoke)
-      super("Command failed (exitstatus=#{$?.exitstatus}): #{invoke}")
+    def initialize(invoke, err)
+      super("Command failed (exitstatus=#{$?.exitstatus}): #{invoke}\n  #{err}")
     end
   end
 
@@ -70,17 +71,33 @@ class PDFKit
     append_stylesheets
 
     invoke = command(path)
+    result, err, status = Open3.popen3(invoke) do |i, o, e, t|
+      i.binmode
+      o.binmode
+      e.binmode
 
-    result = IO.popen(invoke, "wb+") do |pdf|
-      pdf.puts(@source.to_s) if @source.html?
-      pdf.close_write
-      pdf.gets(nil) if path.nil?
+      out_reader = Thread.new { o.read }
+      err_reader = Thread.new { e.read }
+      if @source.html?
+        begin
+          i.write @source.to_s 
+        rescue Errno::EPIPE
+        end
+      end
+      i.close
+      if t.join(PDFKit.configuration.timeout)
+        [out_reader.value, err_reader.value, t.value]
+      else
+        Process.kill("TERM", t.pid)
+        raise "command timeout after #{PDFKit.configuration.timeout} seconds: #{invoke}"
+      end
     end
 
-    # $? is thread safe per
-    # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise ImproperWkhtmltopdfExitStatus, invoke if empty_result?(path, result) || !successful?($?)
-    return result
+    if successful?(status) && !empty_result?(path, result)
+      result
+    else
+      raise ImproperWkhtmltopdfExitStatus.new(invoke, err)
+    end
   end
 
   def to_file(path)

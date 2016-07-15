@@ -169,6 +169,14 @@ Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent
 *  **Mangled output in the browser:** Be sure that your HTTP response
    headers specify "Content-Type: application/pdf"
 
+*  **wkhtmltopdf becomes stuck:** If you are using remote resources wkhtmltopdf
+   can occasionally become stuck due to connection issues. You can set the
+   `config.timeout` configuration to the number of seconds PDFKit should wait
+   before killing wkhtmltopdf and raising an exception.
+
+   Note: This can cause orphan process when the subprocess is run with `system`
+   instead of `exec`.
+
 ## Note on Patches/Pull Requests
 
 * Fork the project.

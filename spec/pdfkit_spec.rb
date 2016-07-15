@@ -532,6 +532,17 @@ describe PDFKit do
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
     end
+
+    it "will kill wkhtmltopdf when it becomes stuck" do
+      PDFKit.configure do |config|
+        config.timeout = 2
+      end
+      pdfkit = PDFKit.new("<html><script>for (;;) {}</script></html>")
+      expect { pdfkit.to_pdf }.to raise_error /timeout/
+      PDFKit.configure do |config|
+        config.timeout = nil
+      end
+    end
   end
 
   describe "#to_file" do

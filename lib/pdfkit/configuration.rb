@@ -1,6 +1,6 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :root_url
+    attr_accessor :meta_tag_prefix, :root_url, :timeout
     attr_writer :use_xvfb, :verbose
     attr_reader :default_options
 
