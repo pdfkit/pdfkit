@@ -381,22 +381,4 @@ describe PDFKit::Middleware do
       end
     end
   end
-
-  it "does not get stuck rendering each request as pdf" do
-    mock_app
-    # false by default. No requests.
-    expect(@app.send(:rendering_pdf?)).to eq(false)
-
-    # Remain false on a normal request
-    get 'http://www.example.org/public/file'
-    expect(@app.send(:rendering_pdf?)).to eq(false)
-
-    # Return true on a pdf request.
-    get 'http://www.example.org/public/file.pdf'
-    expect(@app.send(:rendering_pdf?)).to eq(true)
-
-    # Restore to false on any non-pdf request.
-    get 'http://www.example.org/public/file'
-    expect(@app.send(:rendering_pdf?)).to eq(false)
-  end
 end
