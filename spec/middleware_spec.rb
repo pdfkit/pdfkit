@@ -21,6 +21,35 @@ describe PDFKit::Middleware do
   end
 
   describe "#call" do
+
+    describe 'threadsafety' do
+      before { mock_app }
+      it 'is threadsafe' do
+        n = 30
+        extensions = Array.new(n) { rand > 0.5 ? 'html' : 'pdf' }
+        actual_content_types = Hash.new
+
+        threads = (0...n).map { |i|
+          Thread.new do
+            resp = get("http://www.example.org/public/test.#{extensions[i]}")
+            actual_content_types[i] = resp.content_type
+          end
+        }
+
+        threads.each(&:join)
+
+        extensions.each_with_index do |extension, index|
+          result = actual_content_types[index]
+          case extension
+          when 'html', 'txt', 'csv'
+            expect(result).to eq("text/#{extension}")
+          when 'pdf'
+            expect(result).to eq('application/pdf')
+          end
+        end
+      end
+    end
+
     describe "caching" do
       let(:headers) do
         {
