@@ -23,10 +23,11 @@ Gem::Specification.new do |s|
   s.requirements << "wkhtmltopdf"
 
   # Development Dependencies
+  s.add_development_dependency(%q<activesupport>, ["= 5.0.0.1"])
   s.add_development_dependency(%q<mocha>, [">= 0.9.10"])
-  s.add_development_dependency(%q<rack-test>, [">= 0.5.6"])
-  s.add_development_dependency(%q<i18n>, ["~>0.6.11"]) # Ruby 1.9.2 compatibility
-  s.add_development_dependency(%q<rake>, ["~>0.9.2"])
+  s.add_development_dependency(%q<rack-test>, ["0.6.3"])
+  s.add_development_dependency(%q<i18n>, ["~> 0.7"]) # Ruby 1.9.2 compatibility
+  s.add_development_dependency(%q<rake>, ["11.3.0"])
   s.add_development_dependency(%q<rdoc>, ["~> 4.0.1"])
   s.add_development_dependency(%q<rspec>, ["~> 3.0"])
 end
