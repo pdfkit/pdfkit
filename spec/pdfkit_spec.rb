@@ -501,6 +501,12 @@ describe PDFKit do
       pdf = pdfkit.to_pdf
       expect(pdf[0...4]).to eq("%PDF") # PDF Signature at the beginning
     end
+
+    it "should generate PDF with the same encoding specified in the options" do
+      pdfkit = PDFKit.new("<html><body>this is some text</body></html>", encoding: 'utf-8')
+      pdf = pdfkit.to_pdf
+      pdf.encoding.to_s.should == 'UTF-8'
+    end
   end
 
   describe "#to_file" do
@@ -522,7 +528,7 @@ describe PDFKit do
 
     it "does not truncate data (in Ruby 1.8.6)" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
-      pdfkit = PDFKit.new(File.new(file_path))
+      pdfkit = PDFKit.new(File.new(file_path), encoding: 'ASCII-8BIT')
       pdf_data = pdfkit.to_pdf
       pdfkit.to_file(@file_path)
       file_data = open(@file_path, 'rb') {|io| io.read }
