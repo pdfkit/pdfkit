@@ -158,7 +158,7 @@ Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent
    HTML source make sure you use complete paths (either file paths or
    urls including the domain). In restrictive server environments the
    root_url configuration may be what you are looking for change your
-   asset host.
+   asset host. If one image from your HTML cannot be found (relative or wrong path for ie), others images with right paths **may not** be displayed in the output PDF as well (it seems to be an issue with wkhtmltopdf)
 
 *  **Mangled output in the browser:** Be sure that your HTTP response
    headers specify "Content-Type: application/pdf"
