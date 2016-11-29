@@ -1,5 +1,7 @@
 # PDFKit
 
+[![Gem Version](https://badge.fury.io/rb/pdfkit.svg)](http://badge.fury.io/rb/pdfkit)
+
 Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the back-end which renders HTML using Webkit.
 
 ## Install
