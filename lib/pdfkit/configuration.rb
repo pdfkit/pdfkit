@@ -23,7 +23,16 @@ class PDFKit
     end
 
     def default_wkhtmltopdf
-      @default_command_path ||= (defined?(Bundler::GemfileError) && File.exists?('Gemfile') ? `bundle exec which wkhtmltopdf` : `which wkhtmltopdf`).chomp
+      @default_command_path ||=
+        if defined?(Bundler::GemfileError) && File.exists?('Gemfile')
+          # Starting with Bundler 1.14, if the Bundler.rubygems.user_home value
+          # is a read-only or non-existent directory, Bundler prints out an error message.
+          # We want to ignore this message, so we want to find the first line that points
+          # to a file
+          `bundle exec which wkhtmltopdf`.lines.detect { |l| File.file?(l) }.to_s.chomp
+        else
+          `which wkhtmltopdf`.chomp
+        end
     end
 
     def wkhtmltopdf=(path)
