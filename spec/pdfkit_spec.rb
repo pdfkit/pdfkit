@@ -484,6 +484,12 @@ describe PDFKit do
       expect { pdfkit.to_pdf }.to raise_error /exitstatus=1/
     end
 
+    it "does not throw an error when ignore_errors argument is truthy" do
+      pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
+      allow(pdfkit).to receive(:successful?).and_return(false)
+      expect { pdfkit.to_pdf(nil, true) }.not_to raise_error /exitstatus/
+    end
+
     it "does not throw an error if it is unable to connect", pending: 'this test works for wkhtmltopdf-binary (0.9.9.1)' do
       pdfkit = PDFKit.new("http://localhost/this-should-not-be-found/404.html")
       pdf = pdfkit.to_pdf

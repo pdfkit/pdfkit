@@ -56,7 +56,7 @@ class PDFKit
     PDFKit.configuration.wkhtmltopdf
   end
 
-  def to_pdf(path=nil)
+  def to_pdf(path=nil, ignore_errors=false)
     preprocess_html
     append_stylesheets
 
@@ -70,12 +70,14 @@ class PDFKit
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if empty_result?(path, result) or !successful?($?)
+    unless ignore_errors
+      raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if empty_result?(path, result) or !successful?($?)
+    end
     return result
   end
 
-  def to_file(path)
-    self.to_pdf(path)
+  def to_file(path, ignore_errors=false)
+    self.to_pdf(path, ignore_errors)
     File.new(path)
   end
 
