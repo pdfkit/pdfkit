@@ -70,8 +70,12 @@ class PDFKit
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    # raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if empty_result?(path, result) or !successful?($?)
-    return 'test test'
+    if empty_result?(path, result)
+      return 'empty'
+    end
+    if !successful?($?)
+      return 'sdfsdf'
+    end
     return result
   end
 
