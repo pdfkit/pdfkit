@@ -56,11 +56,12 @@ class PDFKit
     PDFKit.configuration.wkhtmltopdf
   end
 
-  def to_pdf(path=nil)
+  def to_pdf(path=nil, ignore_content_errors=false)
     preprocess_html
     append_stylesheets
 
-    invoke = command(path)
+    error_log = `pwd`.chomp + '/wkhtmltopdf_errors'
+    invoke = command(path) + " 2>#{error_log}"
 
     result = IO.popen(invoke, "wb+") do |pdf|
       pdf.puts(@source.to_s) if @source.html?
@@ -70,11 +71,12 @@ class PDFKit
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    if empty_result?(path, result)
-      return 'empty'
-    end
-    if !successful?($?)
-      return 'sdfsdf'
+    if empty_result?(path, result) || !successful?($?)
+      error = File.open(error_log).read.chomp
+      return result if ignore_content_errors && (error.include? 'Content')
+      raise "command failed (exitstatus=#{$?.exitstatus})
+      error: #{error}
+      command: #{invoke}"
     end
     return result
   end
