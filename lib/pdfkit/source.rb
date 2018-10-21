@@ -13,7 +13,7 @@ class PDFKit
     end
 
     def file?
-      @is_file ||= @source.kind_of?(File)
+      @is_file ||= @source.kind_of?(File) or @source.kind_of?(Tempfile)
     end
 
     def html?
