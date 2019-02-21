@@ -53,7 +53,7 @@ class PDFKit
   end
 
   def executable
-    PDFKit.configuration.wkhtmltopdf
+    PDFKit.configuration.executable
   end
 
   def to_pdf(path=nil)
