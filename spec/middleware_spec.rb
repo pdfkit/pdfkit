@@ -267,6 +267,51 @@ describe PDFKit::Middleware do
           end
         end
       end
+
+      describe 'javascript delay' do
+        context 'when header PDFKit-javascript-delay is present' do
+          it 'passes header value through to PDFKit initialiser' do
+            expect(PDFKit).to receive(:new).with('Hello world!', {
+              root_url: 'http://www.example.com/', protocol: 'http', javascript_delay: 4321
+            }).and_call_original
+
+            headers = { 'PDFKit-javascript-delay' => '4321' }
+            mock_app({}, { only: '/public' }, headers)
+            get 'http://www.example.com/public/test_save.pdf'
+          end
+
+          it 'handles invalid content in header' do
+            expect(PDFKit).to receive(:new).with('Hello world!', {
+              root_url: 'http://www.example.com/', protocol: 'http', javascript_delay: 0
+            }).and_call_original
+
+            headers = { 'PDFKit-javascript-delay' => 'invalid' }
+            mock_app({}, { only: '/public' }, headers)
+            get 'http://www.example.com/public/test_save.pdf'
+          end
+
+          it 'overrides default option' do
+            expect(PDFKit).to receive(:new).with('Hello world!', {
+              root_url: 'http://www.example.com/', protocol: 'http', javascript_delay: 4321
+            }).and_call_original
+
+            headers = { 'PDFKit-javascript-delay' => '4321' }
+            mock_app({ javascript_delay: 1234 }, { only: '/public' }, headers)
+            get 'http://www.example.com/public/test_save.pdf'
+          end
+        end
+
+        context 'when header PDFKit-javascript-delay is not present' do
+          it 'passes through default option' do
+            expect(PDFKit).to receive(:new).with('Hello world!', {
+              root_url: 'http://www.example.com/', protocol: 'http', javascript_delay: 1234
+            }).and_call_original
+
+            mock_app({ javascript_delay: 1234 }, { only: '/public' }, { })
+            get 'http://www.example.com/public/test_save.pdf'
+          end
+        end
+      end
     end
 
     describe "remove .pdf from PATH_INFO and REQUEST_URI" do

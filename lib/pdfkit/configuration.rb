@@ -1,10 +1,11 @@
 class PDFKit
   class Configuration
     attr_accessor :meta_tag_prefix, :default_options, :root_url
-    attr_writer :verbose
+    attr_writer :use_xvfb, :verbose
 
     def initialize
       @verbose         = false
+      @use_xvfb        = false
       @meta_tag_prefix = 'pdfkit-'
       @default_options = {
         :disable_smart_shrinking => false,
@@ -35,6 +36,14 @@ class PDFKit
       end
     end
 
+    def executable
+      using_xvfb? ? "xvfb-run #{wkhtmltopdf}" : wkhtmltopdf
+    end
+
+    def using_xvfb?
+      @use_xvfb
+    end
+
     def quiet?
       !@verbose
     end
@@ -54,6 +63,7 @@ class PDFKit
   # @example
   #   PDFKit.configure do |config|
   #     config.wkhtmltopdf = '/usr/bin/wkhtmltopdf'
+  #     config.use_xvfb    = true
   #     config.verbose     = true
   #   end
 
