@@ -1,3 +1,10 @@
+2019-02-21
+=================
+  * Bump to 0.8.4
+  * Removed support for Ruby < 2.2
+  * Xvfb support (#277)
+  * Remove 'config.protocol' from the README (#389)
+
 2015-08-26
 =================
   * Bump to 0.8.2
