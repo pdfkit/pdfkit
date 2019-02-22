@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 group :test do
-  gem 'activesupport', '~> 3.0'
+  gem 'activesupport', '~> 4.1'
   gem 'simplecov', require: false
 end
 
