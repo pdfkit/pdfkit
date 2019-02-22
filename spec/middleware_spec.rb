@@ -21,6 +21,35 @@ describe PDFKit::Middleware do
   end
 
   describe "#call" do
+
+    describe 'threadsafety' do
+      before { mock_app }
+      it 'is threadsafe' do
+        n = 30
+        extensions = Array.new(n) { rand > 0.5 ? 'html' : 'pdf' }
+        actual_content_types = Hash.new
+
+        threads = (0...n).map { |i|
+          Thread.new do
+            resp = get("http://www.example.org/public/test.#{extensions[i]}")
+            actual_content_types[i] = resp.content_type
+          end
+        }
+
+        threads.each(&:join)
+
+        extensions.each_with_index do |extension, index|
+          result = actual_content_types[index]
+          case extension
+          when 'html', 'txt', 'csv'
+            expect(result).to eq("text/#{extension}")
+          when 'pdf'
+            expect(result).to eq('application/pdf')
+          end
+        end
+      end
+    end
+
     describe "caching" do
       let(:headers) do
         {
@@ -396,23 +425,5 @@ describe PDFKit::Middleware do
         expect(protocol).to eq('http')
       end
     end
-  end
-
-  it "does not get stuck rendering each request as pdf" do
-    mock_app
-    # false by default. No requests.
-    expect(@app.send(:rendering_pdf?)).to eq(false)
-
-    # Remain false on a normal request
-    get 'http://www.example.org/public/file'
-    expect(@app.send(:rendering_pdf?)).to eq(false)
-
-    # Return true on a pdf request.
-    get 'http://www.example.org/public/file.pdf'
-    expect(@app.send(:rendering_pdf?)).to eq(true)
-
-    # Restore to false on any non-pdf request.
-    get 'http://www.example.org/public/file'
-    expect(@app.send(:rendering_pdf?)).to eq(false)
   end
 end

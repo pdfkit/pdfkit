@@ -9,6 +9,10 @@ class PDFKit
     end
 
     def call(env)
+      dup._call(env)
+    end
+
+    def _call(env)
       @request    = Rack::Request.new(env)
       @render_pdf = false
 
