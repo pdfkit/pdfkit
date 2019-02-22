@@ -1,3 +1,9 @@
+2019-02-22
+=================
+  * Bump to 0.8.4.1
+  * Make PDFkit threadsafe (#377)
+  * Update activesupport (#434)
+
 2019-02-21
 =================
   * Bump to 0.8.4
