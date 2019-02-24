@@ -34,7 +34,7 @@ pdf = kit.to_pdf
 file = kit.to_file('/path/to/save/pdf')
 
 # PDFKit.new can optionally accept a URL or a File.
-# Stylesheets can not be added when source is provided as a URL of File.
+# Stylesheets can not be added when source is provided as a URL or File.
 kit = PDFKit.new('http://google.com')
 kit = PDFKit.new(File.new('/path/to/html'))
 
