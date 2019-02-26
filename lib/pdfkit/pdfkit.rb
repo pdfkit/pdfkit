@@ -39,7 +39,7 @@ class PDFKit
     @renderer = WkHTMLtoPDF.new options
     @renderer.normalize_options
 
-    raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
+    raise NoExecutableError unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
 
   def command(path = nil)
@@ -124,7 +124,7 @@ class PDFKit
   end
 
   def append_stylesheets
-    raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@source.html?
+    raise ImproperSourceError, 'Stylesheets may only be added to an HTML source' if stylesheets.any? && !@source.html?
 
     stylesheets.each do |stylesheet|
       if @source.to_s.match(/<\/head>/)
