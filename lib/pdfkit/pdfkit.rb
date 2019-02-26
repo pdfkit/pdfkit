@@ -1,7 +1,9 @@
 require 'shellwords'
 
 class PDFKit
-  class NoExecutableError < StandardError
+  class Error < StandardError; end
+
+  class NoExecutableError < Error
     def initialize
       msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
       msg << ">> Please install wkhtmltopdf - https://github.com/pdfkit/PDFKit/wiki/Installing-WKHTMLTOPDF"
@@ -9,7 +11,7 @@ class PDFKit
     end
   end
 
-  class ImproperSourceError < StandardError
+  class ImproperSourceError < Error
     def initialize(msg)
       super("Improper Source: #{msg}")
     end
