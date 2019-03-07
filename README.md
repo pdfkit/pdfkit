@@ -116,6 +116,13 @@ config.middleware.use PDFKit::Middleware, {}, :except => [%r[^/prawn], %r[^/secr
 # conditions can be strings (either one or an array)
 config.middleware.use PDFKit::Middleware, {}, :except => ['/secret']
 ```
+**With conditions to force download**
+```ruby
+# force download with attachment disposition
+config.middleware.use PDFKit::Middleware, {}, :dispositon => 'attachment'
+# conditions can force a filename
+config.middleware.use PDFKit::Middleware, {}, :dispositon => 'attachment; filename=report.pdf'
+```
 **Saving the generated .pdf to disk**
 
 Setting the `PDFKit-save-pdf` header will cause PDFKit to write the generated .pdf to the file indicated by the value of the header.
@@ -140,13 +147,13 @@ Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent
    around this issue you may want to run a server with multiple workers
    like Passenger or try to embed your resources within your HTML to
    avoid extra HTTP requests.
-   
+
    Example solution (rails / bundler), add unicorn to the development
    group in your Gemfile `gem 'unicorn'` then run `bundle`. Next, add a
    file `config/unicorn.conf` with
-   
+
         worker_processes 3
-   
+
    Then to run the app `unicorn_rails -c config/unicorn.conf` (from rails_root)
 
 *  **Resources aren't included in the PDF:** Images, CSS, or JavaScript

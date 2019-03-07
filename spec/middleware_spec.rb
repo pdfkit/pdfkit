@@ -341,6 +341,44 @@ describe PDFKit::Middleware do
           end
         end
       end
+
+      describe ":disposition" do
+        describe "inline or blank" do
+          context "default" do
+            specify do
+              mock_app
+              get 'http://www.example.org/public/test.pdf'
+              expect(last_response.headers["Content-Disposition"]).to eq("inline")
+            end
+          end
+
+          context "inline" do
+            specify do
+              mock_app({}, { disposition: 'inline'  })
+              get 'http://www.example.org/public/test.pdf'
+              expect(last_response.headers["Content-Disposition"]).to eq("inline")
+            end
+          end
+        end
+
+        describe "attachment" do
+          context "attachment" do
+            specify do
+              mock_app({}, { disposition: 'attachment'  })
+              get 'http://www.example.org/public/test.pdf'
+              expect(last_response.headers["Content-Disposition"]).to eq("attachment")
+            end
+          end
+
+          context "attachment with filename" do
+            specify do
+              mock_app({}, { disposition: 'attachment; filename=report.pdf'  })
+              get 'http://www.example.org/public/test.pdf'
+              expect(last_response.headers["Content-Disposition"]).to eq("attachment; filename=report.pdf")
+            end
+          end
+        end
+      end
     end
 
     describe "remove .pdf from PATH_INFO and REQUEST_URI" do
