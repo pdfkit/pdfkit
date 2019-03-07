@@ -354,7 +354,7 @@ describe PDFKit::Middleware do
 
           context "inline" do
             specify do
-              mock_app({}, { disposition: 'inline'  })
+              mock_app({}, { :disposition => 'inline'  })
               get 'http://www.example.org/public/test.pdf'
               expect(last_response.headers["Content-Disposition"]).to eq("inline")
             end
@@ -364,7 +364,7 @@ describe PDFKit::Middleware do
         describe "attachment" do
           context "attachment" do
             specify do
-              mock_app({}, { disposition: 'attachment'  })
+              mock_app({}, { :disposition => 'attachment'  })
               get 'http://www.example.org/public/test.pdf'
               expect(last_response.headers["Content-Disposition"]).to eq("attachment")
             end
@@ -372,7 +372,7 @@ describe PDFKit::Middleware do
 
           context "attachment with filename" do
             specify do
-              mock_app({}, { disposition: 'attachment; filename=report.pdf'  })
+              mock_app({}, { :disposition => 'attachment; filename=report.pdf'  })
               get 'http://www.example.org/public/test.pdf'
               expect(last_response.headers["Content-Disposition"]).to eq("attachment; filename=report.pdf")
             end
