@@ -1,6 +1,6 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :default_options, :root_url
+    attr_accessor :meta_tag_prefix, :default_options, :root_url, :log_file
     attr_writer :use_xvfb, :verbose
 
     def initialize

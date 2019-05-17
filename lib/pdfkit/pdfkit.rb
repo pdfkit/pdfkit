@@ -44,7 +44,20 @@ class PDFKit
     input_for_command = @source.to_input_for_command
     output_for_command = path ? Shellwords.shellescape(path) : '-'
 
-    "#{shell_escaped_command} #{input_for_command} #{output_for_command}"
+    log("#{shell_escaped_command} #{input_for_command} #{output_for_command}")
+  end
+
+  def log(command)
+    log_file = PDFKit.configuration.log_file
+    if log_file.nil?
+      command
+    else
+      # log the command itself to the log file
+      open(log_file, 'a') { |f| f.puts command }
+
+      # also redirect stderr to the logfile
+      "#{command} 2>>#{log_file}"
+    end
   end
 
   def options
