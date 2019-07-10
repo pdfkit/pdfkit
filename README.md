@@ -125,7 +125,7 @@ For example:
 headers['PDFKit-save-pdf'] = 'path/to/saved.pdf'
 ```
 
-Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent back to the client.  If the path is not writable/non-existant the write will fail silently.  The `PDFKit-save-pdf` header is never sent back to the client.
+Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent back to the client.  If the path is not writable/non-existent the write will fail silently.  The `PDFKit-save-pdf` header is never sent back to the client.
 
 ## Troubleshooting
 
