@@ -12,6 +12,11 @@ describe PDFKit::Source do
       expect(source).not_to be_url
     end
 
+    it "returns false if passed a tempfile" do
+      source = PDFKit::Source.new(::Tempfile.new(__FILE__))
+      expect(source).not_to be_url
+    end
+
     it "returns false if passed HTML" do
       source = PDFKit::Source.new('<blink>Oh Hai!</blink>')
       expect(source).not_to be_url
@@ -26,6 +31,11 @@ describe PDFKit::Source do
   describe "#file?" do
     it "returns true if passed a file" do
       source = PDFKit::Source.new(::File.new(__FILE__))
+      expect(source).to be_file
+    end
+
+    it "returns true if passed a tempfile" do
+      source = PDFKit::Source.new(::Tempfile.new(__FILE__))
       expect(source).to be_file
     end
 
@@ -48,6 +58,11 @@ describe PDFKit::Source do
 
     it "returns false if passed a file" do
       source = PDFKit::Source.new(::File.new(__FILE__))
+      expect(source).not_to be_html
+    end
+
+    it "returns false if passed a tempfile" do
+      source = PDFKit::Source.new(::Tempfile.new(__FILE__))
       expect(source).not_to be_html
     end
 
@@ -77,6 +92,11 @@ describe PDFKit::Source do
       source = PDFKit::Source.new(::File.new(__FILE__))
       expect(source.to_input_for_command).to match 'spec/source_spec.rb'
     end
+
+    it "returns the file path for tempfile sources" do
+      source = PDFKit::Source.new(file = ::Tempfile.new(__FILE__))
+      expect(source.to_input_for_command).to match file.path
+    end
   end
 
   describe "#to_s" do
@@ -88,6 +108,11 @@ describe PDFKit::Source do
     it "returns a path if passed a file" do
       source = PDFKit::Source.new(::File.new(__FILE__))
       expect(source.to_s).to eq(__FILE__)
+    end
+
+    it "returns a path if passed a tempfile" do
+      source = PDFKit::Source.new(file = ::Tempfile.new(__FILE__))
+      expect(source.to_s).to eq(file.path)
     end
 
     it "returns the url if passed a url like string" do
