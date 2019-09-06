@@ -499,7 +499,7 @@ describe PDFKit do
     #NOTICE: This test is failed if use wkhtmltopdf-binary (0.9.9.1)
     it "throws an error if it is unable to connect" do
       pdfkit = PDFKit.new("http://google.com/this-should-not-be-found/404.html")
-      expect { pdfkit.to_pdf }.to raise_error /exitstatus=1/
+      expect { pdfkit.to_pdf }.to raise_error PDFKit::ImproperWkhtmltopdfExitStatus, /exitstatus=1/
     end
 
     it "does not throw an error if it is unable to connect", pending: 'this test works for wkhtmltopdf-binary (0.9.9.1)' do

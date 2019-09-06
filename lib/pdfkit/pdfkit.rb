@@ -1,7 +1,9 @@
 require 'shellwords'
 
 class PDFKit
-  class NoExecutableError < StandardError
+  class Error < StandardError; end
+
+  class NoExecutableError < Error
     def initialize
       msg  = "No wkhtmltopdf executable found at #{PDFKit.configuration.wkhtmltopdf}\n"
       msg << ">> Please install wkhtmltopdf - https://github.com/pdfkit/PDFKit/wiki/Installing-WKHTMLTOPDF"
@@ -9,9 +11,15 @@ class PDFKit
     end
   end
 
-  class ImproperSourceError < StandardError
+  class ImproperSourceError < Error
     def initialize(msg)
       super("Improper Source: #{msg}")
+    end
+  end
+
+  class ImproperWkhtmltopdfExitStatus < Error
+    def initialize(invoke)
+      super("Command failed (exitstatus=#{$?.exitstatus}): #{invoke}")
     end
   end
 
@@ -31,7 +39,7 @@ class PDFKit
     @renderer = WkHTMLtoPDF.new options
     @renderer.normalize_options
 
-    raise NoExecutableError.new unless File.exists?(PDFKit.configuration.wkhtmltopdf)
+    raise NoExecutableError unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
 
   def command(path = nil)
@@ -70,7 +78,7 @@ class PDFKit
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise "command failed (exitstatus=#{$?.exitstatus}): #{invoke}" if empty_result?(path, result) or !successful?($?)
+    raise ImproperWkhtmltopdfExitStatus, invoke if empty_result?(path, result) || !successful?($?)
     return result
   end
 
@@ -116,7 +124,7 @@ class PDFKit
   end
 
   def append_stylesheets
-    raise ImproperSourceError.new('Stylesheets may only be added to an HTML source') if stylesheets.any? && !@source.html?
+    raise ImproperSourceError, 'Stylesheets may only be added to an HTML source' if stylesheets.any? && !@source.html?
 
     stylesheets.each do |stylesheet|
       if @source.to_s.match(/<\/head>/)
