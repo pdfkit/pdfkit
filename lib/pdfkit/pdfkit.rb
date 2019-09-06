@@ -91,7 +91,7 @@ class PDFKit
 
   def find_options_in_meta(content)
     # Read file if content is a File
-    content = content.read if content.is_a?(File)
+    content = content.read if content.is_a?(File) || content.is_a?(Tempfile)
 
     found = {}
     content.scan(/<meta [^>]*>/) do |meta|

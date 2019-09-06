@@ -23,6 +23,13 @@ describe PDFKit do
       expect(pdfkit.source.to_s).to eq(file_path)
     end
 
+    it "accepts a Tempfile as the source" do
+      file_path = File.join(SPEC_ROOT,'fixtures','example.html')
+      pdfkit = PDFKit.new(Tempfile.new(file_path))
+      expect(pdfkit.source).to be_file
+      expect(pdfkit.source.to_s).to match /^#{Dir.tmpdir}/
+    end
+
     # Options
     ## options keys
     it "drops options without values" do
@@ -250,6 +257,12 @@ describe PDFKit do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
       expect(pdfkit.command).to match /#{file_path} -$/
+    end
+
+    it "specifies the path to the source if it is a tempfile" do
+      file_path = File.join(SPEC_ROOT,'fixtures','example.html')
+      pdfkit = PDFKit.new(Tempfile.new(file_path))
+      expect(pdfkit.command).to match /#{Dir.tmpdir}\S+ -$/
     end
 
     it "specifies the path for the ouput if a path is given" do
