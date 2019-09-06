@@ -40,6 +40,13 @@ describe PDFKit::Configuration do
       expect(subject.default_options[:quiet]).to eql false
       expect(subject.default_options[:is_awesome]).to eql true
     end
+
+    it "merges additional options with existing defaults" do
+      subject.default_options = { quiet: false, is_awesome: true }
+      expect(subject.default_options[:quiet]).to eql false
+      expect(subject.default_options[:is_awesome]).to eql true
+      expect(subject.default_options[:disable_smart_shrinking]).to eql false
+    end
   end
 
   describe "#root_url" do

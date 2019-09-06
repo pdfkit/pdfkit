@@ -1,7 +1,8 @@
 class PDFKit
   class Configuration
-    attr_accessor :meta_tag_prefix, :default_options, :root_url
+    attr_accessor :meta_tag_prefix, :root_url
     attr_writer :use_xvfb, :verbose
+    attr_reader :default_options
 
     def initialize
       @verbose         = false
@@ -50,6 +51,10 @@ class PDFKit
 
     def verbose?
       @verbose
+    end
+
+    def default_options=(options)
+      @default_options.merge!(options)
     end
   end
 
