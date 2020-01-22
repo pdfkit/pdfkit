@@ -25,14 +25,20 @@ class PDFKit
     end
 
     def default_wkhtmltopdf
-      @default_command_path ||= (defined?(Bundler::GemfileError) && File.exists?('Gemfile') ? `bundle exec which wkhtmltopdf` : `which wkhtmltopdf`).chomp
+      # @default_command_path ||= (defined?(Bundler::GemfileError) && File.exists?('Gemfile') ? `bundle exec which wkhtmltopdf` : `which wkhtmltopdf`).chomp
+      return @default_command_path if @default_command_path
+      if defined?(Bundler::GemfileError) && File.exists?('Gemfile')
+        @default_command_path = `bundle exec which wkhtmltopdf`.chomp
+      end
+      @default_command_path = `which wkhtmltopdf`.chomp if @default_command_path.nil? || @default_command_path.empty?
+      @default_command_path
     end
 
     def wkhtmltopdf=(path)
       if File.exist?(path)
         @wkhtmltopdf = path
       else
-        warn "No executable found at #{path}. Will fall back to #{default_wkhtmltopdf}" unless File.exist?(path)
+        warn "No executable found at #{path}. Will fall back to #{default_wkhtmltopdf}"
         @wkhtmltopdf = default_wkhtmltopdf
       end
     end

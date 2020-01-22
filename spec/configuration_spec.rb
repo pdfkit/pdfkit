@@ -3,11 +3,48 @@ require 'spec_helper'
 describe PDFKit::Configuration do
   subject { PDFKit::Configuration.new }
   describe "#wkhtmltopdf" do
+    context "when explicitly configured" do
+      it "uses configured value and don't detect" do
+        expect(subject).not_to receive(:default_wkhtmltopdf)
+        subject.wkhtmltopdf = "./Gemfile" # Need a file which exists
+        expect(subject.wkhtmltopdf).to eq("./Gemfile")
+      end
+
+      it "falls back to detected binary if configured path doesn't exists" do
+        expect(subject).to receive(:default_wkhtmltopdf).twice.and_return("/bin/fallback")
+        expect(subject).to receive(:warn).with(/No executable found/)
+        subject.wkhtmltopdf = "./missing-file" # Need a file which doesn't exist
+        expect(subject.wkhtmltopdf).to eq("/bin/fallback")
+      end
+    end
+
     context "when not explicitly configured" do
-      it "detects the existance of bundler" do
-        # Test assumes bundler is installed in your test environment
-        expect(subject).to receive(:`).with('bundle exec which wkhtmltopdf').and_return('c:\windows\path.exe')
-        subject.wkhtmltopdf
+      context "when running inside bundler" do
+        # Simulate the presence of bundler even if it's not here
+        before { stub_const("Bundler::GemfileError", Class) }
+
+        it "detects the existance of bundler" do
+          expect(subject).to receive(:`).with('bundle exec which wkhtmltopdf').and_return("c:\\windows\\path.exe\n")
+          expect(subject.wkhtmltopdf).to eq('c:\windows\path.exe')
+        end
+
+        it "falls back if bundler path fails" do
+          # This happens when there is a wrong (buggy) version of bundler for example
+          expect(subject).to receive(:`).with('bundle exec which wkhtmltopdf').and_return("")
+          expect(subject).to receive(:`).with('which wkhtmltopdf').and_return("c:\\windows\\path.exe\n")
+          expect(subject.wkhtmltopdf).to eq('c:\windows\path.exe')
+        end
+      end
+
+      context "when running without bundler" do
+        # Simulate the absence of bundler even if it's there
+        before { hide_const("Bundler::GemfileError") }
+
+        it "detects the existance of bundler" do
+          expect(subject).not_to receive(:`).with('bundle exec which wkhtmltopdf')
+          expect(subject).to receive(:`).with('which wkhtmltopdf').and_return('c:\windows\path.exe')
+          expect(subject.wkhtmltopdf).to eq('c:\windows\path.exe')
+        end
       end
     end
   end
