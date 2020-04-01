@@ -1,7 +1,10 @@
-Unreleased
+2020-04-01
 =================
-  * Improve wkhtmltopdf path detection when `bundle exec which` is failing (#460)
-
+  * Bump to 0.8.4.2
+  * Improve path detection feedback (#460)
+  * Fix typos (#444)
+  * Update readme (#439)
+  
 2019-02-22
 =================
   * Bump to 0.8.4.1
