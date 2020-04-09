@@ -343,6 +343,20 @@ describe PDFKit::Middleware do
       end
 
       describe ":disposition" do
+        describe "doesn't overwrite existing value" do
+          let(:headers) do
+            super().merge({
+              'Content-Disposition' => 'attachment; filename=report-20200101.pdf'
+            })
+          end
+
+          specify do
+            mock_app({}, { :disposition => 'inline' })
+            get 'http://www.example.org/public/test.pdf'
+            expect(last_response.headers["Content-Disposition"]).to eq('attachment; filename=report-20200101.pdf')
+          end
+        end
+
         describe "inline or blank" do
           context "default" do
             specify do

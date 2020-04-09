@@ -119,9 +119,9 @@ config.middleware.use PDFKit::Middleware, {}, :except => ['/secret']
 **With conditions to force download**
 ```ruby
 # force download with attachment disposition
-config.middleware.use PDFKit::Middleware, {}, :dispositon => 'attachment'
+config.middleware.use PDFKit::Middleware, {}, :disposition => 'attachment'
 # conditions can force a filename
-config.middleware.use PDFKit::Middleware, {}, :dispositon => 'attachment; filename=report.pdf'
+config.middleware.use PDFKit::Middleware, {}, :disposition => 'attachment; filename=report.pdf'
 ```
 **Saving the generated .pdf to disk**
 
