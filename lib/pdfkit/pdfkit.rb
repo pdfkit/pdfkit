@@ -1,4 +1,5 @@
 require 'shellwords'
+require 'tempfile' if not defined?(Tempfile)
 
 class PDFKit
   class Error < StandardError; end

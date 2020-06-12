@@ -1,4 +1,5 @@
 require 'uri'
+require 'tempfile' if not defined?(Tempfile)
 
 class PDFKit
   class Source
