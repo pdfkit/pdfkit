@@ -12,5 +12,5 @@ before_install:
 
 before_script:
   - "sudo apt-get -qq -y install fontconfig libxrender1"
-  - "wget https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.xenial_amd64.deb"
+  - "wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.xenial_amd64.deb"
   - "sudo apt-get install ./wkhtmltox_0.12.5-1.xenial_amd64.deb"
