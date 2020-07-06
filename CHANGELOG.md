@@ -1,6 +1,6 @@
 2020-07-05
 =================
-  * Bump to 0.8.4.3
+  * Bump to 0.8.4.3.1
   * Don't override request level Content-Disposition header if it exists (#466)
   * Update rake (#471)
   * Add missing require statements for tempfile (#467)
