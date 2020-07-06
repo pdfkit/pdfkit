@@ -47,7 +47,7 @@ class PDFKit
 
         headers['Content-Length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
         headers['Content-Type']   = 'application/pdf'
-        headers['Content-Disposition'] = @conditions[:disposition] || 'inline'
+        headers['Content-Disposition'] ||= @conditions[:disposition] || 'inline'
       end
 
       [status, headers, response]
