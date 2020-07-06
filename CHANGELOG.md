@@ -1,3 +1,13 @@
+2020-07-05
+=================
+  * Bump to 0.8.4.3
+  * Don't override request level Content-Disposition header if it exists (#466)
+  * Update rake (#471)
+  * Add missing require statements for tempfile (#467)
+  * Only grab last line of bundle exec which output (#464)
+  * Return 500 status when an exception is caught in middleware (#469)
+  * Update Travis CI URL for wkhtmltopf (#473)
+  
 2020-04-01
 =================
   * Bump to 0.8.4.2
