@@ -34,6 +34,17 @@ describe PDFKit::Configuration do
           expect(subject).to receive(:`).with('which wkhtmltopdf').and_return("c:\\windows\\path.exe\n")
           expect(subject.wkhtmltopdf).to eq('c:\windows\path.exe')
         end
+
+        it "returns last line of 'bundle exec which' output" do
+          # Happens when the user does not have a HOME directory on their system and runs bundler < 2
+          expect(subject).to receive(:`).with('bundle exec which wkhtmltopdf').and_return(<<~EOT
+            `/home/myuser` is not a directory.
+            Bundler will use `/tmp/bundler/home/myuser' as your home directory temporarily.
+            /usr/bin/wkhtmltopdf
+          EOT
+          )
+          expect(subject.wkhtmltopdf).to eq('/usr/bin/wkhtmltopdf')
+        end
       end
 
       context "when running without bundler" do
