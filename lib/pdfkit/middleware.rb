@@ -51,6 +51,12 @@ class PDFKit
       end
 
       [status, headers, response]
+
+    rescue StandardError => e
+      status = 500
+      response = [e.message]
+
+      [status, headers, response]
     end
 
     private

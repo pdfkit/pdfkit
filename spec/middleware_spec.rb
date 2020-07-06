@@ -393,6 +393,16 @@ describe PDFKit::Middleware do
           end
         end
       end
+
+      describe "error handling" do
+        specify do
+          mock_app
+          allow(PDFKit).to receive(:new).and_raise(StandardError.new("Something went wrong"))
+          get 'http://www.example.org/public/test.pdf'
+          expect(last_response.status).to eq(500)
+          expect(last_response.body).to eq("Something went wrong")
+        end
+      end
     end
 
     describe "remove .pdf from PATH_INFO and REQUEST_URI" do
