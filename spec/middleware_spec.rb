@@ -395,12 +395,27 @@ describe PDFKit::Middleware do
       end
 
       describe "error handling" do
-        specify do
-          mock_app
-          allow(PDFKit).to receive(:new).and_raise(StandardError.new("Something went wrong"))
-          get 'http://www.example.org/public/test.pdf'
-          expect(last_response.status).to eq(500)
-          expect(last_response.body).to eq("Something went wrong")
+        let(:error) { StandardError.new("Something went wrong") }
+
+        context "errors raised by PDF generation" do
+          specify do
+            mock_app
+            allow(PDFKit).to receive(:new).and_raise(error)
+            get 'http://www.example.org/public/test.pdf'
+            expect(last_response.status).to eq(500)
+            expect(last_response.body).to eq(error.message)
+          end
+        end
+
+        context "errors raised upstream" do
+          specify do
+            mock_app
+            allow(@app).to receive(:call).and_raise(error)
+
+            expect {
+              get 'http://www.example.org/public/test.pdf'
+            }.to raise_error(error)
+          end
         end
       end
     end

@@ -19,42 +19,41 @@ class PDFKit
       set_request_to_render_as_pdf(env) if render_as_pdf?
       status, headers, response = @app.call(env)
 
-      if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
-        body = response.respond_to?(:body) ? response.body : response.join
-        body = body.join if body.is_a?(Array)
+      begin
+        if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
+          body = response.respond_to?(:body) ? response.body : response.join
+          body = body.join if body.is_a?(Array)
 
-        root_url = root_url(env)
-        protocol = protocol(env)
-        options = @options.merge(root_url: root_url, protocol: protocol)
+          root_url = root_url(env)
+          protocol = protocol(env)
+          options = @options.merge(root_url: root_url, protocol: protocol)
 
-        if headers['PDFKit-javascript-delay']
-          options.merge!(javascript_delay: headers.delete('PDFKit-javascript-delay').to_i)
+          if headers['PDFKit-javascript-delay']
+            options.merge!(javascript_delay: headers.delete('PDFKit-javascript-delay').to_i)
+          end
+
+          body = PDFKit.new(body, options).to_pdf
+          response = [body]
+
+          if headers['PDFKit-save-pdf']
+            File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) } rescue nil
+            headers.delete('PDFKit-save-pdf')
+          end
+
+          unless @caching
+            # Do not cache PDFs
+            headers.delete('ETag')
+            headers.delete('Cache-Control')
+          end
+
+          headers['Content-Length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
+          headers['Content-Type']   = 'application/pdf'
+          headers['Content-Disposition'] ||= @conditions[:disposition] || 'inline'
         end
-
-        body = PDFKit.new(body, options).to_pdf
-        response = [body]
-
-        if headers['PDFKit-save-pdf']
-          File.open(headers['PDFKit-save-pdf'], 'wb') { |file| file.write(body) } rescue nil
-          headers.delete('PDFKit-save-pdf')
-        end
-
-        unless @caching
-          # Do not cache PDFs
-          headers.delete('ETag')
-          headers.delete('Cache-Control')
-        end
-
-        headers['Content-Length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
-        headers['Content-Type']   = 'application/pdf'
-        headers['Content-Disposition'] ||= @conditions[:disposition] || 'inline'
+      rescue StandardError => e
+        status = 500
+        response = [e.message]
       end
-
-      [status, headers, response]
-
-    rescue StandardError => e
-      status = 500
-      response = [e.message]
 
       [status, headers, response]
     end
