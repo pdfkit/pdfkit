@@ -1,3 +1,8 @@
+2020-08-16
+=================
+  * Bump to 0.8.4.3.2
+  * Reduce scope of middleware exception handling (#476)
+
 2020-07-05
 =================
   * Bump to 0.8.4.3.1
