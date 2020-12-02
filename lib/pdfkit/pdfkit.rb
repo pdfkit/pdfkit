@@ -40,7 +40,7 @@ class PDFKit
     @renderer = WkHTMLtoPDF.new options
     @renderer.normalize_options
 
-    raise NoExecutableError unless File.exists?(PDFKit.configuration.wkhtmltopdf)
+    # raise NoExecutableError unless File.exists?(PDFKit.configuration.wkhtmltopdf)
   end
 
   def command(path = nil)
