@@ -501,6 +501,14 @@ describe PDFKit do
       expect(pdfkit.source.to_s).to include("<style>#{File.read(css)}</style></head>")
     end
 
+    it "can deal with ActiveSupport::SafeBuffer if the HTML doesn't have a head tag" do
+      pdfkit = PDFKit.new(ActiveSupport::SafeBuffer.new "<html><body>Hai!</body></html>")
+      css = File.join(SPEC_ROOT,'fixtures','example.css')
+      pdfkit.stylesheets << css
+      pdfkit.to_pdf
+      expect(pdfkit.source.to_s).to include("<style>#{File.read(css)}</style>")
+    end
+
     it "escapes \\X in stylesheets" do
       pdfkit = PDFKit.new("<html><head></head><body>Hai!</body></html>")
       css = File.join(SPEC_ROOT,'fixtures','example_with_hex_symbol.css')
