@@ -2,6 +2,11 @@
 
 Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antialize/wkhtmltopdf) on the back-end which renders HTML using Webkit.
 
+## Supported versions
+
+- Ruby 2.5, 2.6
+- Rails 4.2, 5.2, 6.0
+
 ## Install
 
 ### PDFKit
