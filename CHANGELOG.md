@@ -1,3 +1,10 @@
+2021-01-23
+=================
+  * Bump to 0.8.5
+  * Make `PDFKit::VERSION` public (#484) 
+  * Fix to render stylesheets as html safe string on Rails 6 (#483)
+      * Adds support for Rails 6
+
 2020-08-16
 =================
   * Bump to 0.8.4.3.2
