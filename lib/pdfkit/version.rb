@@ -1,3 +1,3 @@
 class PDFKit
-  VERSION = '0.8.4.3.2'
+  VERSION = '0.8.5'
 end
