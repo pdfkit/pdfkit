@@ -29,4 +29,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<rake>, ["~>12.3.3"])
   s.add_development_dependency(%q<rdoc>, ["~> 4.0.1"])
   s.add_development_dependency(%q<rspec>, ["~> 3.0"])
+
+  # Runtime Dependencies
+  s.add_runtime_dependency(%q<webrick>, [">= 1.0"])
 end
