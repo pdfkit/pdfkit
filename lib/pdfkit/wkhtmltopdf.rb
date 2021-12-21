@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class PDFKit
   class WkHTMLtoPDF
     attr_reader :options
     # Pulled from:
     # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
-    REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script]
-    SPECIAL_OPTIONS = %w[cover toc]
+    REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script].freeze
+    SPECIAL_OPTIONS = %w[cover toc].freeze
 
     def initialize(options)
       @options = options

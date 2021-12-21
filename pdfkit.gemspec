@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.required_ruby_version = '>= 2.5'
+  s.required_ruby_version = ">= 2.5"
 
   s.requirements << "wkhtmltopdf"
 
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<activesupport>, [">= 4.1.11"])
   s.add_development_dependency(%q<mocha>, [">= 0.9.10"])
   s.add_development_dependency(%q<rack-test>, [">= 0.5.6"])
-  s.add_development_dependency(%q<rake>, ["~>12.3.3"])
-  s.add_development_dependency(%q<rdoc>, ["~> 4.0.1"])
+  s.add_development_dependency(%q<rake>, [">= 12.3.3"])
+  s.add_development_dependency(%q<rdoc>, [">= 4.0.1"])
   s.add_development_dependency(%q<rspec>, ["~> 3.0"])
 end

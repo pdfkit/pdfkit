@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PDFKit
   class Configuration
     attr_accessor :meta_tag_prefix, :root_url
@@ -26,7 +28,7 @@ class PDFKit
 
     def default_wkhtmltopdf
       return @default_command_path if @default_command_path
-      if defined?(Bundler::GemfileError) && File.exists?('Gemfile')
+      if defined?(Bundler::GemfileError) && File.exist?('Gemfile')
         @default_command_path = `bundle exec which wkhtmltopdf`.chomp.lines.last
       end
       @default_command_path = `which wkhtmltopdf`.chomp if @default_command_path.nil? || @default_command_path.empty?

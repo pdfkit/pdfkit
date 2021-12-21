@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 def app; Rack::Lint.new(@app); end
@@ -267,8 +269,8 @@ describe PDFKit::Middleware do
       describe "saving generated pdf to disk" do
         before do
           #make sure tests don't find an old test_save.pdf
-          File.delete('spec/test_save.pdf') if File.exists?('spec/test_save.pdf')
-          expect(File.exists?('spec/test_save.pdf')).to eq(false)
+          File.delete('spec/test_save.pdf') if File.exist?('spec/test_save.pdf')
+          expect(File.exist?('spec/test_save.pdf')).to eq(false)
         end
 
         context "when header PDFKit-save-pdf is present" do
@@ -276,7 +278,7 @@ describe PDFKit::Middleware do
             headers = { 'PDFKit-save-pdf' => 'spec/test_save.pdf' }
             mock_app({}, {only: '/public'}, headers)
             get 'http://www.example.org/public/test_save.pdf'
-            expect(File.exists?('spec/test_save.pdf')).to eq(true)
+            expect(File.exist?('spec/test_save.pdf')).to eq(true)
           end
 
           it "does not raise when target directory does not exist" do
@@ -292,7 +294,7 @@ describe PDFKit::Middleware do
           it "does not saved the .pdf to disk" do
             mock_app({}, {only: '/public'}, {} )
             get 'http://www.example.org/public/test_save.pdf'
-            expect(File.exists?('spec/test_save.pdf')).to eq(false)
+            expect(File.exist?('spec/test_save.pdf')).to eq(false)
           end
         end
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pdfkit/source'
 require 'pdfkit/pdfkit'
 require 'pdfkit/middleware'
