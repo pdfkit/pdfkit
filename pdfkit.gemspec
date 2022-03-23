@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.requirements << "wkhtmltopdf"
+  s.requirements << "addressable"
 
   # Development Dependencies
   s.add_development_dependency(%q<activesupport>, [">= 4.1.11"])
