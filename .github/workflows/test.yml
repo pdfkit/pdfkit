@@ -20,9 +20,9 @@ jobs:
 
     - name: Setup wkhtmltopdf
       run: |
-        sudo apt-get -qq -y install fontconfig libxrender1
-        wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.xenial_amd64.deb
-        sudo apt-get install ./wkhtmltox_0.12.5-1.xenial_amd64.deb
+        sudo apt-get install -y xfonts-base xfonts-75dpi
+        wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
+        sudo dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb
 
     - name: Run tests
       run: bundle exec rake
