@@ -1,0 +1,30 @@
+name: Test workflow
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        ruby: [2.5, 2.6, 2.7]
+        rails: ['~> 4.1', '~> 5.2', '~> 6.0']
+    runs-on: ${{ matrix.os }}
+    env:
+      RAILS_VERSION: ${{ matrix.rails }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+
+    - name: Setup wkhtmltopdf
+      run: |
+        sudo apt-get install -y xfonts-base xfonts-75dpi
+        wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
+        sudo dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb
+
+    - name: Run tests
+      run: bundle exec rake
