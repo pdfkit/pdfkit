@@ -1,3 +1,8 @@
+2022-04-11
+=================
+  * Bump to 0.8.6
+  * Update ruby and rails versions
+
 2021-01-23
 =================
   * Bump to 0.8.5
