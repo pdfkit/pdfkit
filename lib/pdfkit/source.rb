@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tempfile'
 require 'uri'
 
@@ -7,6 +9,8 @@ class PDFKit
 
     def initialize(url_file_or_html)
       @source = url_file_or_html
+      # @source is assumed to be modifiable, so make sure it is.
+      @source = @source.dup if @source.is_a?(String) && @source.frozen?
     end
 
     def url?
@@ -38,11 +42,11 @@ class PDFKit
     private
 
     def shell_safe_url
-      url_needs_escaping? ? URI::escape(@source) : @source
+      url_needs_escaping? ? URI::DEFAULT_PARSER.escape(@source) : @source
     end
 
     def url_needs_escaping?
-      URI::decode(@source) == @source
+      URI::DEFAULT_PARSER.unescape(@source) == @source
     end
   end
 end

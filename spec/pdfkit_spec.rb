@@ -1,4 +1,6 @@
 #encoding: UTF-8
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe PDFKit do
@@ -27,7 +29,7 @@ describe PDFKit do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(Tempfile.new(file_path))
       expect(pdfkit.source).to be_file
-      expect(pdfkit.source.to_s).to match /^#{Dir.tmpdir}/
+      expect(pdfkit.source.to_s).to match(/^#{Dir.tmpdir}/)
     end
 
     # Options
@@ -239,12 +241,12 @@ describe PDFKit do
 
     it "read the source from stdin if it is html" do
       pdfkit = PDFKit.new('html')
-      expect(pdfkit.command).to match /- -$/
+      expect(pdfkit.command).to match(/- -$/)
     end
 
     it "specifies the URL to the source if it is a url" do
       pdfkit = PDFKit.new('http://google.com')
-      expect(pdfkit.command).to match /"http:\/\/google.com" -$/
+      expect(pdfkit.command).to match(/"http:\/\/google.com" -$/)
     end
 
     it "does not break Windows paths" do
@@ -256,19 +258,19 @@ describe PDFKit do
     it "specifies the path to the source if it is a file" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
-      expect(pdfkit.command).to match /#{file_path} -$/
+      expect(pdfkit.command).to match(/#{file_path} -$/)
     end
 
     it "specifies the path to the source if it is a tempfile" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(Tempfile.new(file_path))
-      expect(pdfkit.command).to match /#{Dir.tmpdir}\S+ -$/
+      expect(pdfkit.command).to match(/#{Dir.tmpdir}\S+ -$/)
     end
 
     it "specifies the path for the ouput if a path is given" do
       file_path = "/path/to/output.pdf"
       pdfkit = PDFKit.new("html")
-      expect(pdfkit.command(file_path)).to match /#{file_path}$/
+      expect(pdfkit.command(file_path)).to match(/#{file_path}$/)
     end
 
     it "detects special pdfkit meta tags" do

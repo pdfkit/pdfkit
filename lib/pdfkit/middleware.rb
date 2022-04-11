@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PDFKit
   class Middleware
     def initialize(app, options = {}, conditions = {})
