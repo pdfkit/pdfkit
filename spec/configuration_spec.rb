@@ -121,6 +121,17 @@ describe PDFKit::Configuration do
     end
   end
 
+  describe "#timeout" do
+    it "can be configured to a different value" do
+      subject.timeout = 123
+      expect(subject.timeout).to eq(123)
+    end
+
+    it "defaults to nil" do
+      expect(subject.timeout).to be_nil
+    end
+  end
+
   describe "#using_xvfb?" do
     it "can be configured to true" do
       subject.use_xvfb = true

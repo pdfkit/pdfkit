@@ -74,8 +74,7 @@ class PDFKit
     PDFKit.configuration.executable
   end
 
-  # TODO(ivy): Set a default `timeout` in the next major version.
-  def to_pdf(path=nil, timeout: nil)
+  def to_pdf(path=nil, timeout: PDFKit.configuration.timeout)
     preprocess_html
     append_stylesheets
 
