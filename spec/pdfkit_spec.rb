@@ -562,6 +562,8 @@ describe PDFKit do
     end
 
     it "does not truncate data (in Ruby 1.8.6)" do
+      skip "This test is only for Ruby 1.8.6" unless RUBY_VERSION == '1.8.6'
+
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
       pdf_data = pdfkit.to_pdf
