@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
 
   s.requirements << "wkhtmltopdf"
 
+  s.add_dependency(%q<childprocess>, [">= 1.0.0"])
+
   # Development Dependencies
   s.add_development_dependency(%q<activesupport>, [">= 4.1.11"])
   s.add_development_dependency(%q<mocha>, [">= 0.9.10"])
