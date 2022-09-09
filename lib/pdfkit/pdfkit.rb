@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'childprocess'
 require 'shellwords'
 require 'tempfile'
 
@@ -23,6 +24,12 @@ class PDFKit
   class ImproperWkhtmltopdfExitStatus < Error
     def initialize(invoke)
       super("Command failed (exitstatus=#{$?.exitstatus}): #{invoke}")
+    end
+  end
+
+  class TimeoutError < Error
+    def initialize(timeout)
+      super("Command timed out after #{timeout} seconds")
     end
   end
 
@@ -67,22 +74,47 @@ class PDFKit
     PDFKit.configuration.executable
   end
 
-  def to_pdf(path=nil)
+  # TODO(ivy): Set a default `timeout` in the next major version.
+  def to_pdf(path=nil, timeout: nil)
     preprocess_html
     append_stylesheets
 
     invoke = command(path)
 
-    result = IO.popen(invoke, "wb+") do |pdf|
-      pdf.puts(@source.to_s) if @source.html?
-      pdf.close_write
-      pdf.gets(nil) if path.nil?
+    out_reader, out_writer = IO.pipe
+
+    process = ChildProcess.build('/bin/sh', '-c', invoke).tap do |p|
+      p.io.stdout = p.io.stderr = out_writer
+      p.duplex = true
+
+      p.start
+
+      p.io.stdin.puts(@source.to_s) if @source.html?
+      p.io.stdin.close
     end
 
-    # $? is thread safe per
-    # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
-    raise ImproperWkhtmltopdfExitStatus, invoke if empty_result?(path, result) || !successful?($?)
-    return result
+    begin
+      if timeout
+        process.poll_for_exit(timeout)
+      else
+        process.wait
+      end
+    rescue ChildProcess::TimeoutError
+      process.stop
+      raise TimeoutError, timeout
+    end
+
+    out_writer.close
+    result = path.nil? ? out_reader.gets(nil) : nil
+
+    unless process.exit_code.zero? || empty_result?(path, result)
+      raise ImproperWkhtmltopdfExitStatus, invoke
+    end
+
+    result
+  ensure
+    process.kill if process&.alive?
+    [out_reader, out_writer].compact.each(&:close)
   end
 
   def to_file(path)

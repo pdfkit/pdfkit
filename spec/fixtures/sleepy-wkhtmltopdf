@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+#
+# sleepy-wkhtmltopdf -- It doesn't do anything, but it takes a while.
+#
+sleep
