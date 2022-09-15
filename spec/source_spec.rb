@@ -99,6 +99,22 @@ describe PDFKit::Source do
       source = PDFKit::Source.new(file = ::Tempfile.new(__FILE__))
       expect(source.to_input_for_command).to match file.path
     end
+
+    it "shellescapes to prevent shell execution" do
+      filename = "/tmp/deleteme_please.txt"
+
+      if File.file?(filename)
+        File.delete(filename)
+      end
+      source = PDFKit::Source.new("http://example.com/?name={'%20`sleep 5`'}")
+      expect(source.to_input_for_command).to eq "\"http://example.com/\\?name\\=\\{\\'\\%20\\`sleep\\ 5\\`\\'\\}\""
+
+      begin
+        PDFKit.new("http%20`touch #{filename}`").to_pdf
+      rescue PDFKit::ImproperWkhtmltopdfExitStatus
+      end
+      expect(File.file?(filename)).to eq false
+    end
   end
 
   describe "#to_s" do

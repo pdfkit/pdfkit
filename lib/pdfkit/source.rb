@@ -42,7 +42,7 @@ class PDFKit
     private
 
     def shell_safe_url
-      url_needs_escaping? ? URI::DEFAULT_PARSER.escape(@source) : @source
+      url_needs_escaping? ? URI::DEFAULT_PARSER.escape(@source) : @source.shellescape
     end
 
     def url_needs_escaping?
