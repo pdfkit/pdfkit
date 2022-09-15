@@ -42,11 +42,21 @@ class PDFKit
     private
 
     def shell_safe_url
-      url_needs_escaping? ? URI::DEFAULT_PARSER.escape(@source) : @source.shellescape
+      if url_needs_escaping?
+        URI::DEFAULT_PARSER.escape(@source)
+      elsif url_has_backticks?
+        @source.shellescape
+      else
+        @source
+      end
     end
 
     def url_needs_escaping?
       URI::DEFAULT_PARSER.unescape(@source) == @source
+    end
+
+    def url_has_backticks?
+      @source.include? '`'
     end
   end
 end
