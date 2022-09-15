@@ -80,6 +80,11 @@ describe PDFKit::Source do
       expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
     end
 
+    it "URI escapes source URI only escape part of it" do
+      source = PDFKit::Source.new("https://www.google.com/search?q='%20 sleep 5'")
+      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='%2520%20sleep%205'\""
+    end
+
     it "does not URI escape previously escaped source URLs" do
       source = PDFKit::Source.new("https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'")
       expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
