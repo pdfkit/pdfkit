@@ -44,7 +44,7 @@ class PDFKit
     def shell_safe_url
       if url_needs_escaping?
         URI::DEFAULT_PARSER.escape(@source)
-      elsif url_has_backticks?
+      elsif url_has_shellcode?
         @source.shellescape
       else
         @source
@@ -55,8 +55,13 @@ class PDFKit
       URI::DEFAULT_PARSER.unescape(@source) == @source
     end
 
-    def url_has_backticks?
-      @source.include? '`'
+    def url_has_shellcode?
+      possible_shellcodes = [
+        '`',
+        '$('
+      ]
+
+      possible_shellcodes.select { |code| @source.include?(code) }.any?
     end
   end
 end

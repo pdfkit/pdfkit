@@ -100,7 +100,7 @@ describe PDFKit::Source do
       expect(source.to_input_for_command).to match file.path
     end
 
-    it "shellescapes to prevent shell execution" do
+    it "should not allow backtick shell execution in url" do
       filename = "/tmp/deleteme_please.txt"
 
       if File.file?(filename)
@@ -113,6 +113,19 @@ describe PDFKit::Source do
         PDFKit.new("http%20`touch #{filename}`").to_pdf
       rescue PDFKit::ImproperWkhtmltopdfExitStatus
       end
+      expect(File.file?(filename)).to eq false
+    end
+
+    it "should not allow $( shell execution in url" do
+      filename = "/tmp/deleteme_please.txt"
+
+      if File.file?(filename)
+        File.delete(filename)
+      end
+      source = PDFKit::Source.new("http://example.com/?name={'%20$(sleep 5)'}")
+      expect(source.to_input_for_command).to eq "\"http://example.com/\\?name\\=\\{\\'\\%20\\$\\(sleep\\ 5\\)\\'\\}\""
+
+      PDFKit.new("http%20$(touch #{filename})").to_pdf
       expect(File.file?(filename)).to eq false
     end
   end
