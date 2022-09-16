@@ -102,32 +102,56 @@ describe PDFKit::Source do
 
     it "should not allow backtick shell execution in url" do
       filename = Dir::Tmpname.create('backtick_file') { |path| path }
+      File.delete(filename) if File.file?(filename)
 
-      if File.file?(filename)
-        File.delete(filename)
-      end
       source = PDFKit::Source.new("http://example.com/?name={'%20`sleep 5`'}")
-      expect(source.to_input_for_command).to eq "\"http://example.com/\\?name\\=\\{\\'\\%20\\`sleep\\ 5\\`\\'\\}\""
+      expect(source.to_input_for_command).to eq "\"http://example.com/?name={%27%20%60sleep%205%60%27}\""
 
       begin
         PDFKit.new("http%20`touch #{filename}`").to_pdf
-      rescue PDFKit::ImproperWkhtmltopdfExitStatus
+      rescue URI::InvalidURIError
       end
       expect(File.file?(filename)).to eq false
     end
 
     it "should not allow $( shell execution in url" do
       filename = Dir::Tmpname.create('dolar_sign_file') { |path| path }
+      File.delete(filename) if File.file?(filename)
 
-      if File.file?(filename)
-        File.delete(filename)
-      end
       source = PDFKit::Source.new("http://example.com/?name={'%20$(sleep 5)'}")
-      expect(source.to_input_for_command).to eq "\"http://example.com/\\?name\\=\\{\\'\\%20\\$\\(sleep\\ 5\\)\\'\\}\""
+      expect(source.to_input_for_command).to eq "\"http://example.com/?name={%27%20$(sleep%205)%27}\""
 
       begin
-      PDFKit.new("http%20$(touch #{filename})").to_pdf
-      rescue PDFKit::ImproperWkhtmltopdfExitStatus
+        PDFKit.new("http%20$(touch #{filename})").to_pdf
+      rescue URI::InvalidURIError
+      end
+      expect(File.file?(filename)).to eq false
+    end
+
+    it "should not allow || shell execution in url" do
+      filename = Dir::Tmpname.create('or_file') { |path| path }
+      File.delete(filename) if File.file?(filename)
+
+      source = PDFKit::Source.new("http://%20a\" || sleep 3; \"")
+      expect { source.to_input_for_command }.to raise_exception(URI::InvalidURIError)
+
+      begin
+        PDFKit.new("http://%20a\" || touch #{filename}); \"").to_pdf
+      rescue URI::InvalidURIError
+      end
+      expect(File.file?(filename)).to eq false
+    end
+
+    it "should not allow && shell execution in url" do
+      filename = Dir::Tmpname.create('and_file') { |path| path }
+      File.delete(filename) if File.file?(filename)
+
+      source = PDFKit::Source.new("http://%20a\" && sleep 3; \"")
+      expect { source.to_input_for_command }.to raise_exception(URI::InvalidURIError)
+
+      begin
+        PDFKit.new("http://%20a\" && touch #{filename}); \"").to_pdf
+      rescue URI::InvalidURIError
       end
       expect(File.file?(filename)).to eq false
     end

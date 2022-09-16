@@ -42,26 +42,11 @@ class PDFKit
     private
 
     def shell_safe_url
-      if url_needs_escaping?
-        URI::DEFAULT_PARSER.escape(@source)
-      elsif url_has_shellcode?
-        @source.shellescape
-      else
-        @source
-      end
+      URI::parse(unescaped_source).to_s
     end
 
-    def url_needs_escaping?
-      URI::DEFAULT_PARSER.unescape(@source) == @source
-    end
-
-    def url_has_shellcode?
-      possible_shellcodes = [
-        '`',
-        '$('
-      ]
-
-      possible_shellcodes.select { |code| @source.include?(code) }.any?
+    def unescaped_source
+      URI::DEFAULT_PARSER.unescape(@source)
     end
   end
 end
