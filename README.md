@@ -63,7 +63,7 @@ PDFKit.new(html, protocol: 'https').to_file
 ```
 
 ### Using cookies in scraping
-If you want to pass a cookie to cookie to pdfkit to scrape a website, you can
+If you want to pass a cookie to pdfkit to scrape a website, you can
 pass it in a hash:
 ```ruby
 kit = PDFKit.new(url, cookie: {cookie_name: :cookie_value})
