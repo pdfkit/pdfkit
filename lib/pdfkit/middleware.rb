@@ -44,13 +44,13 @@ class PDFKit
 
           unless @caching
             # Do not cache PDFs
-            headers.delete('ETag')
-            headers.delete('Cache-Control')
+            headers.delete('etag')
+            headers.delete('cache-control')
           end
 
-          headers['Content-Length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
+          headers['content-length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
           headers['content-type']   = 'application/pdf'
-          headers['Content-Disposition'] ||= @conditions[:disposition] || 'inline'
+          headers['content-disposition'] ||= @conditions[:disposition] || 'inline'
         end
       rescue StandardError => e
         status = 500
