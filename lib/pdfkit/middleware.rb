@@ -22,7 +22,7 @@ class PDFKit
       status, headers, response = @app.call(env)
 
       begin
-        if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
+        if rendering_pdf? && headers['content-type'] =~ /text\/html|application\/xhtml\+xml/
           body = response.respond_to?(:body) ? response.body : response.join
           body = body.join if body.is_a?(Array)
 
@@ -49,7 +49,7 @@ class PDFKit
           end
 
           headers['Content-Length'] = (body.respond_to?(:bytesize) ? body.bytesize : body.size).to_s
-          headers['Content-Type']   = 'application/pdf'
+          headers['content-type']   = 'application/pdf'
           headers['Content-Disposition'] ||= @conditions[:disposition] || 'inline'
         end
       rescue StandardError => e

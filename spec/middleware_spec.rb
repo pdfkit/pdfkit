@@ -19,7 +19,7 @@ end
 
 describe PDFKit::Middleware do
   let(:headers) do
-    {'Content-Type' => "text/html"}
+    {'content-type' => "text/html"}
   end
 
   describe "#call" do
@@ -55,7 +55,7 @@ describe PDFKit::Middleware do
     describe "caching" do
       let(:headers) do
         {
-          'Content-Type' => "text/html",
+          'content-type' => "text/html",
           'ETag' => 'foo',
           'Cache-Control' => 'max-age=2592000, public'
         }
@@ -99,7 +99,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -107,7 +107,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -119,7 +119,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -127,7 +127,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -141,7 +141,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -149,7 +149,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -161,7 +161,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -169,7 +169,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -187,7 +187,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -195,7 +195,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -207,7 +207,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -215,7 +215,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -229,7 +229,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -237,7 +237,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -249,7 +249,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -257,7 +257,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -446,7 +446,7 @@ describe PDFKit::Middleware do
           main_app = lambda { |env|
             @env = env
             @env['SCRIPT_NAME'] = '/example.org'
-            headers = {'Content-Type' => "text/html"}
+            headers = {'content-type' => "text/html"}
             [200, headers, @body || ['Hello world!']]
           }
 
