@@ -172,7 +172,7 @@ Will cause the .pdf to be saved to `path/to/saved.pdf` in addition to being sent
    asset host.
 
 *  **Mangled output in the browser:** Be sure that your HTTP response
-   headers specify "Content-Type: application/pdf"
+   headers specify "content-type: application/pdf"
 
 ## Note on Patches/Pull Requests
 

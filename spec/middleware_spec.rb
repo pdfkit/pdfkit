@@ -19,7 +19,7 @@ end
 
 describe PDFKit::Middleware do
   let(:headers) do
-    {'Content-Type' => "text/html"}
+    {'content-type' => "text/html"}
   end
 
   describe "#call" do
@@ -55,36 +55,36 @@ describe PDFKit::Middleware do
     describe "caching" do
       let(:headers) do
         {
-          'Content-Type' => "text/html",
-          'ETag' => 'foo',
-          'Cache-Control' => 'max-age=2592000, public'
+          'content-type' => "text/html",
+          'etag' => 'foo',
+          'cache-control' => 'max-age=2592000, public'
         }
       end
 
       context "by default" do
         before { mock_app }
 
-        it "deletes ETag" do
+        it "deletes etag" do
           get 'http://www.example.org/public/test.pdf'
-          expect(last_response.headers["ETag"]).to be_nil
+          expect(last_response.headers["etag"]).to be_nil
         end
-        it "deletes Cache-Control" do
+        it "deletes cache-control" do
           get 'http://www.example.org/public/test.pdf'
-          expect(last_response.headers["Cache-Control"]).to be_nil
+          expect(last_response.headers["cache-control"]).to be_nil
         end
       end
 
       context "when on" do
         before { mock_app({}, :caching => true) }
 
-        it "preserves ETag" do
+        it "preserves etag" do
           get 'http://www.example.org/public/test.pdf'
-          expect(last_response.headers["ETag"]).not_to be_nil
+          expect(last_response.headers["etag"]).not_to be_nil
         end
 
-        it "preserves Cache-Control" do
+        it "preserves cache-control" do
           get 'http://www.example.org/public/test.pdf'
-          expect(last_response.headers["Cache-Control"]).not_to be_nil
+          expect(last_response.headers["cache-control"]).not_to be_nil
         end
       end
     end
@@ -99,7 +99,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -107,7 +107,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -119,7 +119,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -127,7 +127,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -141,7 +141,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -149,7 +149,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -161,7 +161,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -169,7 +169,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -187,7 +187,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -195,7 +195,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -207,7 +207,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -215,7 +215,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -229,7 +229,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -237,7 +237,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -249,7 +249,7 @@ describe PDFKit::Middleware do
             context "matching" do
               specify do
                 get 'http://www.example.org/public/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+                expect(last_response.headers["content-type"]).to eq("application/pdf")
                 expect(last_response.body.bytesize).to eq(PDFKit.new("Hello world!").to_pdf.bytesize)
               end
             end
@@ -257,7 +257,7 @@ describe PDFKit::Middleware do
             context "not matching" do
               specify do
                 get 'http://www.example.org/secret/test.pdf'
-                expect(last_response.headers["Content-Type"]).to eq("text/html")
+                expect(last_response.headers["content-type"]).to eq("text/html")
                 expect(last_response.body).to eq("Hello world!")
               end
             end
@@ -348,14 +348,14 @@ describe PDFKit::Middleware do
         describe "doesn't overwrite existing value" do
           let(:headers) do
             super().merge({
-              'Content-Disposition' => 'attachment; filename=report-20200101.pdf'
+              'content-disposition' => 'attachment; filename=report-20200101.pdf'
             })
           end
 
           specify do
             mock_app({}, { :disposition => 'inline' })
             get 'http://www.example.org/public/test.pdf'
-            expect(last_response.headers["Content-Disposition"]).to eq('attachment; filename=report-20200101.pdf')
+            expect(last_response.headers["content-disposition"]).to eq('attachment; filename=report-20200101.pdf')
           end
         end
 
@@ -364,7 +364,7 @@ describe PDFKit::Middleware do
             specify do
               mock_app
               get 'http://www.example.org/public/test.pdf'
-              expect(last_response.headers["Content-Disposition"]).to eq("inline")
+              expect(last_response.headers["content-disposition"]).to eq("inline")
             end
           end
 
@@ -372,7 +372,7 @@ describe PDFKit::Middleware do
             specify do
               mock_app({}, { :disposition => 'inline'  })
               get 'http://www.example.org/public/test.pdf'
-              expect(last_response.headers["Content-Disposition"]).to eq("inline")
+              expect(last_response.headers["content-disposition"]).to eq("inline")
             end
           end
         end
@@ -382,7 +382,7 @@ describe PDFKit::Middleware do
             specify do
               mock_app({}, { :disposition => 'attachment'  })
               get 'http://www.example.org/public/test.pdf'
-              expect(last_response.headers["Content-Disposition"]).to eq("attachment")
+              expect(last_response.headers["content-disposition"]).to eq("attachment")
             end
           end
 
@@ -390,7 +390,7 @@ describe PDFKit::Middleware do
             specify do
               mock_app({}, { :disposition => 'attachment; filename=report.pdf'  })
               get 'http://www.example.org/public/test.pdf'
-              expect(last_response.headers["Content-Disposition"]).to eq("attachment; filename=report.pdf")
+              expect(last_response.headers["content-disposition"]).to eq("attachment; filename=report.pdf")
             end
           end
         end
@@ -446,7 +446,7 @@ describe PDFKit::Middleware do
           main_app = lambda { |env|
             @env = env
             @env['SCRIPT_NAME'] = '/example.org'
-            headers = {'Content-Type' => "text/html"}
+            headers = {'content-type' => "text/html"}
             [200, headers, @body || ['Hello world!']]
           }
 
