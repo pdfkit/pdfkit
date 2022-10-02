@@ -1,3 +1,9 @@
+2022-10-02
+=================
+  * Bump to 0.8.7
+  * Lowercase the header names for rack 3 changes (#511)
+  * Partially escaped URLs should be escaped (#509)
+
 2022-04-11
 =================
   * Bump to 0.8.6
