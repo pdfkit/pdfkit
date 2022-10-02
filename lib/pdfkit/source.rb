@@ -46,7 +46,7 @@ class PDFKit
     end
 
     def url_needs_escaping?
-      URI::DEFAULT_PARSER.unescape(@source) == @source
+      URI::DEFAULT_PARSER.escape(URI::DEFAULT_PARSER.unescape(@source)) != @source
     end
   end
 end
