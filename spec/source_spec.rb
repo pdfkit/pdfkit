@@ -77,17 +77,17 @@ describe PDFKit::Source do
   describe "#to_input_for_command" do
     it "URI escapes source URLs and encloses them in quotes to accomodate ampersands" do
       source = PDFKit::Source.new("https://www.google.com/search?q='cat<dev/zero>/dev/null'")
-      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
+      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q=\\'cat\\%3Cdev/zero\\%3E/dev/null\\'\""
     end
 
     it "URI escapes source URI only escape part of it" do
       source = PDFKit::Source.new("https://www.google.com/search?q='%20 sleep 5'")
-      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='%2520%20sleep%205'\""
+      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q=\\'\\%2520\\%20sleep\\%205\\'\""
     end
 
     it "does not URI escape previously escaped source URLs" do
       source = PDFKit::Source.new("https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'")
-      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
+      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q=\\'cat\\%3Cdev/zero\\%3E/dev/null\\'\""
     end
 
     it "returns a '-' for HTML strings to indicate that we send that content through STDIN" do
@@ -103,6 +103,16 @@ describe PDFKit::Source do
     it "returns the file path for tempfile sources" do
       source = PDFKit::Source.new(file = ::Tempfile.new(__FILE__))
       expect(source.to_input_for_command).to match file.path
+    end
+
+    it "URL query string escaped for shell commands" do
+      source = PDFKit::Source.new("http://localhost:3000/?home=$HOME")
+      expect(source.to_input_for_command).to eq "\"http://localhost:3000/?home=\\$HOME\""
+    end
+
+    it "URL query parameter name work correctly with shellescape" do
+      source = PDFKit::Source.new("http://localhost:3000/?param[home]=$HOME")
+      expect(source.to_input_for_command).to eq "\"http://localhost:3000/?param[home]=\\$HOME\""
     end
   end
 
