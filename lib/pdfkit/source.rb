@@ -42,11 +42,45 @@ class PDFKit
     private
 
     def shell_safe_url
-      url_needs_escaping? ? URI::DEFAULT_PARSER.escape(@source) : @source
+      url = url_needs_escaping? ? URI::DEFAULT_PARSER.escape(@source) : @source
+
+      URI::DEFAULT_PARSER.parse(url)
+      shellescape_query(url)
     end
 
     def url_needs_escaping?
       URI::DEFAULT_PARSER.escape(URI::DEFAULT_PARSER.unescape(@source)) != @source
+    end
+
+    def needs_shell_escaping?(data)
+      Shellwords.escape(shellwords_unescape(data)) != data
+    end
+
+    def shellescape_query(url)
+      url, query = url.split('?')
+      return url.to_s if query.nil?
+
+      params = query.split('&').map { |pv| pv.split('=') }
+      params = params.map do |parameter_name, parameter_value|
+        parameter_name  = shellescape_parameter_name(parameter_name) if needs_shell_escaping?(parameter_name)
+        parameter_value = Shellwords.escape(parameter_value) if needs_shell_escaping?(parameter_value)
+
+        [parameter_name, parameter_value]
+      end.to_h
+
+      query = params.map { |pv| pv.join('=') }.join('&')
+
+      [url, query].join('?')
+    end
+
+    def shellescape_parameter_name(parameter_name)
+      allow_curly_bracket_regex = %r{\\([\[\]])}
+
+      Shellwords.escape(parameter_name).gsub(allow_curly_bracket_regex, '\1')
+    end
+
+    def shellwords_unescape(value)
+      value.gsub(%r{\\([^A-Za-z0-9_\-.,:+\/@\n])}, '\1')
     end
   end
 end
