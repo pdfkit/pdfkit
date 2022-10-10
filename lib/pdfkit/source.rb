@@ -29,7 +29,7 @@ class PDFKit
       if file?
         @source.path
       elsif url?
-        %{"#{shell_safe_url}"}
+        escaped_url
       else
         SOURCE_FROM_STDIN
       end
@@ -41,7 +41,7 @@ class PDFKit
 
     private
 
-    def shell_safe_url
+    def escaped_url
       url_needs_escaping? ? URI::DEFAULT_PARSER.escape(@source) : @source
     end
 

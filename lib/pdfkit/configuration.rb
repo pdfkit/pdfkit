@@ -45,7 +45,7 @@ class PDFKit
     end
 
     def executable
-      using_xvfb? ? "xvfb-run #{wkhtmltopdf}" : wkhtmltopdf
+      using_xvfb? ? ['xvfb-run', wkhtmltopdf] : wkhtmltopdf
     end
 
     def using_xvfb?

@@ -21,3 +21,13 @@ require 'custom_wkhtmltopdf_path' if File.exist?(File.join(SPEC_ROOT, 'custom_wk
 RSpec.configure do |config|
   include Rack::Test::Methods
 end
+
+RSpec::Matchers.define :contain do |expected|
+  match do |actual|
+    (0..(actual.length - expected.length)).any? do |base_index|
+      expected.each_with_index.all? do |expected_element,index|
+        actual[base_index+index] == expected_element
+      end
+    end
+  end
+end

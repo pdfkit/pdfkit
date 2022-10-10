@@ -175,22 +175,22 @@ describe PDFKit do
     it "constructs the correct command" do
       pdfkit = PDFKit.new('html', :page_size => 'Letter', :toc_l1_font_size => 12, :replace => {'foo' => 'bar'})
       command = pdfkit.command
-      expect(command).to include "wkhtmltopdf"
-      expect(command).to include "--page-size Letter"
-      expect(command).to include "--toc-l1-font-size 12"
-      expect(command).to include "--replace foo bar"
+      expect(command.first).to match(/wkhtmltopdf/)
+      expect(command).to contain %w[--page-size Letter]
+      expect(command).to contain %w[--toc-l1-font-size 12]
+      expect(command).to contain %w[--replace foo bar]
     end
 
     it "sets up one cookie when hash has only one cookie" do
       pdfkit = PDFKit.new('html', cookie: {cookie_name: :cookie_value})
       command = pdfkit.command
-      expect(command).to include "--cookie cookie_name cookie_value"
+      expect(command).to contain %w[--cookie cookie_name cookie_value]
     end
 
-    it "does not break Windows paths" do
+    it "does not split Windows paths that contain spaces" do
       pdfkit = PDFKit.new('html')
       allow(PDFKit.configuration).to receive(:wkhtmltopdf).and_return 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe'
-      expect(pdfkit.command).not_to include('Program\ Files')
+      expect(pdfkit.command).not_to contain(%w[c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe])
     end
 
     it "does not shell escape source URLs" do
@@ -207,15 +207,15 @@ describe PDFKit do
     it "sets up multiple cookies when passed multiple cookies" do
       pdfkit = PDFKit.new('html', :cookie => {:cookie_name1 => :cookie_val1, :cookie_name2 => :cookie_val2})
       command = pdfkit.command
-      expect(command).to include "--cookie cookie_name1 cookie_val1"
-      expect(command).to include "--cookie cookie_name2 cookie_val2"
+      expect(command).to contain %w[--cookie cookie_name1 cookie_val1]
+      expect(command).to contain %w[--cookie cookie_name2 cookie_val2]
     end
 
     it "sets up multiple cookies when passed an array of tuples" do
       pdfkit = PDFKit.new('html', :cookie => [[:cookie_name1, :cookie_val1], [:cookie_name2, :cookie_val2]])
       command = pdfkit.command
-      expect(command).to include "--cookie cookie_name1 cookie_val1"
-      expect(command).to include "--cookie cookie_name2 cookie_val2"
+      expect(command).to contain %w[--cookie cookie_name1 cookie_val1]
+      expect(command).to contain %w[--cookie cookie_name2 cookie_val2]
     end
 
     it "will not include default options it is told to omit" do
@@ -229,48 +229,57 @@ describe PDFKit do
       expect(pdfkit.command).not_to include('--disable-smart-shrinking')
     end
 
-    it "encapsulates string arguments in quotes" do
+    it "must not split string arguments containing spaces" do
       pdfkit = PDFKit.new('html', :header_center => "foo [page]")
-      expect(pdfkit.command).to include "--header-center foo\\ \\[page\\]"
+      expect(pdfkit.command).to contain ['--header-center', 'foo [page]']
     end
 
-    it "sanitizes string arguments" do
+    it "paramatarizes string arguments" do
       pdfkit = PDFKit.new('html', :header_center => "$(ls)")
-      expect(pdfkit.command).to include "--header-center \\$\\(ls\\)"
+      expect(pdfkit.command).to contain %w[--header-center $(ls)]
     end
 
     it "read the source from stdin if it is html" do
       pdfkit = PDFKit.new('html')
-      expect(pdfkit.command).to match(/- -$/)
+      command = pdfkit.command
+      expect(command[-2]).to eq('-')
+      expect(command[-1]).to eq('-')
     end
 
     it "specifies the URL to the source if it is a url" do
       pdfkit = PDFKit.new('http://google.com')
-      expect(pdfkit.command).to match(/"http:\/\/google.com" -$/)
+      command = pdfkit.command
+      expect(command[-2]).to eq("http://google.com")
+      expect(command[-1]).to eq("-")
     end
 
     it "does not break Windows paths" do
       pdfkit = PDFKit.new('html')
       allow(PDFKit.configuration).to receive(:wkhtmltopdf).and_return 'c:/Program Files/wkhtmltopdf/wkhtmltopdf.exe'
-      expect(pdfkit.command).not_to include('Program\ Files')
+      expect(pdfkit.command).not_to contain ['Program', 'Files']
     end
 
     it "specifies the path to the source if it is a file" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(File.new(file_path))
-      expect(pdfkit.command).to match(/#{file_path} -$/)
+      command = pdfkit.command
+      expect(command[-2]).to eq(file_path)
+      expect(command[-1]).to eq('-')
     end
 
     it "specifies the path to the source if it is a tempfile" do
       file_path = File.join(SPEC_ROOT,'fixtures','example.html')
       pdfkit = PDFKit.new(Tempfile.new(file_path))
-      expect(pdfkit.command).to match(/#{Dir.tmpdir}\S+ -$/)
+      command = pdfkit.command
+      expect(command[-2]).to start_with(Dir.tmpdir)
+      expect(command[-1]).to eq('-')
     end
 
     it "specifies the path for the ouput if a path is given" do
       file_path = "/path/to/output.pdf"
       pdfkit = PDFKit.new("html")
-      expect(pdfkit.command(file_path)).to match(/#{file_path}$/)
+      command = pdfkit.command(file_path)
+      expect(command.last).to eq(file_path)
     end
 
     it "detects special pdfkit meta tags" do
@@ -284,8 +293,8 @@ describe PDFKit do
       }
       pdfkit = PDFKit.new(body)
       command = pdfkit.command
-      expect(command).to include "--page-size Legal"
-      expect(command).to include "--orientation Landscape"
+      expect(command).to contain %w[--page-size Legal]
+      expect(command).to contain %w[--orientation Landscape]
     end
 
     it "detects cookies meta tag" do
@@ -299,7 +308,7 @@ describe PDFKit do
       }
       pdfkit = PDFKit.new(body)
       command = pdfkit.command
-      expect(command).to include "--cookie rails_session rails_session_value --cookie cookie_variable cookie_variable_value"
+      expect(command).to contain %w[--cookie rails_session rails_session_value --cookie cookie_variable cookie_variable_value]
     end
 
     it "detects disable_smart_shrinking meta tag" do
@@ -313,7 +322,7 @@ describe PDFKit do
       pdfkit = PDFKit.new(body)
       command = pdfkit.command
       expect(command).to include "--disable-smart-shrinking"
-      expect(command).not_to include "--disable-smart-shrinking true"
+      expect(command).not_to contain %w[--disable-smart-shrinking true]
     end
 
     it "detects names with hyphens instead of underscores" do
@@ -342,8 +351,8 @@ describe PDFKit do
       }
       pdfkit = PDFKit.new(body)
       command = pdfkit.command
-      expect(command).to include "--page-size Legal"
-      expect(command).to include "--orientation Landscape"
+      expect(command).to contain %w[--page-size Legal]
+      expect(command).to contain %w[--orientation Landscape]
     end
 
     it "skips non-pdfkit meta tags" do
@@ -358,8 +367,8 @@ describe PDFKit do
       }
       pdfkit = PDFKit.new(body)
       command = pdfkit.command
-      expect(command).not_to include "--page-size Legal"
-      expect(command).to include "--orientation Landscape"
+      expect(command).not_to contain %w[--page-size Legal]
+      expect(command).to contain %w[--orientation Landscape]
     end
 
     it "does not use quiet when told to" do
@@ -422,14 +431,9 @@ describe PDFKit do
         allow(PDFKit::OS).to receive(:host_is_windows?).and_return(true)
       end
 
-      it "escapes special windows characters" do
-        pdf = PDFKit.new('html', :title => 'hello(world)')
-        expect(pdf.command).to include 'hello^(world^)'
-      end
-
       it "quotes spaces in options" do
         pdf = PDFKit.new('html', :title => 'hello world')
-        expect(pdf.command).to include "--title 'hello world'"
+        expect(pdf.command).to contain ['--title', "hello world"]
       end
     end
   end

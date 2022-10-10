@@ -64,7 +64,7 @@ class PDFKit
       when Array
         value.flatten.collect{|x| x.to_s}
       else
-        (OS::host_is_windows? && value.to_s.index(' ')) ? "'#{ value.to_s }'" : value.to_s
+        value.to_s
       end
     end
   
