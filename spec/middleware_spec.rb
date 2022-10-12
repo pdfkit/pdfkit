@@ -437,7 +437,8 @@ describe PDFKit::Middleware do
           {'Content-Type' => "text/html"}
         end
 
-        specify "header gets correctly updated", pending: "this test only applies to rack 2.x and is rejected by rack 3.x" do
+        specify "header gets correctly updated" do
+          pending("this test only applies to rack 2.x and is rejected by rack 3.x") if Rack.release >= "3.0.0"
           get 'http://www.example.org/public/test.pdf'
           expect(last_response.headers["Content-Type"]).to eq("application/pdf")
         end
