@@ -422,6 +422,29 @@ describe PDFKit::Middleware do
       end
     end
 
+    describe "content type header" do
+      before { mock_app }
+
+      context "lower case" do
+        specify "header gets correctly updated" do
+          get 'http://www.example.org/public/test.pdf'
+          expect(last_response.headers["content-type"]).to eq("application/pdf")
+        end
+      end
+
+      context "mixed case" do
+        let(:headers) do
+          {'Content-Type' => "text/html"}
+        end
+
+        specify "header gets correctly updated" do
+          pending("this test only applies to rack 2.x and is rejected by rack 3.x") if Rack.release >= "3.0.0"
+          get 'http://www.example.org/public/test.pdf'
+          expect(last_response.headers["Content-Type"]).to eq("application/pdf")
+        end
+      end
+    end
+
     describe "remove .pdf from PATH_INFO and REQUEST_URI" do
       before { mock_app }
 
