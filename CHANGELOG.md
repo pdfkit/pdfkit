@@ -1,3 +1,8 @@
+2022-10-17
+=================
+  * Bump to 0.8.7.1
+  * Support non-lower-case Content-Type header provided by app (#516)
+
 2022-10-02
 =================
   * Bump to 0.8.7
