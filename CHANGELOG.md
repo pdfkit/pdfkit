@@ -1,3 +1,8 @@
+2022-10-18
+=================
+  * Bump to 0.8.7.2
+  * Call IO.popen with an Array of command arguments (#519)
+
 2022-10-17
 =================
   * Bump to 0.8.7.1
