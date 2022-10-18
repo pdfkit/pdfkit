@@ -75,19 +75,14 @@ describe PDFKit::Source do
   end
 
   describe "#to_input_for_command" do
-    it "URI escapes source URLs and encloses them in quotes to accomodate ampersands" do
-      source = PDFKit::Source.new("https://www.google.com/search?q='cat<dev/zero>/dev/null'")
-      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
-    end
-
-    it "URI escapes source URI only escape part of it" do
-      source = PDFKit::Source.new("https://www.google.com/search?q='%20 sleep 5'")
-      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='%2520%20sleep%205'\""
+    it "URI escapes source URI" do
+      source = PDFKit::Source.new("https://www.google.com/search?q=foo bar")
+      expect(source.to_input_for_command).to eq "https://www.google.com/search?q=foo%20bar"
     end
 
     it "does not URI escape previously escaped source URLs" do
-      source = PDFKit::Source.new("https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'")
-      expect(source.to_input_for_command).to eq "\"https://www.google.com/search?q='cat%3Cdev/zero%3E/dev/null'\""
+      source = PDFKit::Source.new("https://www.google.com/search?q=foo%20bar")
+      expect(source.to_input_for_command).to eq "https://www.google.com/search?q=foo%20bar"
     end
 
     it "returns a '-' for HTML strings to indicate that we send that content through STDIN" do

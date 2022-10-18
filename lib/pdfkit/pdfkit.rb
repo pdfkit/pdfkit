@@ -46,16 +46,11 @@ class PDFKit
   end
 
   def command(path = nil)
-    args = @renderer.options_for_command
-    shell_escaped_command = [executable, OS::shell_escape_for_os(args)].join ' '
-
-    # In order to allow for URL parameters (e.g. https://www.google.com/search?q=pdfkit) we do
-    # not escape the source. The user is responsible for ensuring that no vulnerabilities exist
-    # in the source. Please see https://github.com/pdfkit/pdfkit/issues/164.
-    input_for_command = @source.to_input_for_command
-    output_for_command = path ? Shellwords.shellescape(path) : '-'
-
-    "#{shell_escaped_command} #{input_for_command} #{output_for_command}"
+    args = [*executable]
+    args.concat(@renderer.options_for_command)
+    args << @source.to_input_for_command
+    args << (path ? path : '-')
+    args
   end
 
   def options
