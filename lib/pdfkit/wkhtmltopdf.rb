@@ -3,9 +3,9 @@
 class PDFKit
   class WkHTMLtoPDF
     attr_reader :options
-    # Pulled from:
-    # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/ebf9b6cfc4c58a31349fb94c568b254fac37b3d3/README_WKHTMLTOIMAGE#L27
-    REPEATABLE_OPTIONS = %w[--allow --cookie --custom-header --post --post-file --run-script].freeze
+    # Pulled from: 
+    # https://github.com/wkhtmltopdf/wkhtmltopdf/blob/6a57c1449797d6cb915921fb747f3ac36199241f/docs/usage/wkhtmltopdf.txt#L104
+    REPEATABLE_OPTIONS = %w[--allow --bypass-proxy-for --cookie --custom-header --post --post-file --run-script --replace].freeze
     SPECIAL_OPTIONS = %w[cover toc].freeze
 
     def initialize(options)
