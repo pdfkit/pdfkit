@@ -49,7 +49,7 @@ class PDFKit
     args = [*executable]
     args.concat(@renderer.options_for_command)
     args << @source.to_input_for_command
-    args << (path ? path : '-')
+    args << (path ? path.to_s : '-')
     args
   end
 

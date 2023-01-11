@@ -181,6 +181,20 @@ describe PDFKit do
       expect(command).to contain %w[--replace foo bar]
     end
 
+    it "contains a specified by path argument" do
+      pdfkit = PDFKit.new('html')
+      command = pdfkit.command("/foo/bar")
+      expect(command.first).to match(/wkhtmltopdf/)
+      expect(command.last).to eq("/foo/bar")
+    end
+
+    it "contains a specified by path argument of Pathname" do
+      pdfkit = PDFKit.new('html')
+      command = pdfkit.command(Pathname.new("/foo/bar"))
+      expect(command.first).to match(/wkhtmltopdf/)
+      expect(command.last).to eq("/foo/bar")
+    end
+
     it "sets up one cookie when hash has only one cookie" do
       pdfkit = PDFKit.new('html', cookie: {cookie_name: :cookie_value})
       command = pdfkit.command
