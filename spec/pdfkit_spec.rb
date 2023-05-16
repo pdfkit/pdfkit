@@ -45,8 +45,8 @@ describe PDFKit do
     end
 
     it "transforms complex keys into command-line arguments" do
-      pdfkit = PDFKit.new('html', :replace => {'value' => 'something else'} )
-      expect(pdfkit.options).to have_key('--replace')
+      pdfkit = PDFKit.new('html', :header_left => {'value' => 'something else'} )
+      expect(pdfkit.options).to have_key('--header-left')
     end
 
     it "drops options with false or falsey values" do
@@ -72,8 +72,8 @@ describe PDFKit do
     end
 
     it "parses hash option values into an array" do
-      pdfkit = PDFKit.new('html', :replace => {'value' => 'something else'} )
-      expect(pdfkit.options['--replace']).to eql ['value', 'something else']
+      pdfkit = PDFKit.new('html', :header_left => {'value' => 'something else'} )
+      expect(pdfkit.options['--header-left']).to eql ['value', 'something else']
     end
 
     it "flattens hash options into the key" do
@@ -84,8 +84,8 @@ describe PDFKit do
     end
 
     it "parses array option values into a string" do
-      pdfkit = PDFKit.new('html', :replace => ['value', 'something else'] )
-      expect(pdfkit.options['--replace']).to eql ['value', 'something else']
+      pdfkit = PDFKit.new('html', :header_left => ['value', 'something else'] )
+      expect(pdfkit.options['--header-left']).to eql ['value', 'something else']
     end
 
     it "flattens array options" do
