@@ -48,6 +48,7 @@ jobs:
         rubygems: latest
         bundler: latest
         bundler-cache: true
+        cache-version: 0.1
 
     - name: Setup wkhtmltopdf
       run: |
