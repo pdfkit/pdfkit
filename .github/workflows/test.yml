@@ -45,7 +45,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        rubygems: latest
+        rubygems: default
         bundler: latest
         bundler-cache: true
 
