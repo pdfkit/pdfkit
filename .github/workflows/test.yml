@@ -43,6 +43,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
+      # rubygems-update's latest is no longer compatible with ruby 2.5, so conditionally run ruby-setup setting the
+      # rubygem version the most recent valid version for 2.5:
+      # https://rubygems.org/gems/rubygems-update/versions/3.3.26
+      if: ${{ matrix.ruby == '2.5' }}
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        rubygems: 3.3.26
+        bundler: latest
+        bundler-cache: true
+    - uses: ruby/setup-ruby@v1
+      # otherwise, we can use rubygems latest
+      if: ${{ matrix.ruby != '2.5' }}
       with:
         ruby-version: ${{ matrix.ruby }}
         rubygems: latest
