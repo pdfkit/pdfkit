@@ -1,3 +1,9 @@
+2023-02-27
+=================
+  * Bump to 0.8.7.3
+  * Allow passing a `Pathname` object to the `path` argument by @yujideveloper in https://github.com/pdfkit/pdfkit/pull/522
+  * Update repeatable options by @mguidetti in https://github.com/pdfkit/pdfkit/pull/524
+
 2022-10-18
 =================
   * Bump to 0.8.7.2
