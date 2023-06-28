@@ -4,7 +4,7 @@ Create PDFs using plain old HTML+CSS. Uses [wkhtmltopdf](http://github.com/antia
 
 ## Supported versions
 
-- Ruby 2.5, 2.6, 2.7, 3.0, 3.1
+- Ruby 2.5, 2.6, 2.7, 3.0, 3.1, 3.2
 - Rails 4.2, 5.2, 6.0, 6.1, 7.0
 
 ## Install
