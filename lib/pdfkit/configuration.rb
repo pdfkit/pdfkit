@@ -11,6 +11,7 @@ class PDFKit
       @use_xvfb        = false
       @meta_tag_prefix = 'pdfkit-'
       @default_options = {
+        :enable_local_file_access => true,
         :disable_smart_shrinking => false,
         :quiet => true,
         :page_size => 'Letter',
