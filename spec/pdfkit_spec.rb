@@ -385,6 +385,22 @@ describe PDFKit do
       expect(command).to contain %w[--orientation Landscape]
     end
 
+    it "handles empty meta tags" do
+      body = %{
+        <html>
+          <head>
+            <meta name="pdfkit-footer_html"/>
+            <meta name="pdfkit-header_html" content=""/>
+          </head>
+          <br>
+        </html>
+      }
+      pdfkit = PDFKit.new(body)
+      command = pdfkit.command
+      expect(command).not_to contain %w[--footer-html]
+      expect(command).to contain ["--header-html", ""]
+    end
+
     it "does not use quiet when told to" do
       pdfkit = PDFKit.new('html', quiet: false)
       expect(pdfkit.command).not_to include '--quiet'
